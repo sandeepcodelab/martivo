@@ -1,0 +1,17 @@
+# Build / output
+dist
+build
+coverage
+
+# Node modules
+node_modules
+
+# Environment / config
+.env
+.env.sample
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
