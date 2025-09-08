@@ -3,8 +3,10 @@ dist
 build
 coverage
 
-# Node modules
+# Node modules & files
 node_modules
+package-lock.json
+package.json
 
 # Environment / config
 .env
