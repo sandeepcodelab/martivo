@@ -98,4 +98,18 @@ userSchema.methods.generateRefreshToken = function () {
   );
 };
 
+// Generate temporary token
+userSchema.methods.generateTemporaryToken = function () {
+  const unHashedToken = crypto.randomBytes(20).toString("hex");
+
+  const hashedToken = crypto
+    .createHmac("sha256")
+    .update(unHashedToken)
+    .digest("hex");
+
+  const tokenExpiry = Date.now() + (30 * 60 * 1000);
+
+  return { unHashedToken, hashedToken, tokenExpiry };
+};
+
 export const User = mongoose.model("User", userSchema);
