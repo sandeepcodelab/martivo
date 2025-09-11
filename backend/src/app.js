@@ -3,6 +3,7 @@ import cors from "cors";
 
 // Routers
 import healthcheckRouter from "./routes/healthcheckRoute.js";
+import authRouter from "./routes/authRoute.js";
 
 const app = express();
 
@@ -27,5 +28,6 @@ app.use(
 
 // Routes
 app.use("/api/v1/healthcheck", healthcheckRouter);
+app.use("/api/v1/auth", authRouter);
 
 export default app;
