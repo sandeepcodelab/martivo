@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import crypto, { createHmac } from "crypto";
+import crypto from "crypto";
 
 const userSchema = new Schema(
   {
@@ -11,9 +11,8 @@ const userSchema = new Schema(
         localPath: String,
       },
       default: {
-        url: "",
-        localPath:
-          "https://placehold.co/250x200/31343C/EEE?font=raleway&text=User",
+        url: "https://placehold.co/250x200/31343C/EEE?font=raleway&text=User",
+        localPath: "",
       },
     },
     name: {
@@ -103,11 +102,11 @@ userSchema.methods.generateTemporaryToken = function () {
   const unHashedToken = crypto.randomBytes(20).toString("hex");
 
   const hashedToken = crypto
-    .createHmac("sha256")
+    .createHash("sha256")
     .update(unHashedToken)
     .digest("hex");
 
-  const tokenExpiry = Date.now() + (30 * 60 * 1000);
+  const tokenExpiry = Date.now() + 30 * 60 * 1000;
 
   return { unHashedToken, hashedToken, tokenExpiry };
 };
