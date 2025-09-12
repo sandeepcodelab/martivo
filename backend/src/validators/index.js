@@ -7,7 +7,7 @@ const userRegisterValidator = () => {
       .notEmpty()
       .withMessage("Email field cannot be empty.")
       .isEmail()
-      .withMessage("The email format is invalid. Please enter a valid email."),
+      .withMessage("Please enter a valid email address."),
     body("name")
       .trim()
       .notEmpty()
@@ -17,10 +17,25 @@ const userRegisterValidator = () => {
     body("password")
       .trim()
       .notEmpty()
-      .withMessage("Password cannot be empty.")
+      .withMessage("Password field cannot be empty.")
       .isLength({ min: 8 })
       .withMessage("Password must be at least 8 characters in length."),
   ];
 };
 
-export { userRegisterValidator };
+const userLoginValidator = () => {
+  return [
+    body("email")
+      .trim()
+      .notEmpty()
+      .withMessage("Email field cannot be empty.")
+      .isEmail()
+      .withMessage("Please enter a valid email address."),
+    body("password")
+      .trim()
+      .notEmpty()
+      .withMessage("Password field cannot be empty."),
+  ];
+};
+
+export { userRegisterValidator, userLoginValidator };
