@@ -67,11 +67,71 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(200)
     .json(
       new ApiResponse(
-        200,
+        201,
         { user: createdUser },
         "Registration successful! Please verify your email to activate your account."
       )
     );
 });
 
-export { registerUser };
+const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    throw new ApiError(400, "Email field cannot be empty.");
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ApiError(404, "User not found. Please register first.");
+  }
+
+  if (!password) {
+    throw new ApiError(400, "Password field cannot be empty.");
+  }
+
+  const isPasswordCorrect = await user.isPasswordCorrect(password);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(
+      401,
+      "Invalid credentials. Please check your email and password and try again."
+    );
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+
+  // const loggedInUser = await User.findByIdAndUpdate(
+  //   user._id,
+  //   { $set: { refreshToken } },
+  //   { new: true }
+  // ).select(
+  //   "-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
+  // );
+
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { user: loggedInUser, accessToken, refreshToken },
+        "Login successful"
+      )
+    );
+});
+
+export { registerUser, login };
