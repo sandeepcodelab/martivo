@@ -134,6 +134,14 @@ const login = asyncHandler(async (req, res) => {
     );
 });
 
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { user: req.user }, "User fetched successfully.")
+    );
+});
+
 const logoutUser = asyncHandler(async (req, res) => {
   const user = await User.findByIdAndUpdate(
     req.user._id,
@@ -157,4 +165,4 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Logout successfully."));
 });
 
-export { registerUser, login, logoutUser };
+export { registerUser, login, logoutUser, getCurrentUser };
