@@ -5,6 +5,7 @@ import {
   logoutUser,
   getCurrentUser,
   emailVerification,
+  resendEmailVerification,
 } from "../controllers/authController.js";
 import { validate } from "../middlewares/validatorMiddleware.js";
 import {
@@ -19,6 +20,7 @@ router.route("/register").post(userRegisterValidator(), validate, registerUser);
 router.route("/login").post(userLoginValidator(), validate, login);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/user").get(verifyJWT, getCurrentUser);
-router.route("/verify-email/:token").get(emailVerification);
+router.route("/verify/:token").get(emailVerification);
+router.route("/resend-email-verification/:token").get(resendEmailVerification);
 
 export default router;
