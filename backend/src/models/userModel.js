@@ -99,7 +99,7 @@ userSchema.methods.generateRefreshToken = function () {
 
 // Generate temporary token
 userSchema.methods.generateTemporaryToken = function () {
-  const unHashedToken = crypto.randomBytes(20).toString("hex");
+  const unHashedToken = crypto.randomBytes(32).toString("hex");
 
   const hashedToken = crypto
     .createHash("sha256")
