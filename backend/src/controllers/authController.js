@@ -293,6 +293,43 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+const forgotPasswordRequest = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ApiError(404, "User does not exists.");
+  }
+
+  const { unHashedToken, hashedToken, tokenExpiry } =
+    user.generateTemporaryToken();
+
+  user.forgotPasswordToken = hashedToken;
+  user.forgotPasswordExpiry = tokenExpiry;
+
+  await user.save({ validateBeforeSave: false });
+
+  await sendEmail({
+    email: user?.email,
+    subject: "Password reset request",
+    mailgenContent: generateResetPasswordMail(
+      user.name,
+      `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${unHashedToken}`
+    ),
+  });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {},
+        "A password reset link has been sent to your email. Please check your inbox and follow the instructions."
+      )
+    );
+});
+
 export {
   registerUser,
   login,
