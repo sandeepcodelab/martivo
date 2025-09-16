@@ -49,6 +49,15 @@ const forgotPasswordValidator = () => {
   ];
 };
 
+const resetForgotPasswordValidator = () => {
+  return [
+    body("newPassword")
+      .trim()
+      .notEmpty()
+      .withMessage("New password cannot be empty."),
+  ];
+};
+
 export {
   userRegisterValidator,
   userLoginValidator,
