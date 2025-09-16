@@ -2,7 +2,11 @@ import { User } from "../models/userModel.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/apiError.js";
-import { generateVerificationMail, sendEmail } from "../utils/mail.js";
+import {
+  generateResetPasswordMail,
+  generateVerificationMail,
+  sendEmail,
+} from "../utils/mail.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
