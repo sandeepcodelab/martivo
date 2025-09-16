@@ -110,14 +110,6 @@ const login = asyncHandler(async (req, res) => {
     user._id
   );
 
-  // const loggedInUser = await User.findByIdAndUpdate(
-  //   user._id,
-  //   { $set: { refreshToken } },
-  //   { new: true }
-  // ).select(
-  //   "-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
-  // );
-
   const loggedInUser = await User.findById(user._id).select(
     "-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
   );
