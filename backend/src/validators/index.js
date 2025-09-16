@@ -38,4 +38,21 @@ const userLoginValidator = () => {
   ];
 };
 
-export { userRegisterValidator, userLoginValidator };
+const forgotPasswordValidator = () => {
+  return [
+    body("email")
+      .trim()
+      .notEmpty()
+      .withMessage("Email field cannot be empty.")
+      .isEmail()
+      .withMessage("Please enter a valid email address."),
+  ];
+};
+
+export {
+  userRegisterValidator,
+  userLoginValidator,
+  forgotPasswordValidator,
+  resetForgotPasswordValidator,
+  changeCurrentPasswordValidator,
+};
