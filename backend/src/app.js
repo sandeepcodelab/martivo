@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
+// Error handler
+import { globleErrorHandler } from "./middlewares/errorMiddleware.js";
+
 // Routers
 import healthcheckRouter from "./routes/healthcheckRoute.js";
 import authRouter from "./routes/authRoute.js";
@@ -31,5 +34,8 @@ app.use(
 // Routes
 app.use("/api/v1/healthcheck", healthcheckRouter);
 app.use("/api/v1/auth", authRouter);
+
+// Error handler
+app.use(globleErrorHandler);
 
 export default app;
