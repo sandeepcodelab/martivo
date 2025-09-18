@@ -65,4 +65,51 @@ const editCategory = asyncHandler(async (req, res) => {
     .json(200, { category }, "Category fetched successfully.");
 });
 
-export { addCategory, getAllCategories, editCategory };
+const updateCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const { name, slug, parentId, status } = req.body;
+
+  if (!name) {
+    throw new ApiError(400, "Name field cannot be empty.", []);
+  }
+
+  const categorySlug = slug ? slug : slugify(name, { lower: true, trim: true });
+
+  const category = await Category.findById(id);
+
+  if (!category) {
+    throw new ApiError(404, "Category not found.", []);
+  }
+
+  const updatedCategory = await Category.findByIdAndUpdate(
+    category._id,
+    {
+      $set: {
+        name: name || category.name,
+        slug: categorySlug || category.slug,
+        parentId: parentId || category.parentId,
+        status: status || category.status,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  if (!updatedCategory) {
+    throw new ApiError(500, "Failed to update category, Please try again.", []);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { category: updatedCategory },
+        "Category updated successfully."
+      )
+    );
+});
+
+export { addCategory, getAllCategories, editCategory, updateCategory };
