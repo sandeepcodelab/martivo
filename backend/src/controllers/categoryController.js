@@ -112,4 +112,24 @@ const updateCategory = asyncHandler(async (req, res) => {
     );
 });
 
-export { addCategory, getAllCategories, editCategory, updateCategory };
+const deleteCategory = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const category = Category.findByIdAndDelete(id);
+
+  if (!category) {
+    throw new ApiError(404, "Category not found.", []);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Category deleted successfully."));
+});
+
+export {
+  addCategory,
+  getAllCategories,
+  editCategory,
+  updateCategory,
+  deleteCategory,
+};
