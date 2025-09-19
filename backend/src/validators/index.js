@@ -1,5 +1,6 @@
 import { body } from "express-validator";
 
+// Auth validators
 const userRegisterValidator = () => {
   return [
     body("email")
@@ -71,10 +72,20 @@ const changeCurrentPasswordValidator = () => {
   ];
 };
 
+// Category validators
+const categoryValidator = () => {
+  return [
+    body("name").trim().notEmpty().withMessage("Name field cannot be empty."),
+  ];
+};
+
 export {
+  // Auth validators
   userRegisterValidator,
   userLoginValidator,
   forgotPasswordValidator,
   resetForgotPasswordValidator,
   changeCurrentPasswordValidator,
+  // Category validators
+  categoryValidator,
 };
