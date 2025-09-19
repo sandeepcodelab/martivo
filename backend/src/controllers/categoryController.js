@@ -13,7 +13,7 @@ const addCategory = asyncHandler(async (req, res) => {
 
   const categorySlug = slug ? slug : slugify(name, { lower: true, trim: true });
 
-  const existedSlug = await Category.findOne({ categorySlug });
+  const existedSlug = await Category.findOne({ slug: categorySlug });
 
   if (existedSlug) {
     throw new ApiError(
@@ -48,13 +48,15 @@ const getAllCategories = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(200, { categories }, "Categories fetched successfully.");
+    .json(
+      new ApiResponse(200, { categories }, "Categories fetched successfully.")
+    );
 });
 
 const editCategory = asyncHandler(async (req, res) => {
-  const categoryId = req.params.id;
+  const { id } = req.params;
 
-  const category = await Category.findById(categoryId);
+  const category = await Category.findById(id);
 
   if (!category) {
     throw new ApiError(404, "Category not found.", []);
@@ -62,7 +64,7 @@ const editCategory = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(200, { category }, "Category fetched successfully.");
+    .json(new ApiResponse(200, { category }, "Category fetched successfully."));
 });
 
 const updateCategory = asyncHandler(async (req, res) => {
@@ -115,7 +117,7 @@ const updateCategory = asyncHandler(async (req, res) => {
 const deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const category = Category.findByIdAndDelete(id);
+  const category = await Category.findByIdAndDelete(id);
 
   if (!category) {
     throw new ApiError(404, "Category not found.", []);
