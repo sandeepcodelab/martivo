@@ -8,6 +8,7 @@ import { globleErrorHandler } from "./middlewares/errorMiddleware.js";
 // Routers
 import healthcheckRouter from "./routes/healthcheckRoute.js";
 import authRouter from "./routes/authRoute.js";
+import category from "./routes/categoryRoute.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use(
 // Routes
 app.use("/api/v1/healthcheck", healthcheckRouter);
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/category", category);
 
 // Error handler
 app.use(globleErrorHandler);
