@@ -13,7 +13,7 @@ const productSchema = new Schema(
       required: true,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "category",
       required: true,
     },
@@ -30,13 +30,14 @@ const productSchema = new Schema(
     productSubImage: {
       type: [
         {
-          url: String,
-          default:
-            "https://placehold.co/450x400/31343C/EEE?font=raleway&text=Image",
+          url: {
+            type: String,
+            default:
+              "https://placehold.co/450x400/31343C/EEE?font=raleway&text=Image",
+          },
         },
         {
-          localPath: String,
-          default: "",
+          localPath: { type: String, default: "" },
         },
       ],
       default: [],
@@ -44,7 +45,7 @@ const productSchema = new Schema(
     status: {
       type: String,
       enum: ["active", "inactive", "out_of_stock"],
-      default: "inactive",
+      default: "active",
     },
   },
   {
