@@ -17,7 +17,7 @@ const productSchema = new Schema(
       ref: "category",
       required: true,
     },
-    productImage: {
+    thumbnail: {
       type: {
         url: String,
         localPath: String,
@@ -27,7 +27,7 @@ const productSchema = new Schema(
         localPath: "",
       },
     },
-    productSubImage: {
+    images: {
       type: [
         {
           url: {
