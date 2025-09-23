@@ -18,30 +18,29 @@ const productSchema = new Schema(
       required: true,
     },
     thumbnail: {
-      type: {
-        url: String,
-        localPath: String,
+      url: {
+        type: String,
+        default:
+          "https://placehold.co/450x400/31343C/EEE?font=raleway&text=Image",
       },
-      default: {
-        url: "https://placehold.co/450x400/31343C/EEE?font=raleway&text=Image",
-        localPath: "",
+      localPath: {
+        type: String,
+        default: "",
       },
     },
-    images: {
-      type: [
-        {
-          url: {
-            type: String,
-            default:
-              "https://placehold.co/450x400/31343C/EEE?font=raleway&text=Image",
-          },
+    images: [
+      {
+        url: {
+          type: String,
+          default:
+            "https://placehold.co/450x400/31343C/EEE?font=raleway&text=Image",
         },
-        {
-          localPath: { type: String, default: "" },
+        localPath: {
+          type: String,
+          default: "",
         },
-      ],
-      default: [],
-    },
+      },
+    ],
     status: {
       type: String,
       enum: ["active", "inactive", "out_of_stock"],
