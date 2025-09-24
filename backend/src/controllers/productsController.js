@@ -158,10 +158,10 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 
   // Get old thumbnail and images, and removing them
-  if (!thumbnail) {
+  if (thumbnail) {
     const oldThumbnail = product.thumbnail?.url;
 
-    if (!oldThumbnail) {
+    if (oldThumbnail) {
       const match = oldThumbnail.match(/\/(martivo\/[^.]+)\./);
       const public_id = match ? match[1] : null;
 
@@ -173,7 +173,7 @@ const updateProduct = asyncHandler(async (req, res) => {
   if (images.length > 0) {
     const oldImages = product.images;
 
-    if (oldImages?.length > 0) {
+    if (oldImages.length > 0) {
       try {
         await Promise.all(
           oldImages.map(async (image) => {
@@ -189,6 +189,9 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
   }
 
+  const finalImages =
+    Array.isArray(images) && images?.length > 0 ? images : product.images;
+
   const updateProduct = await Product.findByIdAndUpdate(
     product._id,
     {
@@ -197,7 +200,8 @@ const updateProduct = asyncHandler(async (req, res) => {
         description: description || product.description,
         category: category || product.category,
         thumbnail: thumbnail || product.thumbnail,
-        images: images || product.images,
+        images: finalImages,
+        status: status || product.status,
       },
     },
     { new: true }
@@ -218,6 +222,56 @@ const updateProduct = asyncHandler(async (req, res) => {
     );
 });
 
-// const addProduct = asyncHandler(async(req, res) => {})
+const deleteProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
 
-export { addProduct, getAllProducts, editProduct, updateProduct };
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new ApiError(404, "Product not found.", []);
+  }
+
+  const thumbnail = product.thumbnail;
+
+  if (thumbnail) {
+    const match = thumbnail.match(/\/(martivo\/[^.]+)\./);
+    const public_id = match ? match[1] : null;
+
+    await deleteFromCloudinary(public_id);
+  }
+
+  const images = product.images;
+
+  if (images.length > 0) {
+    try {
+      await Promise.all(
+        images.map(async (image) => {
+          const match = image.url.match(/\/(martivo\/[^.]+)\./);
+          const public_id = match ? match[1] : null;
+
+          await deleteFromCloudinary(public_id);
+        })
+      );
+    } catch (error) {
+      throw new ApiError(500, "Failed to delete images.", []);
+    }
+  }
+
+  const deleteProduct = await Product.findByIdAndDelete(product._id);
+
+  if (!deleteProduct) {
+    throw new ApiError(500, "Failed to delete product.", []);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Product deleted successfully."));
+});
+
+export {
+  addProduct,
+  getAllProducts,
+  editProduct,
+  updateProduct,
+  deleteProduct,
+};
