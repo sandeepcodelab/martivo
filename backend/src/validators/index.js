@@ -94,6 +94,20 @@ const addProductVlidator = () => {
   ];
 };
 
+const updateProductVlidator = () => {
+  return [
+    body("title").trim().notEmpty().withMessage("Title field cannot be empty."),
+    body("description")
+      .trim()
+      .notEmpty()
+      .withMessage("Description field cannot be empty."),
+    body("category")
+      .trim()
+      .notEmpty()
+      .withMessage("Catrgory field cannot be empty."),
+  ];
+};
+
 export {
   // Auth validators
   userRegisterValidator,
@@ -105,4 +119,5 @@ export {
   categoryValidator,
   // Product validator
   addProductVlidator,
+  updateProductVlidator,
 };
