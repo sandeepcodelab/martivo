@@ -13,6 +13,7 @@ const addProduct = asyncHandler(async (req, res) => {
   const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
   const imagesLocalPath = req.files?.images;
 
+  // Upload thumbnail
   let thumbnail = "";
   if (thumbnailLocalPath) {
     try {
@@ -22,6 +23,7 @@ const addProduct = asyncHandler(async (req, res) => {
     }
   }
 
+  // Upload images
   let uploadedImages = [];
   let images = [];
   if (imagesLocalPath?.length > 0) {
@@ -111,6 +113,111 @@ const editProduct = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { product }, "Product fetched successfully."));
 });
 
+const updateProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const { title, description, category, status } = req.body;
+
+  const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
+  const imagesLocalPath = req.files?.images;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new ApiError(404, "Product not found.", []);
+  }
+
+  // upload thumbnail
+  let thumbnail = "";
+  if (thumbnailLocalPath) {
+    try {
+      thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+    } catch (error) {
+      throw new ApiError(500, "Failed to upload thumbnail.", []);
+    }
+  }
+
+  // Upload images
+  let uploadedImages = [];
+  let images = [];
+  if (imagesLocalPath?.length > 0) {
+    try {
+      await Promise.all(
+        imagesLocalPath.map(async (image) => {
+          const uploadedImg = await uploadOnCloudinary(image.path);
+          images.push({
+            url: uploadedImg.secure_url,
+            localPath: image.path,
+          });
+          uploadedImages.push(uploadedImg);
+        })
+      );
+    } catch (error) {
+      throw new ApiError(500, "Failed to upload thumbnail.", []);
+    }
+  }
+
+  // Get old thumbnail and images, and removing them
+  if (!thumbnail) {
+    const oldThumbnail = product.thumbnail?.url;
+
+    if (!oldThumbnail) {
+      const match = oldThumbnail.match(/\/(martivo\/[^.]+)\./);
+      const public_id = match ? match[1] : null;
+
+      await deleteFromCloudinary(public_id);
+    }
+  }
+
+  // Images
+  if (images.length > 0) {
+    const oldImages = product.images;
+
+    if (oldImages?.length > 0) {
+      try {
+        await Promise.all(
+          oldImages.map(async (image) => {
+            const match = image.url.match(/\/(martivo\/[^.]+)\./);
+            const public_id = match ? match[1] : null;
+
+            await deleteFromCloudinary(public_id);
+          })
+        );
+      } catch (error) {
+        throw new ApiError(500, "Failed to delete images.", []);
+      }
+    }
+  }
+
+  const updateProduct = await Product.findByIdAndUpdate(
+    product._id,
+    {
+      $set: {
+        title: title || product.title,
+        description: description || product.description,
+        category: category || product.category,
+        thumbnail: thumbnail || product.thumbnail,
+        images: images || product.images,
+      },
+    },
+    { new: true }
+  );
+
+  if (!updateProduct) {
+    throw new ApiError(500, "Failed to update product.", []);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { product: updateProduct },
+        "Product updated successfully."
+      )
+    );
+});
+
 // const addProduct = asyncHandler(async(req, res) => {})
 
-export { addProduct, getAllProducts, editProduct };
+export { addProduct, getAllProducts, editProduct, updateProduct };
