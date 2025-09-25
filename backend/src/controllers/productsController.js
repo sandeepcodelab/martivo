@@ -118,56 +118,11 @@ const updateProduct = asyncHandler(async (req, res) => {
 
   const { title, description, category, status } = req.body;
 
-  const imagesLocalPath = req.files?.images;
-
   const product = await Product.findById(id);
 
   if (!product) {
     throw new ApiError(404, "Product not found.", []);
   }
-
-  // Upload images
-  let uploadedImages = [];
-  let images = [];
-  if (imagesLocalPath?.length > 0) {
-    try {
-      await Promise.all(
-        imagesLocalPath.map(async (image) => {
-          const uploadedImg = await uploadOnCloudinary(image.path);
-          images.push({
-            url: uploadedImg.secure_url,
-            localPath: image.path,
-          });
-          uploadedImages.push(uploadedImg);
-        })
-      );
-    } catch (error) {
-      throw new ApiError(500, "Failed to upload thumbnail.", []);
-    }
-  }
-
-  // Get old images and remove them
-  if (images.length > 0) {
-    const oldImages = product.images;
-
-    if (oldImages.length > 0) {
-      try {
-        await Promise.all(
-          oldImages.map(async (image) => {
-            const match = image.url.match(/\/(martivo\/[^.]+)\./);
-            const public_id = match ? match[1] : null;
-
-            await deleteFromCloudinary(public_id);
-          })
-        );
-      } catch (error) {
-        throw new ApiError(500, "Failed to delete images.", []);
-      }
-    }
-  }
-
-  const finalImages =
-    Array.isArray(images) && images?.length > 0 ? images : product.images;
 
   const updateProduct = await Product.findByIdAndUpdate(
     product._id,
@@ -176,8 +131,6 @@ const updateProduct = asyncHandler(async (req, res) => {
         title: title || product.title,
         description: description || product.description,
         category: category || product.category,
-        thumbnail: thumbnail || product.thumbnail,
-        images: finalImages,
         status: status || product.status,
       },
     },
@@ -302,6 +255,89 @@ const updateProductThumbnail = asyncHandler(async (req, res) => {
     );
 });
 
+const updateProductImages = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const imagesLocalPath = req.files?.images;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new ApiError(404, "Product not found.", []);
+  }
+
+  // Upload images
+  let uploadedImages = [];
+  let images = [];
+  if (imagesLocalPath?.length > 0) {
+    try {
+      await Promise.all(
+        imagesLocalPath.map(async (image) => {
+          const uploadedImg = await uploadOnCloudinary(image.path);
+          images.push({
+            url: uploadedImg.secure_url,
+            localPath: image.path,
+          });
+          uploadedImages.push(uploadedImg);
+        })
+      );
+    } catch (error) {
+      throw new ApiError(500, "Failed to upload images.", []);
+    }
+  }
+
+  // Get old images and remove them
+  if (images.length > 0) {
+    const oldImages = product.images;
+
+    if (oldImages.length > 0) {
+      try {
+        await Promise.all(
+          oldImages.map(async (image) => {
+            const match = image.url.match(/\/(martivo\/[^.]+)\./);
+            const public_id = match ? match[1] : null;
+
+            await deleteFromCloudinary(public_id);
+          })
+        );
+      } catch (error) {
+        throw new ApiError(500, "Failed to delete images.", []);
+      }
+    }
+  }
+
+  //   const finalImages =
+  //     Array.isArray(images) && images?.length > 0 ? images : product.images;
+
+  const updateImages = await Product.findByIdAndUpdate(
+    product._id,
+    {
+      $set: {
+        images: images,
+      },
+    },
+    { new: true }
+  );
+
+  if (!updateImages) {
+    // Remove images if not updated in database
+    if (uploadedImages?.length > 0) {
+      try {
+        await Promise.all(
+          uploadedImages.map((image) => deleteFromCloudinary(image.public_id))
+        );
+      } catch (error) {
+        throw new ApiError(500, "Failed to delete images.", []);
+      }
+    }
+
+    throw new ApiError(500, "Failed to update product images.", []);
+  }
+
+  return res
+    .status(200)
+    .json(200, { product: updateImages }, "Images updated successfully.");
+});
+
 export {
   addProduct,
   getAllProducts,
@@ -309,4 +345,5 @@ export {
   updateProduct,
   deleteProduct,
   updateProductThumbnail,
+  updateProductImages,
 };
