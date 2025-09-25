@@ -64,14 +64,14 @@ const addProduct = asyncHandler(async (req, res) => {
     if (uploadedImages?.length > 0) {
       try {
         await Promise.all(
-          uploadedImages.map(async (image) => {
-            await deleteFromCloudinary(image.public_id);
-          })
+          uploadedImages.map((image) => deleteFromCloudinary(image.public_id))
         );
       } catch (error) {
         throw new ApiError(500, "Failed to delete images.", []);
       }
     }
+
+    throw new ApiError(500, "Failed to create product.", []);
   }
 
   return res
@@ -99,7 +99,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { products }, "Products fetched successfully."));
 });
 
-const editProduct = asyncHandler(async (req, res) => {
+const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const product = await Product.findById(id);
@@ -118,23 +118,12 @@ const updateProduct = asyncHandler(async (req, res) => {
 
   const { title, description, category, status } = req.body;
 
-  const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
   const imagesLocalPath = req.files?.images;
 
   const product = await Product.findById(id);
 
   if (!product) {
     throw new ApiError(404, "Product not found.", []);
-  }
-
-  // upload thumbnail
-  let thumbnail = "";
-  if (thumbnailLocalPath) {
-    try {
-      thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
-    } catch (error) {
-      throw new ApiError(500, "Failed to upload thumbnail.", []);
-    }
   }
 
   // Upload images
@@ -157,19 +146,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
   }
 
-  // Get old thumbnail and images, and removing them
-  if (thumbnail) {
-    const oldThumbnail = product.thumbnail?.url;
-
-    if (oldThumbnail) {
-      const match = oldThumbnail.match(/\/(martivo\/[^.]+)\./);
-      const public_id = match ? match[1] : null;
-
-      await deleteFromCloudinary(public_id);
-    }
-  }
-
-  // Images
+  // Get old images and remove them
   if (images.length > 0) {
     const oldImages = product.images;
 
@@ -268,10 +245,68 @@ const deleteProduct = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Product deleted successfully."));
 });
 
+const updateProductThumbnail = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    throw new ApiError(404, "Product not found.", []);
+  }
+
+  // upload thumbnail
+  let thumbnail = "";
+  if (thumbnailLocalPath) {
+    thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+  }
+
+  // Get old thumbnail and remove it
+  if (thumbnail) {
+    const oldThumbnail = product.thumbnail?.url;
+
+    if (oldThumbnail) {
+      const match = oldThumbnail.match(/\/(martivo\/[^.]+)\./);
+      const public_id = match ? match[1] : null;
+
+      await deleteFromCloudinary(public_id);
+    }
+  }
+
+  const updateThumbnail = await Product.findByIdAndUpdate(
+    product._id,
+    {
+      $set: {
+        thumbnail: thumbnail,
+      },
+    },
+    { new: true }
+  );
+
+  if (!updateThumbnail) {
+    if (thumbnail) {
+      await deleteFromCloudinary(thumbnail.public_id);
+    }
+
+    throw new ApiError(500, "Failed to update thumbnail.");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { product: updateThumbnail },
+        "Thumbnail updated successfully."
+      )
+    );
+});
+
 export {
   addProduct,
   getAllProducts,
-  editProduct,
+  getProductById,
   updateProduct,
   deleteProduct,
+  updateProductThumbnail,
 };
