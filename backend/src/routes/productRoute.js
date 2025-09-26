@@ -2,9 +2,12 @@ import { Router } from "express";
 import {
   addProduct,
   getAllProducts,
-  editProduct,
+  getProductById,
   updateProduct,
   deleteProduct,
+  updateProductThumbnail,
+  addProductImages,
+  deleteProductImage,
 } from "../controllers/productsController.js";
 import { validate } from "../middlewares/validatorMiddleware.js";
 import {
@@ -30,34 +33,49 @@ router.route("/add").post(
       name: "images",
     },
   ]),
-  addProductVlidator(),
-  validate,
   verifyJWT,
   roleCheck(["admin"]),
+  addProductVlidator(),
+  validate,
   addProduct
 );
 
-router.route("/edit/:id").get(verifyJWT, roleCheck(["admin"]), editProduct);
+router.route("/edit/:id").get(verifyJWT, roleCheck(["admin"]), getProductById);
 
-router.route("/update/:id").patch(
-  upload.fields([
-    {
-      name: "thumbnail",
-      maxCount: 1,
-    },
-    {
-      name: "images",
-    },
-  ]),
-  updateProductVlidator(),
-  validate,
-  verifyJWT,
-  roleCheck(["admin"]),
-  updateProduct
-);
+router
+  .route("/update/:id")
+  .patch(
+    verifyJWT,
+    roleCheck(["admin"]),
+    updateProductVlidator(),
+    validate,
+    updateProduct
+  );
 
 router
   .route("/delete/:id")
   .delete(verifyJWT, roleCheck(["admin"]), deleteProduct);
+
+router
+  .route("/update-thumbnail/:id")
+  .patch(
+    upload.single("thumbnail"),
+    verifyJWT,
+    roleCheck(["admin"]),
+    updateProductThumbnail
+  );
+
+router
+  .route("/add-images/:id")
+  .patch(
+    upload.array("productImages", 6),
+    verifyJWT,
+    roleCheck(["admin"]),
+    addProductImages
+  );
+
+router
+  .route("/delete-image/:id")
+  .delete(verifyJWT, roleCheck(["admin"]), deleteProductImage);
 
 export default router;
