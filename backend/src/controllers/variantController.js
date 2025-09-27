@@ -153,6 +153,35 @@ const updateVariant = asyncHandler(async (req, res) => {
       )
     );
 });
-// const data = asyncHandler(async (req, res) => {})
 
-export { addVariant, getAllVariants, getVariantById, updateVariant };
+const deleteVariant = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const variant = await Variant.findById(id);
+
+  if (!variant) {
+    throw new ApiError(404, "Product variant not found.", []);
+  }
+
+  const deleteVariant = await Variant.findByIdAndDelete(variant._id);
+
+  if (!deleteVariant) {
+    throw new ApiError(
+      500,
+      "Unable to delete product variant. Please retry later.",
+      []
+    );
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Product variant deleted successfully."));
+});
+
+export {
+  addVariant,
+  getAllVariants,
+  getVariantById,
+  updateVariant,
+  deleteVariant,
+};
