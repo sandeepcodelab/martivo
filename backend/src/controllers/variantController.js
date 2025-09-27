@@ -71,6 +71,28 @@ const getAllVariants = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { variants }, "Variants fetched successfully."));
 });
 
+const getVariantById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    throw new ApiError(
+      400,
+      "Variant reference is missing. Please try again.",
+      []
+    );
+  }
+
+  const variant = await Variant.find({ id });
+
+  if (!variant) {
+    throw new ApiError(500, "Unable to fetch variant. Please retry later.", []);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { variant }, "Variants fetched successfully."));
+});
+
 // const data = asyncHandler(async (req, res) => {})
 
-export { addVariant, getAllVariants };
+export { addVariant, getAllVariants, getVariantById };
