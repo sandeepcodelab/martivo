@@ -8,7 +8,11 @@ const addVariant = asyncHandler(async (req, res) => {
     req.body;
 
   if (!productId) {
-    throw new ApiError(400, "Unable to proceed: Product ID not provided.", []);
+    throw new ApiError(
+      400,
+      "Product reference is missing. Please try again.",
+      []
+    );
   }
 
   const variant = await Variant.create({
@@ -33,6 +37,40 @@ const addVariant = asyncHandler(async (req, res) => {
     );
 });
 
+const getAllVariants = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+
+  if (!productId) {
+    throw new ApiError(
+      400,
+      "Product reference is missing. Please try again.",
+      []
+    );
+  }
+
+  const variants = await Variant.find({ productId });
+
+  if (!variants) {
+    throw new ApiError(
+      500,
+      "Unable to fetch variants. Please retry later.",
+      []
+    );
+  }
+
+  if (variants.length === 0) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, { variants }, "We could not find any variants.")
+      );
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { variants }, "Variants fetched successfully."));
+});
+
 // const data = asyncHandler(async (req, res) => {})
 
-export { addVariant };
+export { addVariant, getAllVariants };
