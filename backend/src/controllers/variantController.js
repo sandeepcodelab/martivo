@@ -33,7 +33,7 @@ const addVariant = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .json(
-      new ApiResponse(200, { variant }, "Product variant created successfully.")
+      new ApiResponse(201, { variant }, "Product variant created successfully.")
     );
 });
 
@@ -53,7 +53,7 @@ const getAllVariants = asyncHandler(async (req, res) => {
   if (!variants) {
     throw new ApiError(
       500,
-      "Unable to fetch variants. Please retry later.",
+      "Unable to fetch product variants. Please retry later.",
       []
     );
   }
@@ -68,7 +68,13 @@ const getAllVariants = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { variants }, "Variants fetched successfully."));
+    .json(
+      new ApiResponse(
+        200,
+        { variants },
+        "product variants fetched successfully."
+      )
+    );
 });
 
 const getVariantById = asyncHandler(async (req, res) => {
@@ -82,17 +88,71 @@ const getVariantById = asyncHandler(async (req, res) => {
     );
   }
 
-  const variant = await Variant.find({ id });
+  const variant = await Variant.findById(id);
 
   if (!variant) {
-    throw new ApiError(500, "Unable to fetch variant. Please retry later.", []);
+    throw new ApiError(
+      500,
+      "Unable to fetch product variant. Please retry later.",
+      []
+    );
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { variant }, "Variants fetched successfully."));
+    .json(
+      new ApiResponse(
+        200,
+        { variant },
+        "Product variants fetched successfully."
+      )
+    );
 });
 
+const updateVariant = asyncHandler(async (req, res) => {
+  const { size, color, price, stock, sku, discount, isActive } = req.body;
+  const { id } = req.params;
+
+  const variant = await Variant.findById(id);
+
+  if (!variant) {
+    throw new ApiError(404, "Product variant not found.", []);
+  }
+
+  const updatedVariant = await Variant.findByIdAndUpdate(
+    variant._id,
+    {
+      $set: {
+        size: size || variant.size,
+        color: color || variant.color,
+        price: price || variant.price,
+        stock: stock || variant.stock,
+        sku: sku || variant.sku,
+        discount: discount || variant.discount,
+        isActive: isActive || variant.isActive,
+      },
+    },
+    { new: true }
+  );
+
+  if (!updatedVariant) {
+    throw new ApiError(
+      500,
+      "Unable to update product variant. Please retry later.",
+      []
+    );
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { variant: updatedVariant },
+        "Product variant created successfully."
+      )
+    );
+});
 // const data = asyncHandler(async (req, res) => {})
 
-export { addVariant, getAllVariants, getVariantById };
+export { addVariant, getAllVariants, getVariantById, updateVariant };
