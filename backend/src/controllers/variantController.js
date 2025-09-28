@@ -4,8 +4,8 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/apiError.js";
 
 const addVariant = asyncHandler(async (req, res) => {
-  const { productId, size, color, price, stock, sku, discount, isActive } =
-    req.body;
+  const { size, color, price, stock, sku, discount, isActive } = req.body;
+  const { productId } = req.params;
 
   if (!productId) {
     throw new ApiError(
