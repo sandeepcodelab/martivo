@@ -10,6 +10,7 @@ import healthcheckRouter from "./routes/healthcheckRoute.js";
 import authRouter from "./routes/authRoute.js";
 import categoryRouter from "./routes/categoryRoute.js";
 import productRouter from "./routes/productRoute.js";
+import variantRouter from "./routes/variantRoute.js";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/v1/healthcheck", healthcheckRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/product", productRouter);
+app.use("/api/v1/product-variant", variantRouter);
 
 // Error handler
 app.use(globleErrorHandler);
