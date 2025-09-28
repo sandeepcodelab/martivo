@@ -8,10 +8,12 @@ const variantSchema = new Schema(
       required: true,
     },
     size: {
-      type: [String, Number],
+      type: String,
+      required: true,
     },
     color: {
       type: String,
+      required: true,
     },
     price: {
       type: Number,
