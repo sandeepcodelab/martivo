@@ -136,6 +136,27 @@ const getCart = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { cart }, "Cart fetched successfully."));
 });
 
+const updateCart = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { userId, quantity } = req.body;
+
+  const item = await Cart.findOne({
+    $or: [{ userId }, { guestId }],
+    "items._id": id,
+  });
+
+  if (!item) {
+    throw new ApiError(404, "Item not found.", []);
+  }
+
+  item.items[0].quantity = quantity;
+  await item.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { item }, "Item updated successfully."));
+});
+
 // const getCart = asyncHandler(async(req, res) => {})
 
-export { addItem, getCart };
+export { addItem, getCart, updateCart };
