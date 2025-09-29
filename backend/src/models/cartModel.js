@@ -4,18 +4,34 @@ const cartModel = new Schema(
   {
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "user",
+      ref: "User",
+      default: undefined,
     },
     guestId: {
       type: String,
+      default: undefined,
     },
     items: [
       {
-        type: String,
+        variantId: {
+          type: Schema.Types.ObjectId,
+          ref: "Variant",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+          default: 1,
+        },
       },
     ],
     expiryAt: {
       type: Date,
+      default: null,
+      index: {
+        expires: 0,
+      },
     },
   },
   { timestamps: true }
