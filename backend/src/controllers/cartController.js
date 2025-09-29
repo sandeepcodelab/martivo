@@ -138,4 +138,4 @@ const getCart = asyncHandler(async (req, res) => {
 
 // const getCart = asyncHandler(async(req, res) => {})
 
-export { addItem };
+export { addItem, getCart };
