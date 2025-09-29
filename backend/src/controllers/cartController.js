@@ -157,6 +157,28 @@ const updateCart = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { item }, "Item updated successfully."));
 });
 
-// const getCart = asyncHandler(async(req, res) => {})
+const deleteCartItem = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
 
-export { addItem, getCart, updateCart };
+  const item = await Cart.findOne({
+    $or: [{ userId }, { guestId: userId }],
+    "items._id": id,
+  });
+
+  if (!item) {
+    throw new ApiError(404, "Item not found.", []);
+  }
+
+  const deleteItem = await Cart.findByIdAndDelete(item.items[0]._id);
+
+  if (!deleteItem) {
+    throw new ApiError(500, "Failed to delete item.", []);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Item deleted successfully."));
+});
+
+export { addItem, getCart, updateCart, deleteCartItem };
