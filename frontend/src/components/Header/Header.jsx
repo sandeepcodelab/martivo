@@ -1,28 +1,86 @@
 import Container from "../Container/Container";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
 
-function Header() {
+export default function Header() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <header className="bg-red-600">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
       <Container>
-        <nav className="flex justify-between items-center">
-          <div>
-            <h1 className="text-4xl">LOGO</h1>
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <div className="text-xl font-bold">Martivo</div>
+
+          {/* Desktop Menu */}
+          <nav className="hidden md:flex gap-6 text-sm font-medium">
+            <a href="#" className="hover:text-primary">
+              Home
+            </a>
+            <a href="#" className="hover:text-primary">
+              Products
+            </a>
+            <a href="#" className="hover:text-primary">
+              About
+            </a>
+            <a href="#" className="hover:text-primary">
+              Contact
+            </a>
+          </nav>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex gap-2">
+            <Button variant="outline">Login</Button>
+            <Button>Sign Up</Button>
           </div>
-          <div>
-            <ul className="flex">
-              <li>Home</li>
-              <li>Shop</li>
-              <li>Cart</li>
-              <li>Contact</li>
-            </ul>
+
+          {/* Mobile Menu */}
+          <div className="md:hidden">
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[250px]">
+                <SheetHeader>
+                  <SheetTitle>Menu</SheetTitle>
+                  <SheetDescription className="-mt-5"></SheetDescription>
+                </SheetHeader>
+                <nav className="flex flex-col gap-3 mt-8 text-md mx-auto">
+                  <a href="#" onClick={() => setOpen(false)}>
+                    Home
+                  </a>
+                  <a href="#" onClick={() => setOpen(false)}>
+                    Products
+                  </a>
+                  <a href="#" onClick={() => setOpen(false)}>
+                    About
+                  </a>
+                  <a href="#" onClick={() => setOpen(false)}>
+                    Contact
+                  </a>
+                </nav>
+                <div className="mt-6 flex flex-col gap-2 mx-4">
+                  <Button variant="outline" className="w-full">
+                    Login
+                  </Button>
+                  <Button className="w-full">Sign Up</Button>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
-          <div>
-            <p>Login</p>
-          </div>
-        </nav>
+        </div>
       </Container>
     </header>
   );
 }
-
-export default Header;
