@@ -40,7 +40,7 @@ export default function HomePage() {
         <Container>
           <Carousel
             plugins={[plugin.current]}
-            className="w-full relative py-1"
+            className="w-full relative"
             onMouseEnter={plugin.current.stop}
             onMouseLeave={plugin.current.play}
             opts={{ loop: true }}
@@ -59,8 +59,8 @@ export default function HomePage() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="absolute left-0" />
-            <CarouselNext className="absolute right-0" />
+            <CarouselPrevious variant="ghost" className="absolute left-0" />
+            <CarouselNext variant="ghost" className="absolute right-0" />
           </Carousel>
 
           {/* Dots */}
@@ -148,10 +148,45 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Products Preview */}
+      {/* Featured Products Preview */}
       <section className="py-10">
         <Container>
           <h2 className="text-3xl font-bold mb-8">Featured Products</h2>
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {[1, 2, 3, 4].map((item) => (
+              <Card
+                key={item}
+                className="hover:shadow-md transition py-0 pb-6 gap-1"
+              >
+                <div className="w-full h-50 rounded-t-lg overflow-hidden relative">
+                  <img
+                    src="https://placehold.co/400x400/gray/white"
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-3 right-3 bg-white rounded-full p-1">
+                    <Heart className="size-5 fill-gray-300 text-gray-300" />
+                  </div>
+                </div>
+                <CardHeader className="mt-3">
+                  <CardTitle>Product {item}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground mb-2">$99.00</p>
+                  <Button size="sm" className="w-full cursor-pointer">
+                    Add to Cart
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Best Sellers Products Preview */}
+      <section className="py-10">
+        <Container>
+          <h2 className="text-3xl font-bold mb-8">Best Sellers</h2>
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {[1, 2, 3, 4].map((item) => (
               <Card
