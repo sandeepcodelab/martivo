@@ -11,7 +11,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { Heart } from "lucide-react";
+import { Heart, LayoutGrid } from "lucide-react";
 
 export default function HomePage() {
   const plugin = React.useRef(
@@ -81,53 +81,69 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Features Section */}
+      {/* Category Section */}
       <section className="py-8">
         <Container>
-          <div className="flex flex-wrap gap-4 justify-center">
-            {[
-              {
-                title: "T-shirt",
-                url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=T-Shirt",
-              },
-              {
-                title: "Shoes",
-                url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Shoes",
-              },
-              {
-                title: "Jeans",
-                url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Jeans",
-              },
-              {
-                title: "Jacket",
-                url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Jacket",
-              },
-              {
-                title: "Watch",
-                url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Watch",
-              },
-              {
-                title: "Cap",
-                url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Cap",
-              },
-              {
-                title: "Bag",
-                url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Bag",
-              },
-            ].map((feature, i) => (
-              <div key={i} className="text-center">
-                <div className="w-30 h-30 ">
-                  <img
-                    src={feature.url}
-                    alt=""
-                    className="w-full h-full rounded-full"
-                  />
+          <div className="flex flex-wrap">
+            <div className="flex gap-4 flex-1 justify-evenly overflow-hidden">
+              {[
+                {
+                  title: "T-shirt",
+                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=T-Shirt",
+                },
+                {
+                  title: "Shoes",
+                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Shoes",
+                },
+                {
+                  title: "Jeans",
+                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Jeans",
+                },
+                {
+                  title: "Jacket",
+                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Jacket",
+                },
+                {
+                  title: "Watch",
+                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Watch",
+                },
+                {
+                  title: "Cap",
+                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Cap",
+                },
+                {
+                  title: "Bag",
+                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Bag",
+                },
+                {
+                  title: "Sunglasses",
+                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Sunglasses",
+                },
+              ].map((feature, i) => (
+                <div key={i} className="text-center">
+                  <div className="w-30 h-30 ">
+                    <img
+                      src={feature.url}
+                      alt=""
+                      className="w-full h-full rounded-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">{feature.title}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex px-4">
+              <div className="text-center">
+                <div className="w-30 h-30 bg-gray-200 rounded-full flex items-center justify-center">
+                  <LayoutGrid />
                 </div>
                 <div>
-                  <p className="text-muted-foreground">{feature.title}</p>
+                  <p className="text-muted-foreground">All Category</p>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </Container>
       </section>
