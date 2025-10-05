@@ -84,40 +84,40 @@ export default function HomePage() {
       {/* Category Section */}
       <section className="py-8">
         <Container>
-          <div className="flex flex-wrap">
+          <div className="flex">
             <div className="flex gap-4 flex-1 justify-evenly overflow-hidden">
               {[
                 {
                   title: "T-shirt",
-                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=T-Shirt",
+                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=T-Shirt",
                 },
                 {
                   title: "Shoes",
-                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Shoes",
+                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Shoes",
                 },
                 {
                   title: "Jeans",
-                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Jeans",
+                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Jeans",
                 },
                 {
                   title: "Jacket",
-                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Jacket",
+                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Jacket",
                 },
                 {
                   title: "Watch",
-                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Watch",
+                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Watch",
                 },
                 {
                   title: "Cap",
-                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Cap",
+                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Cap",
                 },
                 {
                   title: "Bag",
-                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Bag",
+                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Bag",
                 },
                 {
                   title: "Sunglasses",
-                  url: "https://placehold.co/200x200/EEE/31343C?font=lora&text=Sunglasses",
+                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Sunglasses",
                 },
               ].map((feature, i) => (
                 <div key={i} className="text-center">
@@ -154,43 +154,26 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold mb-8">Featured Products</h2>
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {[1, 2, 3, 4].map((item) => (
-              <Card key={item} className="hover:shadow-md transition">
-                <Heart />
-                <div className="h-40 bg-muted rounded-t-lg flex items-center justify-center">
-                  <span className="text-muted-foreground">Image</span>
+              <Card
+                key={item}
+                className="hover:shadow-md transition py-0 pb-6 gap-1"
+              >
+                <div className="w-full h-50 rounded-t-lg overflow-hidden relative">
+                  <img
+                    src="https://placehold.co/400x400/gray/white"
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-3 right-3 bg-white rounded-full p-1">
+                    <Heart className="size-5 fill-gray-300 text-gray-300" />
+                  </div>
                 </div>
-                <CardHeader>
+                <CardHeader className="mt-3">
                   <CardTitle>Product {item}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-2">$99.00</p>
-                  <Button size="sm" className="w-full">
-                    Add to Cart
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* Products Preview */}
-      <section className="py-10">
-        <Container>
-          <h2 className="text-3xl font-bold mb-8">Featured Products</h2>
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {[1, 2, 3, 4].map((item) => (
-              <Card key={item} className="hover:shadow-md transition">
-                <Heart />
-                <div className="h-40 bg-muted rounded-t-lg flex items-center justify-center">
-                  <span className="text-muted-foreground">Image</span>
-                </div>
-                <CardHeader>
-                  <CardTitle>Product {item}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-2">$99.00</p>
-                  <Button size="sm" className="w-full">
+                  <Button size="sm" className="w-full cursor-pointer">
                     Add to Cart
                   </Button>
                 </CardContent>
