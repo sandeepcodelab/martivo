@@ -1,48 +1,53 @@
 import Container from "@/components/Container/Container";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function ProductDetails() {
-  const items = Array.from({ length: 9 });
-
-  const visibleItems = items.slice(0, 5);
-  const remainingCount = items.length - visibleItems.length;
-
   return (
-    <section>
+    <section className="mt-4">
       <Container>
         <div className="bg-green-500 grid gap-6 grid-cols-1 md:grid-cols-2">
           <div className="flex gap-4">
-            <div className="">
-              {visibleItems.map((_, index) => (
-                <Card
-                  key={index}
-                  className="relative w-14 h-14 sm:w-16 sm:h-16 overflow-hidden mb-2"
-                >
-                  <CardContent className="p-0">
-                    <img
-                      src="https://placehold.co/600x600/gray/FFFFFF/png"
-                      alt={`Card ${index}`}
-                      className="w-full h-full"
-                    />
-
-                    {/* If this is the last visible card and there are remaining items */}
-                    {index === visibleItems.length - 1 &&
-                      remainingCount > 0 && (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-xl font-semibold">
-                          +{remainingCount}
-                        </div>
-                      )}
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="bg-amber-600">
+              <Carousel
+                opts={{
+                  align: "start",
+                }}
+                orientation="vertical"
+                className="relative w-full max-w-20"
+              >
+                <CarouselContent className="-mt-1 h-80 sm:h-100">
+                  {Array.from({ length: 9 }).map((_, index) => (
+                    <CarouselItem key={index} className="pt-1 basis-1/5">
+                      <Card className="py-0 w-15 h-18 md:w-20 md:h-22 overflow-hidden">
+                        <CardContent className="px-0">
+                          <img
+                            src="https://placehold.co/600x600/gray/FFFFFF/png"
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute top-0" />
+                <CarouselNext className="absolute bottom-0" />
+              </Carousel>
             </div>
             <div>
-              <Card className="py-0 max-w-100 overflow-hidden">
+              <Card className="py-0 min-w-58 w-full h-80 sm:h-100 overflow-hidden">
                 <CardContent className="px-0">
                   <img
                     src="https://placehold.co/600x600/gray/FFFFFF/png"
                     alt=""
-                    className="w-full h-full"
+                    className="object-contain md:object-cover"
                   />
                 </CardContent>
               </Card>
