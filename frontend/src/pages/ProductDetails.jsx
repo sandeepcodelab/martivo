@@ -24,7 +24,7 @@ export default function ProductDetails() {
                 orientation="vertical"
                 className="relative w-full max-w-20"
               >
-                <CarouselContent className="-mt-1 h-80 sm:h-100 lg:h-[500px]">
+                <CarouselContent className="-mt-1 h-80 sm:h-100 lg:h-[450px]">
                   {Array.from({ length: 9 }).map((_, index) => (
                     <CarouselItem key={index} className="pt-1 basis-1/5">
                       <Card className="py-0 w-15 h-18 md:w-20 md:h-22 overflow-hidden">
@@ -44,7 +44,7 @@ export default function ProductDetails() {
               </Carousel>
             </div>
             <div>
-              <Card className="py-0 min-w-58 w-full h-80 sm:h-100 lg:h-[500px] overflow-hidden">
+              <Card className="py-0 min-w-58 w-full h-80 sm:h-100 lg:h-[450px] overflow-hidden">
                 <CardContent className="px-0">
                   <img
                     src="https://placehold.co/600x600/gray/FFFFFF/png"
@@ -107,8 +107,11 @@ export default function ProductDetails() {
             </div>
 
             {/* Buttons */}
-            <div>
-              <Button />
+            <div className="mt-5">
+              <Button className="w-full">Add to Cart</Button>
+              <Button variant="outline" className="w-full mt-3">
+                Buy Now
+              </Button>
             </div>
           </div>
         </div>
