@@ -145,6 +145,7 @@ export default function ProductDetails() {
 
       {/* Description Section */}
       <section className="bg-green-500 mt-10">
+        <div className="text-2xl font-medium mb-3">Realated Products</div>
         <Carousel
           opts={{
             align: "start",
