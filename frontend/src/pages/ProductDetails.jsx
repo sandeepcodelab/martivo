@@ -11,8 +11,8 @@ import {
 
 export default function ProductDetails() {
   return (
-    <section className="mt-4">
-      <Container>
+    <Container>
+      <section className="mt-4">
         <div className="bg-green-500 grid gap-6 grid-cols-1 md:grid-cols-2">
           {/* Gallery */}
           <div className="flex gap-4">
@@ -107,7 +107,7 @@ export default function ProductDetails() {
             </div>
 
             {/* Buttons */}
-            <div className="mt-5 md:w-100">
+            <div className="mt-5 w-full lg:w-100">
               <Button variant="outline" className="w-full cursor-pointer">
                 Buy Now
               </Button>
@@ -117,31 +117,62 @@ export default function ProductDetails() {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Description Section */}
-        <section className="bg-green-500 mt-5">
-          <div className="text-2xl font-medium mb-3">Product Details</div>
-          <div>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maiores
-            sed veritatis hic a laborum asperiores suscipit quos iure cupiditate
-            quae odio blanditiis recusandae commodi ipsam corrupti, accusantium
-            repellendus? Aliquid, atque? Eligendi velit ratione aut, earum illo
-            a perspiciatis saepe corporis odit doloribus excepturi in ad quos
-            distinctio error quas inventore culpa commodi temporibus nihil
-            repudiandae officiis fugit numquam maiores. Nemo! Velit iste vitae
-            tempore delectus? Quam voluptates quo impedit veritatis aliquid quia
-            maxime sint at doloremque ullam recusandae atque consequatur officia
-            facere ad asperiores magni, saepe optio odio, autem repellendus.
-            Pariatur quas sed cum, nemo quaerat consequuntur animi maiores dicta
-            obcaecati corporis quod, inventore praesentium iusto, recusandae a.
-            Inventore veniam iure quos dolorum eos ea temporibus sint vel vero
-            nam? Aliquam consequatur laborum optio porro ut obcaecati quia
-            debitis voluptatum. Ad, hic doloribus? Consectetur, tempore hic
-            dicta maiores quo error nostrum accusamus, pariatur modi nihil
-            velit, quasi excepturi eos fugit!
-          </div>
-        </section>
-      </Container>
-    </section>
+      {/* Description Section */}
+      <section className="bg-green-500 mt-10">
+        <div className="text-2xl font-medium mb-3">Product Description</div>
+        <div>
+          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maiores sed
+          veritatis hic a laborum asperiores suscipit quos iure cupiditate quae
+          odio blanditiis recusandae commodi ipsam corrupti, accusantium
+          repellendus? Aliquid, atque? Eligendi velit ratione aut, earum illo a
+          perspiciatis saepe corporis odit doloribus excepturi in ad quos
+          distinctio error quas inventore culpa commodi temporibus nihil
+          repudiandae officiis fugit numquam maiores. Nemo! Velit iste vitae
+          tempore delectus? Quam voluptates quo impedit veritatis aliquid quia
+          maxime sint at doloremque ullam recusandae atque consequatur officia
+          facere ad asperiores magni, saepe optio odio, autem repellendus.
+          Pariatur quas sed cum, nemo quaerat consequuntur animi maiores dicta
+          obcaecati corporis quod, inventore praesentium iusto, recusandae a.
+          Inventore veniam iure quos dolorum eos ea temporibus sint vel vero
+          nam? Aliquam consequatur laborum optio porro ut obcaecati quia debitis
+          voluptatum. Ad, hic doloribus? Consectetur, tempore hic dicta maiores
+          quo error nostrum accusamus, pariatur modi nihil velit, quasi
+          excepturi eos fugit!
+        </div>
+      </section>
+
+      {/* Description Section */}
+      <section className="bg-green-500 mt-10">
+        <Carousel
+          opts={{
+            align: "start",
+          }}
+          className="relative w-full"
+        >
+          <CarouselContent>
+            {Array.from({ length: 9 }).map((_, index) => (
+              <CarouselItem
+                key={index}
+                className="sm:basis-1/2 md:basis-1/3 lg:basis-1/5"
+              >
+                <div className="p-1">
+                  <Card>
+                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                      <span className="text-3xl font-semibold">
+                        {index + 1}
+                      </span>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-0" />
+          <CarouselNext className="absolute right-0" />
+        </Carousel>
+      </section>
+    </Container>
   );
 }
