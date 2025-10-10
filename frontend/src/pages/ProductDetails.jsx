@@ -158,11 +158,13 @@ export default function ProductDetails() {
                 className="sm:basis-1/2 md:basis-1/3 lg:basis-1/5"
               >
                 <div className="p-1">
-                  <Card>
-                    <CardContent className="flex aspect-square items-center justify-center p-6">
-                      <span className="text-3xl font-semibold">
-                        {index + 1}
-                      </span>
+                  <Card className="py-0 overflow-hidden">
+                    <CardContent className="px-0">
+                      <img
+                        src="https://placehold.co/600x800/gray/FFFFFF/png"
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
                     </CardContent>
                   </Card>
                 </div>
