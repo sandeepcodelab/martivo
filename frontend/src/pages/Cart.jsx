@@ -13,9 +13,10 @@ export default function Cart() {
   return (
     <section>
       <Container>
-        <div className="flex flex-wrap justify-between bg-red-400">
-          <div className="w-full lg:w-3xl">
-            <Card>
+        <div className="flex flex-wrap bg-red-400">
+          {/* Left Side */}
+          <div className="w-full md:w-[70%] p-2">
+            <Card className="w-full">
               <CardHeader>
                 <CardTitle>Card Title</CardTitle>
                 <CardDescription>Card Description</CardDescription>
@@ -29,8 +30,10 @@ export default function Cart() {
               </CardFooter>
             </Card>
           </div>
-          <div className="w-full lg:w-md">
-            <Card>
+
+          {/* Right Side */}
+          <div className="w-full md:w-[30%] p-2">
+            <Card className="w-full">
               <CardHeader>
                 <CardTitle>Card Title</CardTitle>
                 <CardDescription>Card Description</CardDescription>
