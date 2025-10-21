@@ -1,10 +1,15 @@
 import "./App.css";
+import Footer from "./components/Footer/Footer";
+import Header from "./components/Header/Header";
+import { Outlet } from "react-router";
 
 function App() {
   return (
-    <div className="w-full h-screen flex justify-center items-center bg-gray-900">
-      <p className="text-5xl font-bold text-orange-700">Martivo</p>
-    </div>
+    <>
+      <Header />
+      <Outlet />
+      <Footer />
+    </>
   );
 }
 
