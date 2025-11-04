@@ -1,4 +1,5 @@
 import Container from "@/components/Container/Container";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -8,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Trash2, X } from "lucide-react";
+import { Trash2, X, ArrowRight } from "lucide-react";
+import { Link } from "react-router";
 
 export default function Cart() {
   return (
@@ -19,11 +21,11 @@ export default function Cart() {
           <div className="w-full md:w-[70%] p-3">
             <Card className="w-full">
               <CardHeader>
-                <CardTitle>
+                <CardTitle className="font-bold">
                   Cart <span>(3 products)</span>
                 </CardTitle>
-                <CardAction className="flex">
-                  <X />
+                <CardAction className="flex text-sm text-red-600 cursor-pointer">
+                  <X size={20} />
                   Clear cart
                 </CardAction>
               </CardHeader>
@@ -60,7 +62,10 @@ export default function Cart() {
                         Price
                       </div>
                       <div className="flex justify-center w-full md:w-[5%] py-3">
-                        <Trash2 />
+                        <Trash2
+                          size={20}
+                          className="cursor-pointer text-red-600"
+                        />
                       </div>
                     </div>
                   </CardContent>
@@ -71,18 +76,30 @@ export default function Cart() {
 
           {/* Right Side */}
           <div className="w-full md:w-[30%] p-3">
-            <Card className="w-full">
+            <Card className="w-full gap-2">
               <CardHeader>
-                <CardTitle>Card Title</CardTitle>
-                <CardDescription>Card Description</CardDescription>
-                <CardAction>Card Action</CardAction>
+                <CardTitle className="font-bold">Price Details</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>Card Content</p>
+                <div className="font-medium">1 Items</div>
+                <div className="flex justify-between border-b-2 py-3">
+                  <div>
+                    <p>Product 1</p>
+                  </div>
+                  <div>
+                    <p>12300</p>
+                  </div>
+                </div>
+                <div className="flex justify-between font-semibold my-3">
+                  <div>Total</div>
+                  <div>12300</div>
+                </div>
+                <Link to="/checkout">
+                  <Button className="w-full">
+                    Place order <ArrowRight />
+                  </Button>
+                </Link>
               </CardContent>
-              <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter>
             </Card>
           </div>
         </div>
