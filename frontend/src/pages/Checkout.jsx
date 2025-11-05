@@ -39,7 +39,7 @@ export default function Checkout() {
   return (
     <div className="max-w-md mx-auto mt-10 bg-card border p-6 rounded-2xl shadow-sm">
       <h2 className="text-xl font-semibold text-center mb-4">
-        Step {step} of 3
+        Step {step} of 4
       </h2>
 
       <FormProvider {...methods}>
@@ -76,6 +76,28 @@ export default function Checkout() {
                       <FormControl>
                         <Input
                           placeholder="Enter your email"
+                          {...register("email", {
+                            required: "Email is required",
+                            pattern: {
+                              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                              message: "Invalid email format",
+                            },
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.email?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={methods.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Mobile Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your mobile number"
                           {...register("email", {
                             required: "Email is required",
                             pattern: {
@@ -132,11 +154,162 @@ export default function Checkout() {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={methods.control}
+                  name="State"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your state"
+                          {...register("state", {
+                            required: "State is required",
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.state?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={methods.control}
+                  name="ZIP/Postal Code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ZIP/Postal Code</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your ZIP"
+                          {...register("ZIP", {
+                            required: "ZIP is required",
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.zip?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={methods.control}
+                  name="Country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your country"
+                          {...register("country", {
+                            required: "Country is required",
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.country?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
               </div>
             )}
 
-            {/* STEP 3 - REVIEW */}
+            {/* STEP 3 */}
             {step === 3 && (
+              <div className="space-y-4">
+                <FormField
+                  control={methods.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your address"
+                          {...register("address", {
+                            required: "Address is required",
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.address?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={methods.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your city"
+                          {...register("city", {
+                            required: "City is required",
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.city?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={methods.control}
+                  name="State"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your state"
+                          {...register("state", {
+                            required: "State is required",
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.state?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={methods.control}
+                  name="ZIP/Postal Code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>ZIP/Postal Code</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your ZIP"
+                          {...register("ZIP", {
+                            required: "ZIP is required",
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.zip?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={methods.control}
+                  name="Country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Country</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your country"
+                          {...register("country", {
+                            required: "Country is required",
+                          })}
+                        />
+                      </FormControl>
+                      <FormMessage>{errors.country?.message}</FormMessage>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+
+            {/* STEP 4 - REVIEW */}
+            {step === 4 && (
               <div className="space-y-2">
                 <h3 className="font-semibold text-lg mb-2">
                   Review Your Information
@@ -169,7 +342,7 @@ export default function Checkout() {
                 </Button>
               )}
 
-              {step < 3 ? (
+              {step < 4 ? (
                 <Button
                   type="button"
                   onClick={nextStep}
@@ -186,7 +359,7 @@ export default function Checkout() {
 
             {/* Progress bar */}
             <div className="flex justify-center gap-2 mt-4">
-              {[1, 2, 3].map((n) => (
+              {[1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
                   className={`h-2 w-8 rounded-full ${
