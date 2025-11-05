@@ -39,7 +39,7 @@ export default function Checkout() {
 
   return (
     <Container>
-      <div className="max-w-md mx-auto mt-10 bg-card border p-6 rounded-2xl shadow-sm">
+      <div className="max-w-full md:max-w-xl mx-auto mt-10 bg-card border p-6 rounded-2xl shadow-sm">
         <h2 className="text-xl font-semibold text-center mb-4">
           Step {step} of 4
         </h2>
