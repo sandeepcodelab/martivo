@@ -40,6 +40,7 @@ export default function Checkout() {
   return (
     <Container>
       <div className="max-w-full md:max-w-xl mx-auto mt-10 bg-card border p-6 rounded-2xl shadow-sm">
+        <h2 className="text-xl font-bold text-center mb-4">Checkout</h2>
         <h2 className="text-xl font-semibold text-center mb-4">
           Step {step} of 4
         </h2>
@@ -364,7 +365,7 @@ export default function Checkout() {
                 {[1, 2, 3, 4].map((n) => (
                   <div
                     key={n}
-                    className={`h-2 w-8 rounded-full ${
+                    className={`h-1.5 w-8 rounded-full ${
                       step >= n ? "bg-primary" : "bg-muted"
                     }`}
                   />
