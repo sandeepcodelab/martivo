@@ -10,6 +10,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
+import { Link, NavLink } from "react-router";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -19,28 +20,62 @@ export default function Header() {
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="text-xl font-bold">Martivo</div>
+          <div className="text-xl font-bold">
+            <Link>Martivo</Link>
+          </div>
 
           {/* Desktop Menu */}
           <nav className="hidden md:flex gap-6 text-sm font-medium">
-            <a href="#" className="hover:text-primary">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "text-blue-500" : "text-black"
+                } hover:text-primary`
+              }
+            >
               Home
-            </a>
-            <a href="#" className="hover:text-primary">
+            </NavLink>
+            <NavLink
+              to="/products"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "text-blue-500" : "text-black"
+                } hover:text-primary`
+              }
+            >
               Products
-            </a>
-            <a href="#" className="hover:text-primary">
-              About
-            </a>
-            <a href="#" className="hover:text-primary">
-              Contact
-            </a>
+            </NavLink>
+            <NavLink
+              to="/product-details"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "text-blue-500" : "text-black"
+                } hover:text-primary`
+              }
+            >
+              Product-Details
+            </NavLink>
+            <NavLink
+              to="/cart"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "text-blue-500" : "text-black"
+                } hover:text-primary`
+              }
+            >
+              Crat
+            </NavLink>
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex gap-2">
-            <Button variant="outline">Login</Button>
-            <Button>Sign Up</Button>
+            <Button variant="outline">
+              <Link to="/login">Login</Link>
+            </Button>
+            <Button>
+              <Link to="/sign-up">Sign Up</Link>
+            </Button>
           </div>
 
           {/* Mobile Menu */}
