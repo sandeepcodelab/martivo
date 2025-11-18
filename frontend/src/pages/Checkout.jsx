@@ -27,6 +27,9 @@ export default function Checkout() {
     "Apple Pay",
     "Amazon Pay",
   ];
+
+  const paymentMethodSelected = useState(false);
+
   const [step, setStep] = useState(1);
 
   // Initialize React Hook Form
@@ -233,10 +236,16 @@ export default function Checkout() {
                   {paymentMethods.map((paymentMethod) => (
                     <Card className="w-full py-4">
                       <CardContent className="flex justify-between items-center">
-                        <div>{paymentMethod}</div>
+                        <div className="font-semibold">{paymentMethod}</div>
                         <div>
-                          <Circle />
-                          {/* <Check className="border-2 border-gray-300 rounded-full bg-green-600 text-white" /> */}
+                          {paymentMethodSelected ? (
+                            <Circle size={20} />
+                          ) : (
+                            <Check
+                              size={20}
+                              className="border-2 border-green-600 rounded-full bg-green-600 text-white"
+                            />
+                          )}
                         </div>
                       </CardContent>
                     </Card>
