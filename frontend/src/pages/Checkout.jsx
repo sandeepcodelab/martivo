@@ -15,6 +15,8 @@ import Container from "@/components/Container/Container";
 
 import { Card, CardContent } from "@/components/ui/card";
 
+import { Check, Circle } from "lucide-react";
+
 export default function Checkout() {
   const paymentMethods = [
     "Card",
@@ -230,7 +232,13 @@ export default function Checkout() {
                 <div className="space-y-4">
                   {paymentMethods.map((paymentMethod) => (
                     <Card className="w-full py-4">
-                      <CardContent>{paymentMethod}</CardContent>
+                      <CardContent className="flex justify-between items-center">
+                        <div>{paymentMethod}</div>
+                        <div>
+                          <Circle />
+                          {/* <Check className="border-2 border-gray-300 rounded-full bg-green-600 text-white" /> */}
+                        </div>
+                      </CardContent>
                     </Card>
                   ))}
                 </div>
