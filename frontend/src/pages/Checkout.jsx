@@ -60,6 +60,23 @@ export default function Checkout() {
         <h2 className="text-xl font-semibold text-center mb-4">
           Step {step} of 4
         </h2>
+        <div className="flex justify-center items-center text-center mb-4">
+          <div>
+            <span className="border-2 rounded-full px-1.5">1</span>
+          </div>
+          <div className="w-20 h-0.5 bg-gray-300" />
+          <div>
+            <span className="border-2 rounded-full px-1.5">2</span>
+          </div>
+          <div className="w-20 h-0.5 bg-gray-300" />
+          <div>
+            <span className="border-2 rounded-full px-1.5">3</span>
+          </div>
+          <div className="w-20 h-0.5 bg-gray-300" />
+          <div>
+            <span className="border-2 rounded-full px-1.5">4</span>
+          </div>
+        </div>
 
         <FormProvider {...methods}>
           <Form {...methods}>
@@ -250,8 +267,6 @@ export default function Checkout() {
                           ) : (
                             <Circle size={20} />
                           )}
-
-                          {console.log(paymentMethodSelected)}
                         </div>
                       </CardContent>
                     </Card>
