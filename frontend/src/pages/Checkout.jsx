@@ -28,7 +28,7 @@ export default function Checkout() {
     "Amazon Pay",
   ];
 
-  const paymentMethodSelected = useState(false);
+  const [paymentMethodSelected, setPaymentMethodSelected] = useState("");
 
   const [step, setStep] = useState(1);
 
@@ -234,18 +234,24 @@ export default function Checkout() {
               {step === 3 && (
                 <div className="space-y-4">
                   {paymentMethods.map((paymentMethod) => (
-                    <Card className="w-full py-4">
+                    <Card
+                      key={paymentMethod}
+                      className="w-full py-4"
+                      onClick={() => setPaymentMethodSelected(paymentMethod)}
+                    >
                       <CardContent className="flex justify-between items-center">
                         <div className="font-semibold">{paymentMethod}</div>
                         <div>
-                          {paymentMethodSelected ? (
-                            <Circle size={20} />
-                          ) : (
+                          {paymentMethodSelected === paymentMethod ? (
                             <Check
                               size={20}
                               className="border-2 border-green-600 rounded-full bg-green-600 text-white"
                             />
+                          ) : (
+                            <Circle size={20} />
                           )}
+
+                          {console.log(paymentMethodSelected)}
                         </div>
                       </CardContent>
                     </Card>
