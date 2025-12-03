@@ -80,12 +80,18 @@ export default function Checkout() {
               </span>
             </div>
 
-            <div className="flex-1 h-0.5 bg-gray-300"></div>
+            <div
+              className={
+                step >= 2
+                  ? `flex-1 h-0.5 bg-primary`
+                  : `flex-1 h-0.5 bg-gray-300`
+              }
+            ></div>
 
             <div className="flex flex-col items-center">
               <span
                 className={
-                  step >= 1
+                  step >= 2
                     ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white`
                     : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
                 }
@@ -94,12 +100,18 @@ export default function Checkout() {
               </span>
             </div>
 
-            <div className="flex-1 h-0.5 bg-gray-300"></div>
+            <div
+              className={
+                step >= 3
+                  ? `flex-1 h-0.5 bg-primary`
+                  : `flex-1 h-0.5 bg-gray-300`
+              }
+            ></div>
 
             <div className="flex flex-col items-center">
               <span
                 className={
-                  step >= 1
+                  step >= 3
                     ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white`
                     : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
                 }
@@ -108,12 +120,18 @@ export default function Checkout() {
               </span>
             </div>
 
-            <div className="flex-1 h-0.5 bg-gray-300"></div>
+            <div
+              className={
+                step === 4
+                  ? `flex-1 h-0.5 bg-primary`
+                  : `flex-1 h-0.5 bg-gray-300`
+              }
+            ></div>
 
             <div className="flex flex-col items-center">
               <span
                 className={
-                  step >= 1
+                  step === 4
                     ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white`
                     : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
                 }
