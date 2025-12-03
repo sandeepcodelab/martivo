@@ -60,24 +60,52 @@ export default function Checkout() {
         <h2 className="text-xl font-semibold text-center mb-4">
           Step {step} of 4
         </h2>
-        <div className="flex justify-center items-center text-center mb-4">
-          <div>
-            <span className="border-2 rounded-full px-1.5">1</span>
+
+        {/* progress bar */}
+        <div className="flex flex-col items-center w-full mb-5">
+          {/* Circle */}
+          <div className="flex items-center w-full max-w-md justify-between">
+            <div className="flex flex-col items-center">
+              <span className="w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs">
+                1
+              </span>
+            </div>
+
+            <div className="flex-1 h-0.5 bg-gray-300"></div>
+
+            <div className="flex flex-col items-center">
+              <span className="w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs">
+                2
+              </span>
+            </div>
+
+            <div className="flex-1 h-0.5 bg-gray-300"></div>
+
+            <div className="flex flex-col items-center">
+              <span className="w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs">
+                3
+              </span>
+            </div>
+
+            <div className="flex-1 h-0.5 bg-gray-300"></div>
+
+            <div className="flex flex-col items-center">
+              <span className="w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs">
+                4
+              </span>
+            </div>
           </div>
-          <div className="w-20 h-0.5 bg-gray-300" />
-          <div>
-            <span className="border-2 rounded-full px-1.5">2</span>
-          </div>
-          <div className="w-20 h-0.5 bg-gray-300" />
-          <div>
-            <span className="border-2 rounded-full px-1.5">3</span>
-          </div>
-          <div className="w-20 h-0.5 bg-gray-300" />
-          <div>
-            <span className="border-2 rounded-full px-1.5">4</span>
+
+          {/* Title */}
+          <div className="flex justify-between w-full max-w-md">
+            <span className="text-xs text-center w-8 -ml-2">Name</span>
+            <span className="text-xs text-center w-8 -ml-2">Address</span>
+            <span className="text-xs text-center w-8 -ml-1">Payment</span>
+            <span className="text-xs text-center w-8">Review</span>
           </div>
         </div>
 
+        {/* Multi-step form */}
         <FormProvider {...methods}>
           <Form {...methods}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
