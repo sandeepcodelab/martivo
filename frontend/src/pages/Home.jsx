@@ -36,7 +36,7 @@ export default function HomePage() {
   return (
     <main>
       {/* Hero Section */}
-      <section className="bg-background">
+      <section>
         <Container>
           <Carousel
             plugins={[plugin.current]}
@@ -151,12 +151,14 @@ export default function HomePage() {
       {/* Featured Products Preview */}
       <section className="py-10">
         <Container>
-          <h2 className="text-3xl font-bold mb-8">Featured Products</h2>
+          <h2 className="text-3xl font-bold mb-8 dark:text-white">
+            Featured Products
+          </h2>
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {[1, 2, 3, 4].map((item) => (
               <Card
                 key={item}
-                className="hover:shadow-md transition py-0 pb-6 gap-1"
+                className="hover:shadow-md transition py-0 pb-6 gap-1 dark:bg-gray-950/10 dark:text-white"
               >
                 <div className="w-full h-50 rounded-t-lg overflow-hidden relative">
                   <img
@@ -186,12 +188,14 @@ export default function HomePage() {
       {/* Best Sellers Products Preview */}
       <section className="py-10">
         <Container>
-          <h2 className="text-3xl font-bold mb-8">Best Sellers</h2>
+          <h2 className="text-3xl font-bold mb-8 dark:text-white">
+            Best Sellers
+          </h2>
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {[1, 2, 3, 4].map((item) => (
               <Card
                 key={item}
-                className="hover:shadow-md transition py-0 pb-6 gap-1"
+                className="hover:shadow-md transition py-0 pb-6 gap-1 dark:bg-gray-950/10 dark:text-white"
               >
                 <div className="w-full h-50 rounded-t-lg overflow-hidden relative">
                   <img
