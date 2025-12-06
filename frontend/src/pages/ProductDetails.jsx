@@ -13,7 +13,7 @@ export default function ProductDetails() {
   return (
     <Container>
       <section className="mt-4">
-        <div className="bg-green-500 grid gap-6 grid-cols-1 md:grid-cols-2">
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
           {/* Gallery */}
           <div className="flex gap-4">
             <div>
@@ -58,29 +58,37 @@ export default function ProductDetails() {
 
           {/* Product details */}
           <div className="w-full px-10 md:pr-5 ">
-            <h1 className="text-2xl font-medium">
+            <h1 className="text-2xl font-medium dark:text-white">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae
             </h1>
-            <div className="my-2">
+            <div className="my-2 dark:text-white">
               <p>Star</p>
             </div>
             <div>
-              <div className="text-2xl font-medium">Rs. 5000</div>
-              <div className="text-lg">
+              <div className="text-2xl font-medium dark:text-white">
+                Rs. 5000
+              </div>
+              <div className="text-lg dark:text-white">
                 Rs. 10000
                 <span className="pl-3">50% off</span>
               </div>
             </div>
-            <div className="mt-4">
+            <div className="mt-4 dark:text-white">
               <span className="font-medium">Select Size</span>
               <div className="flex flex-wrap gap-2 mt-2">
-                <span className="border-blue-600 border-2 rounded px-3">S</span>
-                <span className="border-blue-600 border-2 rounded px-3">M</span>
-                <span className="border-blue-600 border-2 rounded px-3">L</span>
-                <span className="border-blue-600 border-2 rounded px-3">
+                <span className="border-black dark:border-white border-2 rounded px-3">
+                  S
+                </span>
+                <span className="border-black dark:border-white border-2 rounded px-3">
+                  M
+                </span>
+                <span className="border-black dark:border-white border-2 rounded px-3">
+                  L
+                </span>
+                <span className="border-black dark:border-white border-2 rounded px-3">
                   XL
                 </span>
-                <span className="border-blue-600 border-2 rounded px-3">
+                <span className="border-black dark:border-white border-2 rounded px-3">
                   XXL
                 </span>
               </div>
@@ -88,19 +96,19 @@ export default function ProductDetails() {
             <div className="mt-5">
               <span className="font-medium">Select Colour</span>
               <div className="flex flex-wrap gap-2 mt-2">
-                <span className="border-red-600 border-2 rounded px-3">
+                <span className="border-black dark:border-white border-2 rounded px-3">
                   Red
                 </span>
-                <span className="border-red-600 border-2 rounded px-3">
+                <span className="border-black dark:border-white border-2 rounded px-3">
                   Green
                 </span>
-                <span className="border-red-600 border-2 rounded px-3">
+                <span className="border-black dark:border-white border-2 rounded px-3">
                   Yellow
                 </span>
-                <span className="border-red-600 border-2 rounded px-3">
+                <span className="border-black dark:border-white border-2 rounded px-3">
                   Pink
                 </span>
-                <span className="border-red-600 border-2 rounded px-3">
+                <span className="border-black dark:border-white border-2 rounded px-3">
                   Purple
                 </span>
               </div>
@@ -120,9 +128,11 @@ export default function ProductDetails() {
       </section>
 
       {/* Description Section */}
-      <section className="bg-green-500 mt-10">
-        <div className="text-2xl font-medium mb-3">Product Description</div>
-        <div>
+      <section className="mt-10">
+        <div className="text-2xl font-medium mb-3 dark:text-white">
+          Product Description
+        </div>
+        <div className="dark:text-white">
           Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maiores sed
           veritatis hic a laborum asperiores suscipit quos iure cupiditate quae
           odio blanditiis recusandae commodi ipsam corrupti, accusantium
@@ -144,8 +154,10 @@ export default function ProductDetails() {
       </section>
 
       {/* Description Section */}
-      <section className="bg-green-500 mt-10">
-        <div className="text-2xl font-medium mb-3">Realated Products</div>
+      <section className="mt-10">
+        <div className="text-2xl font-medium mb-3 dark:text-white">
+          Realated Products
+        </div>
         <Carousel
           opts={{
             align: "start",
