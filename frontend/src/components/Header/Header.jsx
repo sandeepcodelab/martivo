@@ -16,11 +16,11 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-gray-600 backdrop-blur bg-white/90 dark:bg-gray-950/90">
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <div className="text-xl font-bold">
+          <div className="text-xl font-bold dark:text-white">
             <Link>Martivo</Link>
           </div>
 
@@ -30,7 +30,7 @@ export default function Header() {
               to="/"
               className={({ isActive }) =>
                 `${
-                  isActive ? "text-blue-500" : "text-black"
+                  isActive ? "text-blue-500" : "text-black dark:text-white"
                 } hover:text-primary`
               }
             >
@@ -40,7 +40,7 @@ export default function Header() {
               to="/products"
               className={({ isActive }) =>
                 `${
-                  isActive ? "text-blue-500" : "text-black"
+                  isActive ? "text-blue-500" : "text-black dark:text-white"
                 } hover:text-primary`
               }
             >
@@ -50,7 +50,7 @@ export default function Header() {
               to="/product-details"
               className={({ isActive }) =>
                 `${
-                  isActive ? "text-blue-500" : "text-black"
+                  isActive ? "text-blue-500" : "text-black dark:text-white"
                 } hover:text-primary`
               }
             >
@@ -60,7 +60,7 @@ export default function Header() {
               to="/cart"
               className={({ isActive }) =>
                 `${
-                  isActive ? "text-blue-500" : "text-black"
+                  isActive ? "text-blue-500" : "text-black dark:text-white"
                 } hover:text-primary`
               }
             >
