@@ -57,22 +57,19 @@ export default function Checkout() {
     <Container>
       <div className="max-w-full md:max-w-xl mx-auto mt-10 bg-card border p-6 rounded-2xl shadow-sm">
         <h2 className="text-xl font-bold text-center mb-4">Checkout</h2>
-        <h2 className="text-xl font-semibold text-center mb-4">
+        {/* <h2 className="text-xl font-semibold text-center mb-4">
           Step {step} of 4
-        </h2>
+        </h2> */}
 
         {/* progress bar */}
-        <div className="flex flex-col items-center w-full mb-5">
+        <div className="flex flex-col items-center w-full mb-10">
           {/* Circle */}
           <div className="flex items-center w-full max-w-md justify-between">
             <div className="flex flex-col items-center">
-              {/* <span className="w-6 h-6 flex justify-center items-center border-2 border-primary rounded-full bg-primary text-white text-xs">
-                1
-              </span> */}
               <span
                 className={
                   step >= 1
-                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white`
+                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white text-xs`
                     : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
                 }
               >
@@ -92,7 +89,7 @@ export default function Checkout() {
               <span
                 className={
                   step >= 2
-                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white`
+                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white text-xs`
                     : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
                 }
               >
@@ -112,7 +109,7 @@ export default function Checkout() {
               <span
                 className={
                   step >= 3
-                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white`
+                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white text-xs`
                     : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
                 }
               >
@@ -132,7 +129,7 @@ export default function Checkout() {
               <span
                 className={
                   step === 4
-                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white`
+                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white text-xs`
                     : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
                 }
               >
