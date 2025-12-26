@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Link, NavLink } from "react-router";
+import { ModeToggle } from "../Providers/ModeToggle";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -66,10 +67,25 @@ export default function Header() {
             >
               Crat
             </NavLink>
+
+            {/* Admin Button */}
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `${
+                  isActive ? "text-blue-500" : "text-black dark:text-white"
+                } hover:text-primary`
+              }
+            >
+              Admin
+            </NavLink>
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex gap-2">
+            {/* Mode toggle */}
+            <ModeToggle />
+
             <Button variant="outline">
               <Link to="/login">Login</Link>
             </Button>
@@ -79,40 +95,46 @@ export default function Header() {
           </div>
 
           {/* Mobile Menu */}
-          <div className="md:hidden">
-            <Sheet open={open} onOpenChange={setOpen}>
-              <SheetTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Menu className="h-6 w-6" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[250px]">
-                <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
-                  <SheetDescription className="-mt-5"></SheetDescription>
-                </SheetHeader>
-                <nav className="flex flex-col gap-3 mt-8 text-md mx-auto">
-                  <a href="#" onClick={() => setOpen(false)}>
-                    Home
-                  </a>
-                  <a href="#" onClick={() => setOpen(false)}>
-                    Products
-                  </a>
-                  <a href="#" onClick={() => setOpen(false)}>
-                    About
-                  </a>
-                  <a href="#" onClick={() => setOpen(false)}>
-                    Contact
-                  </a>
-                </nav>
-                <div className="mt-6 flex flex-col gap-2 mx-4">
-                  <Button variant="outline" className="w-full">
-                    Login
+          <div className="md:hidden flex gap-2">
+            {/* Mode toggle */}
+            <div>
+              <ModeToggle />
+            </div>
+            <div>
+              <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Menu className="h-6 w-6" />
                   </Button>
-                  <Button className="w-full">Sign Up</Button>
-                </div>
-              </SheetContent>
-            </Sheet>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[250px]">
+                  <SheetHeader>
+                    <SheetTitle>Menu</SheetTitle>
+                    <SheetDescription className="-mt-5"></SheetDescription>
+                  </SheetHeader>
+                  <nav className="flex flex-col gap-3 mt-8 text-md mx-auto">
+                    <a href="#" onClick={() => setOpen(false)}>
+                      Home
+                    </a>
+                    <a href="#" onClick={() => setOpen(false)}>
+                      Products
+                    </a>
+                    <a href="#" onClick={() => setOpen(false)}>
+                      About
+                    </a>
+                    <a href="#" onClick={() => setOpen(false)}>
+                      Contact
+                    </a>
+                  </nav>
+                  <div className="mt-6 flex flex-col gap-2 mx-4">
+                    <Button variant="outline" className="w-full">
+                      Login
+                    </Button>
+                    <Button className="w-full">Sign Up</Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </Container>
