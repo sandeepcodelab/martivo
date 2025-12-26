@@ -1,6 +1,8 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import { ThemeProvider } from "@/components/Providers/ThemeProvider";
+
 // import App from "./App";
 import UserLayout from "./layout/UserLayout";
 import { RouterProvider, createBrowserRouter } from "react-router";
@@ -12,7 +14,6 @@ import Login from "./pages/Login";
 import Checkout from "./pages/Checkout";
 
 // Admin
-import Dashboard from "./admin/pages/Dashboard";
 import AdminLayout from "./layout/AdminLayout";
 
 const router = createBrowserRouter([
@@ -62,6 +63,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider defaultTheme="dark" storageKey="martivo-theme">
+      <RouterProvider router={router} />
+    </ThemeProvider>
   </StrictMode>
 );
