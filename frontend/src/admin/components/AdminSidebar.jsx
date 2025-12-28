@@ -2,22 +2,16 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
+  Store,
+  Package,
+  ShoppingBag,
+  LayoutGrid,
+  UserRound,
 } from "lucide-react";
 
-import { NavMain } from "@/admin/components/NavMain";
-import { NavProjects } from "@/admin/components/NavProjects";
-import { NavUser } from "@/admin/components/NavUser";
-import { TeamSwitcher } from "@/admin/components/TeamSwitcher";
+import { MainMenu } from "./MainMenu";
+import { SidebarUser } from "./SidebarUser";
+import { SidebarHeaderTitle } from "./SidebarHeaderTitle";
 import {
   Sidebar,
   SidebarContent,
@@ -28,77 +22,32 @@ import {
 
 // Sample data
 const data = {
+  headerData: {
+    name: "Martivo",
+    logo: Store,
+  },
   user: {
     name: "shadcn",
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
-  teams: [
+  dropdowns: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
+      title: "Products",
       url: "#",
-      icon: SquareTerminal,
+      icon: Package,
       isActive: true,
       items: [
-        { title: "History", url: "#" },
-        { title: "Starred", url: "#" },
-        { title: "Settings", url: "#" },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        { title: "Genesis", url: "#" },
-        { title: "Explorer", url: "#" },
-        { title: "Quantum", url: "#" },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        { title: "Introduction", url: "#" },
-        { title: "Get Started", url: "#" },
-        { title: "Tutorials", url: "#" },
-        { title: "Changelog", url: "#" },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        { title: "General", url: "#" },
-        { title: "Team", url: "#" },
-        { title: "Billing", url: "#" },
-        { title: "Limits", url: "#" },
+        { title: "All Products", url: "#" },
+        { title: "Add Product", url: "#" },
+        { title: "Edit Product", url: "#" },
       ],
     },
   ],
-  projects: [
-    { name: "Design Engineering", url: "#", icon: Frame },
-    { name: "Sales & Marketing", url: "#", icon: PieChart },
-    { name: "Travel", url: "#", icon: Map },
+  menus: [
+    { name: "Orders", url: "#", icon: ShoppingBag },
+    { name: "Categories", url: "#", icon: LayoutGrid },
+    { name: "Users", url: "#", icon: UserRound },
   ],
 };
 
@@ -106,16 +55,15 @@ export function AdminSidebar(props) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <SidebarHeaderTitle headerData={data.headerData} />
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <MainMenu dropdowns={data.dropdowns} menus={data.menus} />
       </SidebarContent>
 
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <SidebarUser user={data.user} />
       </SidebarFooter>
 
       <SidebarRail />
