@@ -1,8 +1,10 @@
+import * as React from "react";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  //   getFilteredRowModel,
 } from "@tanstack/react-table";
 
 import {
@@ -14,18 +16,44 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+import { DataTablePagination } from "./Pagination";
 
 export function DataTable({ columns, data }) {
+  const [sorting, setSorting] = React.useState([]);
+  const [columnFilters, setColumnFilters] = React.useState([]);
+
   const table = useReactTable({
     data,
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    // getSortedRowModel: getSortedRowModel(),
+    // getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
   });
 
   return (
     <div>
+      {/* Filter */}
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Search..."
+          value={table.getColumn("name")?.getFilterValue() ?? ""}
+          onChange={(event) =>
+            table.getColumn("name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
+
+      {/* Table */}
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
@@ -77,24 +105,8 @@ export function DataTable({ columns, data }) {
       </div>
 
       {/* Pagination controls */}
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="pt-4">
+        <DataTablePagination table={table} />
       </div>
     </div>
   );
