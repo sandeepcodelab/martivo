@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -21,8 +21,9 @@ import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "./Pagination";
 
 export function DataTable({ columns, data }) {
-  const [sorting, setSorting] = React.useState([]);
-  const [columnFilters, setColumnFilters] = React.useState([]);
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [filterData, setFilterData] = useState();
 
   const table = useReactTable({
     data,
@@ -43,12 +44,19 @@ export function DataTable({ columns, data }) {
     <div>
       {/* Filter */}
       <div className="flex items-center pb-4">
-        <Input
+        {/* <Input
           placeholder="Search..."
           value={table.getColumn("name")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
           }
+          className="max-w-sm"
+        /> */}
+
+        <Input
+          placeholder="Search..."
+          value={filterData}
+          onChange={(e) => setFilterData(e.target.value)}
           className="max-w-sm"
         />
       </div>
@@ -56,7 +64,7 @@ export function DataTable({ columns, data }) {
       {/* Table */}
       <div className="overflow-hidden rounded-md border">
         <Table>
-          <TableHeader>
+          <TableHeader className="dark:bg-neutral-800 bg-neutral-300 pointer-events-none">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
