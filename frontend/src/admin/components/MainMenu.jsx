@@ -1,7 +1,4 @@
-"use client";
-
 import { ChevronRight } from "lucide-react";
-
 import {
   Collapsible,
   CollapsibleContent,
@@ -17,6 +14,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { Link } from "react-router";
 
 export function MainMenu({ dropdowns, menus }) {
   return (
@@ -46,9 +44,7 @@ export function MainMenu({ dropdowns, menus }) {
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </a>
+                        <Link to={subItem.url}>{subItem.title}</Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
@@ -64,10 +60,10 @@ export function MainMenu({ dropdowns, menus }) {
         {menus.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
+              <Link to={item.url}>
                 <item.icon />
-                <span>{item.name}</span>
-              </a>
+                {item.name}
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
