@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   Store,
@@ -38,16 +36,15 @@ const data = {
       icon: Package,
       isActive: true,
       items: [
-        { title: "All Products", url: "#" },
-        { title: "Add Product", url: "#" },
-        { title: "Edit Product", url: "#" },
+        { title: "All Products", url: "/admin/products/allProduct" },
+        { title: "Add Product", url: "/admin/products/addProduct" },
       ],
     },
   ],
   menus: [
-    { name: "Orders", url: "#", icon: ShoppingBag },
-    { name: "Categories", url: "#", icon: LayoutGrid },
-    { name: "Users", url: "#", icon: UserRound },
+    { name: "Orders", url: "/admin/orders", icon: ShoppingBag },
+    { name: "Categories", url: "/admin/categories", icon: LayoutGrid },
+    { name: "Users", url: "/admin/users", icon: UserRound },
   ],
 };
 
