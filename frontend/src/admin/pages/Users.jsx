@@ -1,5 +1,3 @@
-// "use client";
-
 import { useEffect, useState } from "react";
 import { userColumns } from "../components/columns";
 import { DataTable } from "../components/Data-Table";
@@ -73,78 +71,6 @@ export default function Users() {
         },
         {
           id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "tester@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
-          name: "Tester",
-          email: "m@example.com",
-          role: "user",
-        },
-        {
-          id: "728ed52f",
           name: "Tester Last",
           email: "m@example.com",
           role: "user",
@@ -158,7 +84,7 @@ export default function Users() {
   }, []);
 
   return (
-    <div className="container mx-auto ">
+    <div className="container mx-auto">
       <DataTable columns={userColumns} data={data} />
     </div>
   );
