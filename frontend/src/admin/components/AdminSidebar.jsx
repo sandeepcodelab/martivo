@@ -5,6 +5,7 @@ import {
   ShoppingBag,
   LayoutGrid,
   UserRound,
+  Gauge,
 } from "lucide-react";
 
 import { MainMenu } from "./MainMenu";
@@ -24,10 +25,10 @@ const data = {
     name: "Martivo",
     logo: Store,
   },
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+  dashboard: {
+    name: "Dashboard",
+    url: "/admin",
+    icon: Gauge,
   },
   dropdowns: [
     {
@@ -36,7 +37,7 @@ const data = {
       icon: Package,
       isActive: true,
       items: [
-        { title: "All Products", url: "/admin/products/allProduct" },
+        { title: "All Products", url: "/admin/products" },
         { title: "Add Product", url: "/admin/products/addProduct" },
       ],
     },
@@ -46,6 +47,11 @@ const data = {
     { name: "Categories", url: "/admin/categories", icon: LayoutGrid },
     { name: "Users", url: "/admin/users", icon: UserRound },
   ],
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
 };
 
 export function AdminSidebar(props) {
@@ -56,7 +62,11 @@ export function AdminSidebar(props) {
       </SidebarHeader>
 
       <SidebarContent>
-        <MainMenu dropdowns={data.dropdowns} menus={data.menus} />
+        <MainMenu
+          dashboard={data.dashboard}
+          dropdowns={data.dropdowns}
+          menus={data.menus}
+        />
       </SidebarContent>
 
       <SidebarFooter>
