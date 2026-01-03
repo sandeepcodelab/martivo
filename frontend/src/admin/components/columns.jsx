@@ -45,3 +45,51 @@ export const OrderColumns = [
     header: "Order Date",
   },
 ];
+
+// Category columns
+export const CategoryColumns = [
+  {
+    accessorKey: "categoryName",
+    header: "Category Name",
+  },
+  {
+    accessorKey: "slug",
+    header: "Slug",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
+];
+
+// Product columns
+export const ProductColumns = [
+  {
+    accessorKey: "productName",
+    header: "Product",
+  },
+  {
+    accessorKey: "category",
+    header: "Category",
+  },
+  {
+    accessorKey: "price",
+    header: "Price",
+  },
+  {
+    accessorKey: "stock",
+    header: "Stock",
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+  },
+  {
+    id: "actions",
+    header: "Actions",
+  },
+];
