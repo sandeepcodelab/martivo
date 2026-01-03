@@ -1,4 +1,4 @@
-import { OrderColumns } from "../components/columns";
+import { OrderColumns } from "../components/Columns";
 import { DataTable } from "../components/Data-Table";
 
 export default function Orders() {
