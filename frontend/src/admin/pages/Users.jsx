@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { userColumns } from "../components/columns";
+import { userColumns } from "../components/Columns";
 import { DataTable } from "../components/Data-Table";
 
 export default function Users() {
