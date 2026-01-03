@@ -16,10 +16,21 @@ import {
 } from "@/components/ui/sidebar";
 import { Link } from "react-router";
 
-export function MainMenu({ dropdowns, menus }) {
+export function MainMenu({ dropdowns, menus, dashboard }) {
   return (
     <SidebarGroup>
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
+      {/* Dashboard */}
+      <SidebarMenu>
+        <SidebarMenuItem key="dashboard.name">
+          <SidebarMenuButton asChild>
+            <Link to={dashboard.url}>
+              <dashboard.icon />
+              {dashboard.name}
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
 
       {/* Dropdown menu */}
       <SidebarMenu>
