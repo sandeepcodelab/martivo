@@ -10,8 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Trash2, Upload, CircleX } from "lucide-react";
 
 export default function AddProduct() {
   //   const {
@@ -26,11 +35,12 @@ export default function AddProduct() {
   //   console.log(watch("example")); // watch input value by passing the name of it
 
   return (
-    <div className="w-full flex gap-10">
-      <div className="border-1 rounded-2xl w-4/6 p-5">
-        <Input type="text" placeholder="Title" />
+    <div className="w-full flex gap-10 items-start">
+      <div className="border-1 rounded-2xl w-4/6 p-5 bg-card text-card-foreground">
+        <Input type="text" placeholder="Title" className="mb-5" />
+
         <Select>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full mb-5">
             <SelectValue placeholder="Select a fruit" />
           </SelectTrigger>
           <SelectContent>
@@ -48,26 +58,64 @@ export default function AddProduct() {
         {/* Textarea */}
         <TinyEditor />
       </div>
-      <div className="border-1 rounded-2xl w-2/6 p-5">
-        <div className="rounded-2xl overflow-hidden">
-          <img className="w-full h-60 rounded-2xl" />
-        </div>
-        <Input
-          // ref={inputRef}
-          type="file"
-          accept="image/*"
-          // onChange={handleFileChange}
-          className="hidden"
-        />
-        <Button
-          type="button"
-          variant="outline"
-          // onClick={() => inputRef.current?.click()}
-          className="w-full flex gap-2"
-        >
-          <Upload size={16} />
-          Upload Image
-        </Button>
+
+      <div className="rounded-2xl w-2/6">
+        {/* Product Image (thumbnail) */}
+        <Card className="mb-5">
+          <CardHeader>
+            <CardTitle>Product Image</CardTitle>
+            {/* <CardDescription>Card Description</CardDescription> */}
+            <CardAction>
+              <Trash2
+                size={14}
+                className="text-white hover:text-red-500 cursor-pointer"
+              />
+            </CardAction>
+          </CardHeader>
+          <CardContent className="h-50">
+            <img
+              src="http://www.listercarterhomes.com/wp-content/uploads/2013/11/dummy-image-square.jpg"
+              className="w-full h-full rounded-2xl"
+            />
+          </CardContent>
+          <CardFooter>
+            <Button className="bg-primary text-white w-full">
+              <Upload />
+              Upload Image
+            </Button>
+          </CardFooter>
+        </Card>
+
+        {/* Product Images  */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Product Images</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-3">
+              {[1, 2, 3, 4].map((_, index) => (
+                <div key={index} className="w-20 h-auto relative">
+                  <img
+                    src="http://www.listercarterhomes.com/wp-content/uploads/2013/11/dummy-image-square.jpg"
+                    className="w-full h-full rounded-2xl"
+                  />
+
+                  <CircleX
+                    strokeWidth={3}
+                    size={20}
+                    className="absolute -top-1 -right-1 text-red-500 bg-red-200 rounded-full cursor-pointer"
+                  />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button className="bg-primary text-white w-full">
+              <Upload />
+              Upload Images
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
 
       {/* "handleSubmit" will validate your inputs before invoking "onSubmit" */}
