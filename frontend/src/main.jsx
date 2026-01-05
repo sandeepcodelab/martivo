@@ -15,6 +15,12 @@ import Checkout from "./pages/Checkout";
 
 // Admin
 import AdminLayout from "./layout/AdminLayout";
+import Dashboard from "./admin/pages/Dashboard";
+import ProductsTable from "./admin/pages/Products";
+import Orders from "./admin/pages/Orders";
+import Users from "./admin/pages/Users";
+import Categories from "./admin/pages/Categories";
+import AddProduct from "./admin/pages/AddProduct";
 
 const router = createBrowserRouter([
   {
@@ -54,8 +60,28 @@ const router = createBrowserRouter([
     Component: AdminLayout,
     children: [
       {
-        path: "",
-        element: "",
+        path: "/admin",
+        element: <Dashboard />,
+      },
+      {
+        path: "/admin/products",
+        element: <ProductsTable />,
+      },
+      {
+        path: "/admin/products/addProduct",
+        element: <AddProduct />,
+      },
+      {
+        path: "/admin/orders",
+        element: <Orders />,
+      },
+      {
+        path: "/admin/categories",
+        element: <Categories />,
+      },
+      {
+        path: "/admin/users",
+        element: <Users />,
       },
     ],
   },
@@ -63,7 +89,7 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ThemeProvider defaultTheme="dark" storageKey="martivo-theme">
+    <ThemeProvider defaultTheme="system" storageKey="martivo-theme">
       <RouterProvider router={router} />
     </ThemeProvider>
   </StrictMode>
