@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import TinyEditor from "../components/TinyEditor";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -19,10 +20,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+
 import { Trash2, Upload, CircleX } from "lucide-react";
 
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+
 export default function AddProduct() {
+  const [content, setContent] = useState("");
+
   //   const {
   //     register,
   //     handleSubmit,
@@ -55,8 +61,15 @@ export default function AddProduct() {
           </SelectContent>
         </Select>
 
-        {/* Textarea */}
-        <TinyEditor />
+        {/* Text Editor */}
+        <div className="w-full">
+          <ReactQuill
+            value={content}
+            onChange={setContent}
+            theme="snow"
+            placeholder="Start typing..."
+          />
+        </div>
       </div>
 
       <div className="rounded-2xl w-2/6">
