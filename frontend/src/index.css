@@ -113,7 +113,8 @@
   --sidebar-ring: oklch(0.488 0.243 264.376);
 
   /* React Quill dark mode custom css */
-  .ql-toolbar {
+  .ql-toolbar,
+  .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
     @apply border-neutral-700!;
   }
   .ql-container {
@@ -147,4 +148,7 @@
 }
 .ql-container {
   @apply rounded-b-md bg-card min-h-[299px] max-h-[300px] overflow-auto text-base!;
+}
+.ql-toolbar.ql-snow .ql-picker-options {
+  @apply bg-card;
 }
