@@ -16,14 +16,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Input } from "@/components/ui/input";
-
 import { DataTablePagination } from "./Pagination";
 
 export function DataTable({ columns, data }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
-  const [filterData, setFilterData] = useState();
 
   const table = useReactTable({
     data,
@@ -42,25 +39,6 @@ export function DataTable({ columns, data }) {
 
   return (
     <div>
-      {/* Filter */}
-      <div className="flex items-center pb-4">
-        {/* <Input
-          placeholder="Search..."
-          value={table.getColumn("name")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        /> */}
-
-        <Input
-          placeholder="Search..."
-          value={filterData}
-          onChange={(e) => setFilterData(e.target.value)}
-          className="max-w-sm"
-        />
-      </div>
-
       {/* Table */}
       <div className="overflow-hidden rounded-md border">
         <Table>
