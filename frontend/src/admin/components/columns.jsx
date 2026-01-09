@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash } from "lucide-react";
+
 // User columns
 export const userColumns = [
   {
@@ -47,7 +50,7 @@ export const OrderColumns = [
 ];
 
 // Category columns
-export const CategoryColumns = [
+export const CategoryColumns = (onEdit, onDelete) => [
   {
     accessorKey: "categoryName",
     header: "Category Name",
@@ -59,6 +62,28 @@ export const CategoryColumns = [
   {
     accessorKey: "status",
     header: "Status",
+  },
+  {
+    id: "action",
+    header: "Action",
+    cell: ({ row }) => (
+      <div className="flex gap-2">
+        <Button
+          size="icon"
+          variant="outline"
+          onClick={() => onEdit(row.original)}
+        >
+          <Pencil />
+        </Button>
+        <Button
+          size="icon"
+          variant="destructive"
+          onClick={() => onDelete(row.original.id)}
+        >
+          <Trash />
+        </Button>
+      </div>
+    ),
   },
 ];
 
