@@ -25,12 +25,19 @@ export default function Categories() {
   const onEdit = (row) => {
     setSelectedCategory(row);
     setDialogOpen(true);
-    console.log("edit:", row);
+    // console.log("edit:", row);
   };
 
   // delete handler
   const onDelete = (id) => {
-    console.log("Delete id:", id);
+    // console.log("Delete id:", id);
+  };
+
+  const dialogOnChangeHandler = (open) => {
+    setDialogOpen(open);
+    if (!open) {
+      setSelectedCategory(null);
+    }
   };
 
   const categoryData = [
@@ -95,20 +102,36 @@ export default function Categories() {
       />
 
       {/* Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog open={dialogOpen} onOpenChange={dialogOnChangeHandler}>
         <form>
-          <DialogContent className="sm:max-w-[425px]">
+          <DialogContent
+            aria-describedby={undefined}
+            className="sm:max-w-[425px]"
+          >
             <DialogHeader>
-              <DialogTitle>Add category</DialogTitle>
+              <DialogTitle>
+                {selectedCategory != null ? "Update category" : "Add category"}
+              </DialogTitle>
             </DialogHeader>
             <div className="grid gap-5 mt-2">
               <div className="grid gap-3">
                 <Label htmlFor="name-1">Name</Label>
-                <Input id="name-1" name="name" defaultValue="" />
+                <Input
+                  id="name-1"
+                  name="name"
+                  defaultValue={
+                    selectedCategory != null
+                      ? selectedCategory.categoryName
+                      : ""
+                  }
+                />
               </div>
               <div className="grid gap-3">
                 <Label>Active</Label>
-                <Switch className="cursor-pointer" />
+                <Switch
+                  checked={selectedCategory?.status === "Active" ? true : false}
+                  className="cursor-pointer"
+                />
               </div>
             </div>
             <DialogFooter>
@@ -118,7 +141,7 @@ export default function Categories() {
                 </Button>
               </DialogClose>
               <Button type="submit" className="text-white cursor-pointer">
-                Save
+                {selectedCategory != null ? "Update" : "Save"}
               </Button>
             </DialogFooter>
           </DialogContent>
