@@ -4,6 +4,8 @@ import { CategoryColumns } from "../components/Columns";
 import { DataTable } from "../components/Data-Table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 import {
   Dialog,
@@ -13,13 +15,24 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function Categories() {
   const [searchValue, setSearchValue] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   // edit handler
   const onEdit = (row) => {
@@ -30,7 +43,10 @@ export default function Categories() {
 
   // delete handler
   const onDelete = (id) => {
-    // console.log("Delete id:", id);
+    console.log("Delete id:", id);
+    if (!id) {
+      setAlertOpen(true);
+    }
   };
 
   const dialogOnChangeHandler = (open) => {
@@ -147,6 +163,31 @@ export default function Categories() {
           </DialogContent>
         </form>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog open={alertOpen}>
+        {/* <AlertDialogTrigger>Open</AlertDialogTrigger> */}
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => setAlertOpen(false)}
+              className="cursor-pointer"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction className="bg-red-600 hover:bg-red-500 text-white cursor-pointer">
+              Yes, Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
