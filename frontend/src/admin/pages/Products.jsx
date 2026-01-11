@@ -1,7 +1,16 @@
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 import { ProductColumns } from "../components/Columns";
 import { DataTable } from "../components/Data-Table";
 
 export default function ProductsTable() {
+  const [searchValue, setSearchValue] = useState("");
+
+  const searchHandler = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchValue(value);
+  };
+
   const products = [
     {
       productName: "iPhone 15 Pro",
@@ -127,6 +136,15 @@ export default function ProductsTable() {
 
   return (
     <div className="container mx-auto ">
+      <div className="mb-4">
+        <Input
+          value={searchValue}
+          // onChange={(e) => setSearchValue(e.target.value)}
+          onChange={searchHandler}
+          placeholder="Search..."
+          className="max-w-sm"
+        />
+      </div>
       <DataTable columns={ProductColumns} data={products} />
     </div>
   );
