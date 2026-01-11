@@ -33,6 +33,12 @@ export default function Categories() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [deleteCategory, setDeleteCategory] = useState(null);
+
+  const searchHandler = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchValue(value);
+  };
 
   // edit handler
   const onEdit = (row) => {
@@ -46,7 +52,13 @@ export default function Categories() {
     console.log("Delete id:", id);
     if (!id) {
       setAlertOpen(true);
+      setDeleteCategory(id);
     }
+  };
+  const deleteHandler = () => {
+    console.log(`This record deleted successfully!`);
+    setAlertOpen(false);
+    setDeleteCategory(null);
   };
 
   const dialogOnChangeHandler = (open) => {
@@ -95,7 +107,7 @@ export default function Categories() {
       <div className="flex items-center justify-between pb-4">
         <Input
           value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          onChange={searchHandler}
           placeholder="Search..."
           className="max-w-sm"
         />
@@ -182,7 +194,10 @@ export default function Categories() {
             >
               Cancel
             </AlertDialogCancel>
-            <AlertDialogAction className="bg-red-600 hover:bg-red-500 text-white cursor-pointer">
+            <AlertDialogAction
+              onClick={deleteHandler}
+              className="bg-red-600 hover:bg-red-500 text-white cursor-pointer"
+            >
               Yes, Delete
             </AlertDialogAction>
           </AlertDialogFooter>
