@@ -1,4 +1,7 @@
 import { useState, useRef } from "react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import { Upload, Trash2 } from "lucide-react";
 import {
   Card,
   CardHeader,
@@ -8,14 +11,39 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Upload, Trash2 } from "lucide-react";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 import { Separator } from "@/components/ui/separator";
 
-export default function AddProductUI() {
+export default function AddProduct() {
   const [showVariants, setShowVariants] = useState(false);
   const thumbnailRef = useRef(null);
+  const [variants, setVariants] = useState([
+    {
+      size: "",
+      color: "",
+      price: "",
+      stock: "",
+    },
+  ]);
+
+  const addAnotherVariants = () => {
+    setVariants([
+      ...variants,
+      {
+        size: "",
+        color: "",
+        price: "",
+        stock: "",
+      },
+    ]);
+  };
+
+  const variantChangesHandler = (index, field, value) => {
+    variants[index][field] = value;
+
+    console.log("Updated:", variants);
+  };
+
+  // console.log("Default:", variants);
 
   return (
     <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -68,20 +96,45 @@ export default function AddProductUI() {
             </CardHeader>
 
             <CardContent className="space-y-4">
-              <Card>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-4 gap-3">
-                    <Input placeholder="Size (e.g. M)" />
-                    <Input placeholder="Color (e.g. Red)" />
-                    <Input type="number" placeholder="Price" />
-                    <Input type="number" placeholder="Stock" />
-                  </div>
-                </CardContent>
-              </Card>
+              {variants.map((variant, index) => (
+                <Card key={index}>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-4 gap-3">
+                      <Input
+                        placeholder="Size (e.g. M)"
+                        onChange={(e) =>
+                          variantChangesHandler(index, "size", e.target.value)
+                        }
+                      />
+                      <Input
+                        placeholder="Color (e.g. Red)"
+                        onChange={(e) =>
+                          variantChangesHandler(index, "color", e.target.value)
+                        }
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Price"
+                        onChange={(e) =>
+                          variantChangesHandler(index, "price", e.target.value)
+                        }
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Stock"
+                        onChange={(e) =>
+                          variantChangesHandler(index, "stock", e.target.value)
+                        }
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
               <Button
                 type="button"
                 variant="outline"
                 className="cursor-pointer"
+                onClick={addAnotherVariants}
               >
                 + Add another variant
               </Button>
@@ -112,7 +165,7 @@ export default function AddProductUI() {
             <input type="file" ref={thumbnailRef} hidden />
             <Button
               type="button"
-              className="w-full"
+              className="w-full text-white"
               onClick={() => thumbnailRef.current?.click()}
             >
               <Upload className="mr-2 h-4 w-4" />
