@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { Upload, Trash2 } from "lucide-react";
@@ -26,7 +26,35 @@ import { Separator } from "@/components/ui/separator";
 export default function AddProduct() {
   const [showVariants, setShowVariants] = useState(false);
   const thumbnailRef = useRef(null);
+  const [thumbnailImage, setThumbnailImage] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const productImagesRef = useRef(null);
+  const [productImages, setProductImages] = useState([]);
+  const [productImagesPreview, setProductImagesPreview] = useState([]);
+
+  const thumbnailHandler = (e) => {
+    const image = e.target.files[0];
+
+    if (!image) return;
+
+    const urls = URL.createObjectURL(image);
+
+    setThumbnailImage(image);
+    setThumbnailPreview(urls);
+    console.log(thumbnailImage);
+  };
+
+  const productImagesHandler = (e) => {
+    const images = Array.from(e.target.files);
+
+    if (!images.length) return;
+
+    const urls = images.map((image) => URL.createObjectURL(image));
+
+    setProductImages((prev) => [...prev, ...images]);
+    setProductImagesPreview((prev) => [...prev, ...urls]);
+  };
+
   const [variants, setVariants] = useState([
     {
       size: "",
@@ -204,7 +232,17 @@ export default function AddProduct() {
           </CardHeader>
 
           <CardContent>
-            <div className="h-[180px] bg-muted rounded-lg flex items-center justify-center"></div>
+            {thumbnailPreview ? (
+              <div className="h-[180px] rounded-lg overflow-hidden">
+                <img
+                  src={thumbnailPreview}
+                  alt="Preview"
+                  className="w-full h-full"
+                />
+              </div>
+            ) : (
+              <div className="h-[180px] bg-muted rounded-lg" />
+            )}
           </CardContent>
 
           <CardFooter>
@@ -213,6 +251,7 @@ export default function AddProduct() {
               ref={thumbnailRef}
               hidden
               accept="image/png, image/jpeg, image/jpg"
+              onChange={thumbnailHandler}
             />
             <Button
               type="button"
@@ -232,9 +271,15 @@ export default function AddProduct() {
           </CardHeader>
 
           <CardContent className="grid grid-cols-3 gap-2">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="aspect-square bg-muted rounded-md" />
-            ))}
+            {productImagesPreview.length > 0
+              ? productImagesPreview.map((preview) => (
+                  <div key={preview}>
+                    <img src={preview} className="aspect-square rounded-md" />
+                  </div>
+                ))
+              : [1, 2, 3].map((_, i) => (
+                  <div key={i} className="aspect-square bg-muted rounded-md" />
+                ))}
           </CardContent>
 
           <CardFooter>
@@ -244,6 +289,7 @@ export default function AddProduct() {
               hidden
               accept="image/png, image/jpeg, image/jpg"
               multiple
+              onChange={productImagesHandler}
             />
             <Button
               type="button"
