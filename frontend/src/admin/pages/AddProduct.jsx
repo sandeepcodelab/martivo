@@ -6,6 +6,7 @@ import {
   Card,
   CardHeader,
   CardTitle,
+  CardAction,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -38,12 +39,14 @@ export default function AddProduct() {
   };
 
   const variantChangesHandler = (index, field, value) => {
-    variants[index][field] = value;
-
-    console.log("Updated:", variants);
+    const updateVariants = [...variants];
+    updateVariants[index][field] = value;
+    setVariants(updateVariants);
   };
 
-  // console.log("Default:", variants);
+  const removeVariant = (removeIndex) => {
+    setVariants((prev) => prev.filter((value, index) => index !== removeIndex));
+  };
 
   return (
     <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -99,15 +102,17 @@ export default function AddProduct() {
               {variants.map((variant, index) => (
                 <Card key={index}>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                       <Input
                         placeholder="Size (e.g. M)"
+                        value={variant.size}
                         onChange={(e) =>
                           variantChangesHandler(index, "size", e.target.value)
                         }
                       />
                       <Input
                         placeholder="Color (e.g. Red)"
+                        value={variant.color}
                         onChange={(e) =>
                           variantChangesHandler(index, "color", e.target.value)
                         }
@@ -115,6 +120,8 @@ export default function AddProduct() {
                       <Input
                         type="number"
                         placeholder="Price"
+                        min={0}
+                        value={variant.price}
                         onChange={(e) =>
                           variantChangesHandler(index, "price", e.target.value)
                         }
@@ -122,11 +129,25 @@ export default function AddProduct() {
                       <Input
                         type="number"
                         placeholder="Stock"
+                        min={0}
+                        value={variant.stock}
                         onChange={(e) =>
                           variantChangesHandler(index, "stock", e.target.value)
                         }
                       />
                     </div>
+                    {variants.length > 1 && (
+                      <CardFooter className="flex justify-end px-0">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => removeVariant(index)}
+                          className="cursor-pointer"
+                        >
+                          Remove
+                        </Button>
+                      </CardFooter>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -157,8 +178,8 @@ export default function AddProduct() {
             <Trash2 className="w-4 h-4 cursor-pointer text-muted-foreground" />
           </CardHeader>
 
-          <CardContent className="h-[180px] bg-muted rounded-lg flex items-center justify-center">
-            Image preview
+          <CardContent>
+            <div className="h-[180px] bg-muted rounded-lg flex items-center justify-center"></div>
           </CardContent>
 
           <CardFooter>
