@@ -10,6 +10,15 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -17,6 +26,7 @@ import { Separator } from "@/components/ui/separator";
 export default function AddProduct() {
   const [showVariants, setShowVariants] = useState(false);
   const thumbnailRef = useRef(null);
+  const productImagesRef = useRef(null);
   const [variants, setVariants] = useState([
     {
       size: "",
@@ -60,7 +70,22 @@ export default function AddProduct() {
 
           <CardContent className="space-y-5">
             <Input placeholder="Product title" />
-            <Input placeholder="Category" />
+
+            <Select>
+              <SelectTrigger className="w-full mb-5">
+                <SelectValue placeholder="Select product category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Categories</SelectLabel>
+                  <SelectItem value="apple">Apple</SelectItem>
+                  <SelectItem value="banana">Banana</SelectItem>
+                  <SelectItem value="blueberry">Blueberry</SelectItem>
+                  <SelectItem value="grapes">Grapes</SelectItem>
+                  <SelectItem value="pineapple">Pineapple</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
 
             <ReactQuill placeholder="Description..." />
 
@@ -183,13 +208,18 @@ export default function AddProduct() {
           </CardContent>
 
           <CardFooter>
-            <input type="file" ref={thumbnailRef} hidden />
+            <input
+              type="file"
+              ref={thumbnailRef}
+              hidden
+              accept="image/png, image/jpeg, image/jpg"
+            />
             <Button
               type="button"
-              className="w-full text-white"
+              className="w-full text-white cursor-pointer"
               onClick={() => thumbnailRef.current?.click()}
             >
-              <Upload className="mr-2 h-4 w-4" />
+              <Upload />
               Upload thumbnail
             </Button>
           </CardFooter>
@@ -208,8 +238,20 @@ export default function AddProduct() {
           </CardContent>
 
           <CardFooter>
-            <Button type="button" variant="outline" className="w-full">
-              <Upload className="mr-2 h-4 w-4" />
+            <input
+              type="file"
+              ref={productImagesRef}
+              hidden
+              accept="image/png, image/jpeg, image/jpg"
+              multiple
+            />
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full cursor-pointer"
+              onClick={() => productImagesRef.current?.click()}
+            >
+              <Upload />
               Upload images
             </Button>
           </CardFooter>
