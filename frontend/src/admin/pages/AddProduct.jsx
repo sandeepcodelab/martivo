@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
-import { Upload, Trash2 } from "lucide-react";
+import { Upload, Trash2, CircleX } from "lucide-react";
 import {
   Card,
   CardHeader,
   CardTitle,
-  CardAction,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -32,16 +31,27 @@ export default function AddProduct() {
   const [productImages, setProductImages] = useState([]);
   const [productImagesPreview, setProductImagesPreview] = useState([]);
 
-  const thumbnailHandler = (e) => {
-    const image = e.target.files[0];
+  useEffect(() => {
+    if (thumbnailImage) {
+      const url = URL.createObjectURL(thumbnailImage);
+      setThumbnailPreview(url);
 
-    if (!image) return;
+      return () => URL.revokeObjectURL(url);
+    }
 
-    const urls = URL.createObjectURL(image);
+    if (!thumbnailImage) {
+      setThumbnailPreview(null);
+      return;
+    }
+  }, [thumbnailImage]);
 
-    setThumbnailImage(image);
-    setThumbnailPreview(urls);
-    console.log(thumbnailImage);
+  const removeProductImage = (index) => {
+    setProductImages((prev) => prev.filter((value, i) => i !== index));
+
+    setProductImagesPreview((prev) => {
+      URL.revokeObjectURL(prev[index]);
+      return prev.filter((value, i) => i !== index);
+    });
   };
 
   const productImagesHandler = (e) => {
@@ -53,6 +63,8 @@ export default function AddProduct() {
 
     setProductImages((prev) => [...prev, ...images]);
     setProductImagesPreview((prev) => [...prev, ...urls]);
+
+    return () => urls.map((url) => URL.revokeObjectURL(url));
   };
 
   const [variants, setVariants] = useState([
@@ -228,7 +240,14 @@ export default function AddProduct() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Main image</CardTitle>
-            <Trash2 className="w-4 h-4 cursor-pointer text-muted-foreground" />
+            {thumbnailImage ? (
+              <Trash2
+                onClick={() => setThumbnailImage(null)}
+                className="w-4 h-4 cursor-pointer text-muted-foreground hover:text-red-400"
+              />
+            ) : (
+              ""
+            )}
           </CardHeader>
 
           <CardContent>
@@ -251,7 +270,7 @@ export default function AddProduct() {
               ref={thumbnailRef}
               hidden
               accept="image/png, image/jpeg, image/jpg"
-              onChange={thumbnailHandler}
+              onChange={(e) => setThumbnailImage(e.target.files[0])}
             />
             <Button
               type="button"
@@ -272,9 +291,15 @@ export default function AddProduct() {
 
           <CardContent className="grid grid-cols-3 gap-2">
             {productImagesPreview.length > 0
-              ? productImagesPreview.map((preview) => (
-                  <div key={preview}>
+              ? productImagesPreview.map((preview, index) => (
+                  <div key={preview} className="relative">
                     <img src={preview} className="aspect-square rounded-md" />
+
+                    <CircleX
+                      onClick={() => removeProductImage(index)}
+                      size={20}
+                      className="absolute -top-1 -right-1 bg-red-500 rounded-full cursor-pointer"
+                    />
                   </div>
                 ))
               : [1, 2, 3].map((_, i) => (
