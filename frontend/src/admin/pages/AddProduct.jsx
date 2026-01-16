@@ -23,13 +23,26 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 export default function AddProduct() {
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
   const [showVariants, setShowVariants] = useState(false);
+  const [variants, setVariants] = useState([
+    {
+      size: "",
+      color: "",
+      price: "",
+      stock: "",
+    },
+  ]);
+
   const thumbnailRef = useRef(null);
   const [thumbnailImage, setThumbnailImage] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
   const productImagesRef = useRef(null);
   const [productImages, setProductImages] = useState([]);
   const [productImagesPreview, setProductImagesPreview] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (thumbnailImage) {
@@ -67,15 +80,6 @@ export default function AddProduct() {
     return () => urls.map((url) => URL.revokeObjectURL(url));
   };
 
-  const [variants, setVariants] = useState([
-    {
-      size: "",
-      color: "",
-      price: "",
-      stock: "",
-    },
-  ]);
-
   const addAnotherVariants = () => {
     setVariants([
       ...variants,
@@ -98,6 +102,27 @@ export default function AddProduct() {
     setVariants((prev) => prev.filter((value, index) => index !== removeIndex));
   };
 
+  // Saving product
+  const saveProductHandler = () => {
+    const newErrors = {};
+
+    if (!title) {
+      newErrors.title = "Title field is required";
+    }
+    if (!category) {
+      newErrors.category = "Category field is required";
+    }
+    if (!thumbnailImage) {
+      newErrors.thumbnail = "Image field is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+  };
+
   return (
     <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
       {/* ================= LEFT SIDE ================= */}
@@ -109,29 +134,57 @@ export default function AddProduct() {
           </CardHeader>
 
           <CardContent className="space-y-5">
-            <Input placeholder="Product title" />
+            <div>
+              <Input
+                placeholder="Product title"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                  setErrors((prev) => ({ ...prev, title: "" }));
+                }}
+              />
+              {errors.title && <p className="text-red-500">{errors.title}</p>}
+            </div>
 
-            <Select>
-              <SelectTrigger className="w-full mb-5">
-                <SelectValue placeholder="Select product category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Categories</SelectLabel>
-                  <SelectItem value="apple">Apple</SelectItem>
-                  <SelectItem value="banana">Banana</SelectItem>
-                  <SelectItem value="blueberry">Blueberry</SelectItem>
-                  <SelectItem value="grapes">Grapes</SelectItem>
-                  <SelectItem value="pineapple">Pineapple</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div className="mb-5">
+              <Select
+                value={category}
+                onValueChange={(value) => {
+                  setCategory(value);
+                  setErrors((prev) => ({ ...prev, category: "" }));
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select product category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Categories</SelectLabel>
+                    <SelectItem value="apple">Apple</SelectItem>
+                    <SelectItem value="banana">Banana</SelectItem>
+                    <SelectItem value="blueberry">Blueberry</SelectItem>
+                    <SelectItem value="grapes">Grapes</SelectItem>
+                    <SelectItem value="pineapple">Pineapple</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {errors.category && (
+                <p className="text-red-500">{errors.category}</p>
+              )}
+            </div>
 
-            <ReactQuill placeholder="Description..." />
+            <ReactQuill
+              placeholder="Description..."
+              value={description}
+              onChange={setDescription}
+            />
 
             {/* Actions */}
             <div className="flex justify-end">
-              <Button className="text-white cursor-pointer">
+              <Button
+                onClick={saveProductHandler}
+                className="text-white cursor-pointer"
+              >
                 Save & continue
               </Button>
             </div>
@@ -262,6 +315,9 @@ export default function AddProduct() {
             ) : (
               <div className="h-[180px] bg-muted rounded-lg" />
             )}
+            {errors.thumbnail && (
+              <p className="text-red-500">{errors.thumbnail}</p>
+            )}
           </CardContent>
 
           <CardFooter>
@@ -270,7 +326,10 @@ export default function AddProduct() {
               ref={thumbnailRef}
               hidden
               accept="image/png, image/jpeg, image/jpg"
-              onChange={(e) => setThumbnailImage(e.target.files[0])}
+              onChange={(e) => {
+                setThumbnailImage(e.target.files[0]);
+                setErrors((prev) => ({ ...prev, thumbnail: "" }));
+              }}
             />
             <Button
               type="button"
