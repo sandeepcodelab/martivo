@@ -23,6 +23,111 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 export default function EditProduct() {
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [showVariants, setShowVariants] = useState(false);
+  const [variants, setVariants] = useState([
+    {
+      size: "",
+      color: "",
+      price: "",
+      stock: "",
+    },
+  ]);
+
+  const thumbnailRef = useRef(null);
+  const [thumbnailImage, setThumbnailImage] = useState(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const productImagesRef = useRef(null);
+  const [productImages, setProductImages] = useState([]);
+  const [productImagesPreview, setProductImagesPreview] = useState([]);
+  const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (thumbnailImage) {
+      const url = URL.createObjectURL(thumbnailImage);
+      setThumbnailPreview(url);
+
+      return () => URL.revokeObjectURL(url);
+    }
+
+    if (!thumbnailImage) {
+      setThumbnailPreview(null);
+      return;
+    }
+  }, [thumbnailImage]);
+
+  const removeProductImage = (index) => {
+    setProductImages((prev) => prev.filter((value, i) => i !== index));
+
+    setProductImagesPreview((prev) => {
+      URL.revokeObjectURL(prev[index]);
+      return prev.filter((value, i) => i !== index);
+    });
+  };
+
+  const productImagesHandler = (e) => {
+    const images = Array.from(e.target.files);
+
+    if (!images.length) return;
+
+    const urls = images.map((image) => URL.createObjectURL(image));
+
+    setProductImages((prev) => [...prev, ...images]);
+    setProductImagesPreview((prev) => [...prev, ...urls]);
+
+    return () => urls.map((url) => URL.revokeObjectURL(url));
+  };
+
+  const addAnotherVariants = () => {
+    setVariants([
+      ...variants,
+      {
+        size: "",
+        color: "",
+        price: "",
+        stock: "",
+      },
+    ]);
+  };
+
+  const variantChangesHandler = (index, field, value) => {
+    const updateVariants = [...variants];
+    updateVariants[index][field] = value;
+    setVariants(updateVariants);
+  };
+
+  const removeVariant = (removeIndex) => {
+    setVariants((prev) => prev.filter((value, index) => index !== removeIndex));
+  };
+
+  // Saving product
+  const saveProductHandler = () => {
+    const newErrors = {};
+
+    if (!title) {
+      newErrors.title = "Title is required";
+    }
+    if (!category) {
+      newErrors.category = "Category is required";
+    }
+    if (!thumbnailImage) {
+      newErrors.thumbnail = "Image is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      return;
+    }
+  };
+
+  // Save variants
+  const saveVariantHandler = () => {
+    console.log(variants);
+  };
+
   return (
     <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
       {/* ================= LEFT SIDE ================= */}
