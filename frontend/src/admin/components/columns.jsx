@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash } from "lucide-react";
+import { Link } from "react-router";
 
 // User columns
 export const userColumns = [
@@ -89,9 +90,34 @@ export const CategoryColumns = (onEdit, onDelete) => [
 
 // Product columns
 export const ProductColumns = [
+  // {
+  //   accessorKey: "productName",
+  //   header: "Product",
+  //   cell: ({ row }) => {
+  //     const product = row.original;
+
+  //     return (
+  //       <Link to={`/admin/products/editProduct/${product._id}`}>
+  //         {product.name}
+  //       </Link>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "productName",
     header: "Product",
+    cell: ({ row }) => {
+      const product = row.original;
+
+      return (
+        <Link
+          to={`/admin/products/editProduct/`}
+          className="font-medium hover:text-primary hover:underline"
+        >
+          {product.productName}
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "category",
