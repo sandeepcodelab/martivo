@@ -107,13 +107,13 @@ export default function AddProduct() {
     const newErrors = {};
 
     if (!title) {
-      newErrors.title = "Title field is required";
+      newErrors.title = "Title is required";
     }
     if (!category) {
-      newErrors.category = "Category field is required";
+      newErrors.category = "Category is required";
     }
     if (!thumbnailImage) {
-      newErrors.thumbnail = "Image field is required";
+      newErrors.thumbnail = "Image is required";
     }
 
     setErrors(newErrors);
@@ -121,6 +121,11 @@ export default function AddProduct() {
     if (Object.keys(newErrors).length > 0) {
       return;
     }
+  };
+
+  // Save variants
+  const saveVariantHandler = () => {
+    console.log(variants);
   };
 
   return (
@@ -278,7 +283,11 @@ export default function AddProduct() {
                 + Add another variant
               </Button>
               <div className="flex justify-end">
-                <Button type="button" className="text-white cursor-pointer">
+                <Button
+                  type="button"
+                  onClick={saveVariantHandler}
+                  className="text-white cursor-pointer"
+                >
                   Save variants
                 </Button>
               </div>
