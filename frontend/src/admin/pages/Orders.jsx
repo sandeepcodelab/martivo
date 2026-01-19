@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { OrderColumns } from "../components/Columns";
 import { DataTable } from "../components/Data-Table";
+import { Input } from "@/components/ui/input";
 
 export default function Orders() {
+  const [searchValue, setSearchValue] = useState();
+
   const orderData = [
     {
       orderId: "ORD-1001",
@@ -52,6 +56,14 @@ export default function Orders() {
 
   return (
     <div className="container mx-auto ">
+      <div className="mb-4">
+        <Input
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder="Search..."
+          className="max-w-sm"
+        />
+      </div>
       <DataTable columns={OrderColumns} data={orderData} />
     </div>
   );
