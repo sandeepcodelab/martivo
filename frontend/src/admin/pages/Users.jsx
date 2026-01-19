@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { userColumns } from "../components/Columns";
 import { DataTable } from "../components/Data-Table";
+import { Input } from "@/components/ui/input";
 
 export default function Users() {
+  const [searchValue, setSearchValue] = useState();
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -85,6 +87,14 @@ export default function Users() {
 
   return (
     <div className="container mx-auto">
+      <div className="mb-4">
+        <Input
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder="Search..."
+          className="max-w-sm"
+        />
+      </div>
       <DataTable columns={userColumns} data={data} />
     </div>
   );
