@@ -97,7 +97,7 @@ export const ProductColumns = [
   //     const product = row.original;
 
   //     return (
-  //       <Link to={`/admin/products/editProduct/${product._id}`}>
+  //       <Link to={`/admin/products/edit/${product._id}`}>
   //         {product.name}
   //       </Link>
   //     );
@@ -111,7 +111,7 @@ export const ProductColumns = [
 
       return (
         <Link
-          to={`/admin/products/editProduct/`}
+          to={`/admin/products/edit/`}
           className="font-medium hover:text-primary hover:underline"
         >
           {product.productName}

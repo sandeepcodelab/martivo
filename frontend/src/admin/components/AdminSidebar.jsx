@@ -38,7 +38,7 @@ const data = {
       isActive: true,
       items: [
         { title: "All Products", url: "/admin/products" },
-        { title: "Add Product", url: "/admin/products/addProduct" },
+        { title: "Add Product", url: "/admin/products/add" },
       ],
     },
   ],
