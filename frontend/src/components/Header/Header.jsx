@@ -17,7 +17,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-600 backdrop-blur bg-white/90 dark:bg-gray-950/90">
+    <header className="sticky top-0 z-50 w-full border-b backdrop-blur-lg">
       <Container>
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -86,12 +86,9 @@ export default function Header() {
             {/* Mode toggle */}
             <ModeToggle />
 
-            <Button variant="outline">
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button>
-              <Link to="/sign-up">Sign Up</Link>
-            </Button>
+            <Link to="/auth/login">
+              <Button className="text-white cursor-pointer">Login</Button>
+            </Link>
           </div>
 
           {/* Mobile Menu */}
@@ -113,24 +110,65 @@ export default function Header() {
                     <SheetDescription className="-mt-5"></SheetDescription>
                   </SheetHeader>
                   <nav className="flex flex-col gap-3 mt-8 text-md mx-auto">
-                    <a href="#" onClick={() => setOpen(false)}>
+                    <NavLink
+                      to="/"
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        `${
+                          isActive
+                            ? "text-blue-500"
+                            : "text-black dark:text-white"
+                        } hover:text-primary`
+                      }
+                    >
                       Home
-                    </a>
-                    <a href="#" onClick={() => setOpen(false)}>
+                    </NavLink>
+                    <NavLink
+                      to="/products"
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        `${
+                          isActive
+                            ? "text-blue-500"
+                            : "text-black dark:text-white"
+                        } hover:text-primary`
+                      }
+                    >
                       Products
-                    </a>
-                    <a href="#" onClick={() => setOpen(false)}>
-                      About
-                    </a>
-                    <a href="#" onClick={() => setOpen(false)}>
-                      Contact
-                    </a>
+                    </NavLink>
+                    <NavLink
+                      to="/product-details"
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        `${
+                          isActive
+                            ? "text-blue-500"
+                            : "text-black dark:text-white"
+                        } hover:text-primary`
+                      }
+                    >
+                      Product-Details
+                    </NavLink>
+                    <NavLink
+                      to="/cart"
+                      onClick={() => setOpen(false)}
+                      className={({ isActive }) =>
+                        `${
+                          isActive
+                            ? "text-blue-500"
+                            : "text-black dark:text-white"
+                        } hover:text-primary`
+                      }
+                    >
+                      Crat
+                    </NavLink>
                   </nav>
                   <div className="mt-6 flex flex-col gap-2 mx-4">
-                    <Button variant="outline" className="w-full">
-                      Login
-                    </Button>
-                    <Button className="w-full">Sign Up</Button>
+                    <Link to="/auth/login">
+                      <Button className="text-white w-full cursor-pointer">
+                        Login
+                      </Button>
+                    </Link>
                   </div>
                 </SheetContent>
               </Sheet>
