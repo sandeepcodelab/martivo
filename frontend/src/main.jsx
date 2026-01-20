@@ -10,8 +10,12 @@ import HomePage from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
-import Login from "./pages/Login";
 import Checkout from "./pages/Checkout";
+
+// Auth routes
+import AuthLayout from "./layout/AuthLayout";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 // Admin routes
 import AdminLayout from "./layout/AdminLayout";
@@ -24,6 +28,7 @@ import AddProduct from "./admin/pages/AddProduct";
 import EditProduct from "./admin/pages/EditProduct";
 
 const router = createBrowserRouter([
+  // User Routes
   {
     path: "/",
     element: <UserLayout />,
@@ -33,7 +38,16 @@ const router = createBrowserRouter([
       { path: "cart", element: <Cart /> },
       { path: "product-details", element: <ProductDetails /> },
       { path: "checkout", element: <Checkout /> },
+    ],
+  },
+
+  // Auth Routes
+  {
+    path: "/auth",
+    element: <AuthLayout />,
+    children: [
       { path: "Login", element: <Login /> },
+      { path: "signup", element: <Signup /> },
     ],
   },
 
