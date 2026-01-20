@@ -3,15 +3,16 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router";
+import { useState } from "react";
+import { EyeOff, Eye } from "lucide-react";
 
 export default function Login() {
   const {
@@ -21,14 +22,23 @@ export default function Login() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => console.log(data);
+  const showPasswordIcon = watch("password");
+  const [showPassword, setShowPassword] = useState(false);
 
-  console.log(watch("example")); // watch input value by passing the name of it
+  const onSubmit = (formData) => {
+    const payload = {
+      email: formData.email.trim().toLowerCase(),
+      password: formData.password,
+    };
+    console.log(payload);
+  };
+
+  // console.log(watch("example")); // watch input value by passing the name of it
 
   return (
     <Container>
-      <div className="flex justify-center mt-5">
-        <Card className="w-full max-w-sm">
+      <div className="flex justify-center my-15">
+        <Card className="bg-card w-full max-w-sm">
           <CardHeader>
             <CardTitle className="text-center font-bold text-xl">
               Login
@@ -36,48 +46,64 @@ export default function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    defaultValue="test"
-                    {...register("example")}
-                  />
-                  {errors.exampleRequired && (
-                    <span>This field is required</span>
-                  )}
+              <div className="grid gap-2 mb-5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email", { required: true })}
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-500">Email is required.</p>
+                )}
+              </div>
+
+              <div className="grid gap-2">
+                <div className="flex justify-between items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <Link to="#" className="text-sm hover:underline">
+                    Forgot your password?
+                  </Link>
                 </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <Label htmlFor="password">Password</Label>
-                    <a
-                      href="#"
-                      className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a>
-                  </div>
+                <div className="relative">
                   <Input
                     id="password"
-                    type="password"
-                    required
-                    {...register("exampleRequired", { required: true })}
+                    type={showPassword ? "text" : "password"}
+                    {...register("password", { required: true })}
+                    className="pr-10"
                   />
-                  {errors.exampleRequired && (
-                    <span>This field is required</span>
+                  {showPasswordIcon && (
+                    <Button
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      type="button"
+                      size="icon"
+                      className="absolute top-0 right-0 rounded-l-none text-white bg-transparent hover:bg-transparent"
+                    >
+                      {showPassword ? <Eye /> : <EyeOff />}
+                    </Button>
                   )}
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-500">Password is required.</p>
+                )}
               </div>
+
+              <Button
+                type="submit"
+                className="w-full text-white cursor-pointer mt-6"
+              >
+                Login
+              </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex-col gap-2">
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
+          <CardFooter className="flex justify-center text-muted-foreground">
+            Don&apos;t have an account?&nbsp;
+            <Link
+              to="/auth/signup"
+              className="hover:underline hover:text-primary"
+            >
+              Sign up
+            </Link>
           </CardFooter>
         </Card>
       </div>
