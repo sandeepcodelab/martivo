@@ -1,5 +1,7 @@
-import Container from "@/components/Container/Container";
+import { useState } from "react";
+import { Link } from "react-router";
 import { useForm } from "react-hook-form";
+import Container from "@/components/Container/Container";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,9 +12,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router";
-import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 import { EyeOff, Eye } from "lucide-react";
+import axios from "axios";
 
 export default function Login() {
   const {
@@ -24,13 +26,30 @@ export default function Login() {
 
   const showPasswordIcon = watch("password");
   const [showPassword, setShowPassword] = useState(false);
+  const [userDate, setUserData] = useState();
+  const [spinner, setSpinner] = useState(false);
 
   const onSubmit = (formData) => {
     const payload = {
       email: formData.email.trim().toLowerCase(),
       password: formData.password,
     };
-    console.log(payload);
+
+    setSpinner(true);
+
+    // API request
+    axios
+      .post("/api/v1/auth/login", payload)
+      .then((res) => {
+        setUserData(res?.data);
+      })
+      .catch((error) => {
+        // console.log("Error: ", error);
+        console.log("Error: ", error?.response?.data?.message);
+      })
+      .finally(() => {
+        setSpinner(false);
+      });
   };
 
   // console.log(watch("example")); // watch input value by passing the name of it
@@ -91,8 +110,16 @@ export default function Login() {
               <Button
                 type="submit"
                 className="w-full text-white cursor-pointer mt-6"
+                disabled={spinner}
               >
-                Login
+                {spinner ? (
+                  <div className="flex justify-center items-center gap-2">
+                    <Spinner />
+                    <span>Logging in...</span>
+                  </div>
+                ) : (
+                  "Login"
+                )}
               </Button>
             </form>
           </CardContent>
