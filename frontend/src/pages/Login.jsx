@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import Container from "@/components/Container/Container";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { EyeOff, Eye } from "lucide-react";
 import axios from "axios";
+import AuthContext from "@/contexts/AuthContext";
 
 export default function Login() {
   const {
@@ -26,8 +27,9 @@ export default function Login() {
 
   const showPasswordIcon = watch("password");
   const [showPassword, setShowPassword] = useState(false);
-  const [userDate, setUserData] = useState();
   const [spinner, setSpinner] = useState(false);
+  const { userLogin } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const onSubmit = (formData) => {
     const payload = {
@@ -41,7 +43,8 @@ export default function Login() {
     axios
       .post("/api/v1/auth/login", payload)
       .then((res) => {
-        setUserData(res?.data);
+        userLogin(res?.data);
+        navigate("/");
       })
       .catch((error) => {
         // console.log("Error: ", error);
