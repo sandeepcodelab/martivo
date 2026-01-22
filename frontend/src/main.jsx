@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { ThemeProvider } from "@/components/Providers/ThemeProvider";
 import { createBrowserRouter, RouterProvider } from "react-router";
+import AuthContaxtProvider from "./contexts/AuthContextProvider";
 
 // User routes
 import UserLayout from "./layout/UserLayout";
@@ -70,7 +71,9 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider defaultTheme="system" storageKey="martivo-theme">
-      <RouterProvider router={router} />
+      <AuthContaxtProvider>
+        <RouterProvider router={router} />
+      </AuthContaxtProvider>
     </ThemeProvider>
   </StrictMode>
 );
