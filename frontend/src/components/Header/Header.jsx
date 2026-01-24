@@ -1,5 +1,5 @@
 import Container from "../Container/Container";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -8,13 +8,17 @@ import {
   SheetHeader,
   SheetTitle,
   SheetDescription,
+  SheetFooter,
 } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { Menu, ShoppingCart } from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { ModeToggle } from "../Providers/ModeToggle";
+import AuthContext from "@/contexts/AuthContext";
+import UserProfile from "../Profile/UserProfile";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const { user } = useContext(AuthContext);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b backdrop-blur-lg">
@@ -57,16 +61,6 @@ export default function Header() {
             >
               Product-Details
             </NavLink>
-            <NavLink
-              to="/cart"
-              className={({ isActive }) =>
-                `${
-                  isActive ? "text-blue-500" : "text-black dark:text-white"
-                } hover:text-primary`
-              }
-            >
-              Crat
-            </NavLink>
 
             {/* Admin Button */}
             <NavLink
@@ -82,21 +76,50 @@ export default function Header() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex gap-2">
+          <div className="hidden md:flex gap-3">
+            {/* Cart */}
+            <div className="relative cursor-pointer">
+              <Link to="/cart">
+                <Button variant="ghost" size="icon" className="cursor-pointer">
+                  <ShoppingCart />
+                </Button>
+                <div className="absolute -top-1 -right-1 bg-primary text-[10px] rounded px-1">
+                  10
+                </div>
+              </Link>
+            </div>
             {/* Mode toggle */}
             <ModeToggle />
 
-            <Link to="/auth/login">
-              <Button className="text-white cursor-pointer">Login</Button>
-            </Link>
+            {Object.keys(user).length > 0 ? (
+              <UserProfile user={user} />
+            ) : (
+              <Link to="/auth/login">
+                <Button className="text-white cursor-pointer">Login</Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu */}
           <div className="md:hidden flex gap-2">
+            {/* Cart */}
+            <div className="relative cursor-pointer">
+              <Link to="/cart">
+                <Button variant="ghost" size="icon" className="cursor-pointer">
+                  <ShoppingCart />
+                </Button>
+                <div className="absolute -top-1 -right-1 bg-primary text-[10px] rounded px-1">
+                  10
+                </div>
+              </Link>
+            </div>
+
             {/* Mode toggle */}
             <div>
               <ModeToggle />
             </div>
+
+            {/* Menu */}
             <div>
               <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild>
@@ -149,27 +172,14 @@ export default function Header() {
                     >
                       Product-Details
                     </NavLink>
-                    <NavLink
-                      to="/cart"
-                      onClick={() => setOpen(false)}
-                      className={({ isActive }) =>
-                        `${
-                          isActive
-                            ? "text-blue-500"
-                            : "text-black dark:text-white"
-                        } hover:text-primary`
-                      }
-                    >
-                      Crat
-                    </NavLink>
                   </nav>
-                  <div className="mt-6 flex flex-col gap-2 mx-4">
+                  <SheetFooter>
                     <Link to="/auth/login">
                       <Button className="text-white w-full cursor-pointer">
                         Login
                       </Button>
                     </Link>
-                  </div>
+                  </SheetFooter>
                 </SheetContent>
               </Sheet>
             </div>
