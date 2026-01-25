@@ -20,6 +20,25 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const { user } = useContext(AuthContext);
 
+  const navMenus = [
+    {
+      name: "Home",
+      path: "/",
+    },
+    {
+      name: "Products",
+      path: "/products",
+    },
+    {
+      name: "Product-details",
+      path: "/product-details",
+    },
+    {
+      name: "Admin",
+      path: "/admin",
+    },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b backdrop-blur-lg">
       <Container>
@@ -31,48 +50,19 @@ export default function Header() {
 
           {/* Desktop Menu */}
           <nav className="hidden md:flex gap-6 text-sm font-medium">
-            <NavLink
-              to="/"
-              className={({ isActive }) =>
-                `${
-                  isActive ? "text-blue-500" : "text-black dark:text-white"
-                } hover:text-primary`
-              }
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/products"
-              className={({ isActive }) =>
-                `${
-                  isActive ? "text-blue-500" : "text-black dark:text-white"
-                } hover:text-primary`
-              }
-            >
-              Products
-            </NavLink>
-            <NavLink
-              to="/product-details"
-              className={({ isActive }) =>
-                `${
-                  isActive ? "text-blue-500" : "text-black dark:text-white"
-                } hover:text-primary`
-              }
-            >
-              Product-Details
-            </NavLink>
-
-            {/* Admin Button */}
-            <NavLink
-              to="/admin"
-              className={({ isActive }) =>
-                `${
-                  isActive ? "text-blue-500" : "text-black dark:text-white"
-                } hover:text-primary`
-              }
-            >
-              Admin
-            </NavLink>
+            {navMenus.map((menu) => (
+              <NavLink
+                key={menu.path}
+                to={menu.path}
+                className={({ isActive }) =>
+                  `${
+                    isActive ? "text-blue-500" : "text-black dark:text-white"
+                  } hover:text-primary`
+                }
+              >
+                {menu.name}
+              </NavLink>
+            ))}
           </nav>
 
           {/* Desktop Actions */}
@@ -83,7 +73,7 @@ export default function Header() {
                 <Button variant="ghost" size="icon" className="cursor-pointer">
                   <ShoppingCart />
                 </Button>
-                <div className="absolute -top-1 -right-1 bg-primary text-[10px] rounded px-1">
+                <div className="absolute -top-1 -right-1 bg-primary text-white text-[10px] rounded px-1">
                   10
                 </div>
               </Link>
@@ -133,45 +123,22 @@ export default function Header() {
                     <SheetDescription className="-mt-5"></SheetDescription>
                   </SheetHeader>
                   <nav className="flex flex-col gap-3 mt-8 text-md mx-auto">
-                    <NavLink
-                      to="/"
-                      onClick={() => setOpen(false)}
-                      className={({ isActive }) =>
-                        `${
-                          isActive
-                            ? "text-blue-500"
-                            : "text-black dark:text-white"
-                        } hover:text-primary`
-                      }
-                    >
-                      Home
-                    </NavLink>
-                    <NavLink
-                      to="/products"
-                      onClick={() => setOpen(false)}
-                      className={({ isActive }) =>
-                        `${
-                          isActive
-                            ? "text-blue-500"
-                            : "text-black dark:text-white"
-                        } hover:text-primary`
-                      }
-                    >
-                      Products
-                    </NavLink>
-                    <NavLink
-                      to="/product-details"
-                      onClick={() => setOpen(false)}
-                      className={({ isActive }) =>
-                        `${
-                          isActive
-                            ? "text-blue-500"
-                            : "text-black dark:text-white"
-                        } hover:text-primary`
-                      }
-                    >
-                      Product-Details
-                    </NavLink>
+                    {navMenus.map((menu) => (
+                      <NavLink
+                        key={menu.path}
+                        to={menu.path}
+                        onClick={() => setOpen(false)}
+                        className={({ isActive }) =>
+                          `${
+                            isActive
+                              ? "text-blue-500"
+                              : "text-black dark:text-white"
+                          } hover:text-primary`
+                        }
+                      >
+                        {menu.name}
+                      </NavLink>
+                    ))}
                   </nav>
                   <SheetFooter>
                     {Object.keys(user).length > 0 ? (
