@@ -14,7 +14,7 @@ import { Menu, ShoppingCart } from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { ModeToggle } from "../Providers/ModeToggle";
 import AuthContext from "@/contexts/AuthContext";
-import UserProfile from "../Profile/UserProfile";
+import { UserProfileDesktop, UserProfileMobile } from "../Profile/UserProfile";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -92,7 +92,7 @@ export default function Header() {
             <ModeToggle />
 
             {Object.keys(user).length > 0 ? (
-              <UserProfile user={user} />
+              <UserProfileDesktop user={user} />
             ) : (
               <Link to="/auth/login">
                 <Button className="text-white cursor-pointer">Login</Button>
@@ -174,11 +174,17 @@ export default function Header() {
                     </NavLink>
                   </nav>
                   <SheetFooter>
-                    <Link to="/auth/login">
-                      <Button className="text-white w-full cursor-pointer">
-                        Login
-                      </Button>
-                    </Link>
+                    {Object.keys(user).length > 0 ? (
+                      <div>
+                        <UserProfileMobile user={user} />
+                      </div>
+                    ) : (
+                      <Link to="/auth/login">
+                        <Button className="w-full text-white cursor-pointer">
+                          Log in
+                        </Button>
+                      </Link>
+                    )}
                   </SheetFooter>
                 </SheetContent>
               </Sheet>
