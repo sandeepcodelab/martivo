@@ -12,7 +12,7 @@ const AuthContaxtProvider = ({ children }) => {
 
   // Logout
   const userLogout = () => {
-    setUser(null);
+    setUser({});
     localStorage.removeItem("userAuth");
   };
 
