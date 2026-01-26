@@ -4,9 +4,10 @@ import "./index.css";
 import { ThemeProvider } from "@/components/Providers/ThemeProvider";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import AuthContaxtProvider from "./contexts/AuthContextProvider";
+import { ToastContainer, Bounce } from "react-toastify";
 
 // User routes
-import UserLayout from "./layout/UserLayout";
+import UserLayout from "./layouts/UserLayout";
 import HomePage from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
@@ -14,12 +15,12 @@ import ProductDetails from "./pages/ProductDetails";
 import Checkout from "./pages/Checkout";
 
 // Auth routes
-import AuthLayout from "./layout/AuthLayout";
+import AuthLayout from "./layouts/AuthLayout";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
 // Admin routes
-import AdminLayout from "./layout/AdminLayout";
+import AdminLayout from "./layouts/AdminLayout";
 import Dashboard from "./admin/pages/Dashboard";
 import ProductsTable from "./admin/pages/Products";
 import Orders from "./admin/pages/Orders";
@@ -71,9 +72,21 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider defaultTheme="system" storageKey="martivo-theme">
+      <ToastContainer
+        position="bottom-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        theme="dark"
+        transition={Bounce}
+        pauseOnHover={false}
+        pauseOnFocusLoss={false}
+      />
       <AuthContaxtProvider>
         <RouterProvider router={router} />
       </AuthContaxtProvider>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );
