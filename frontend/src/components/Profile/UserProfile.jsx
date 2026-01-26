@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,10 +9,37 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOutIcon, Ellipsis } from "lucide-react";
-import { Link } from "react-router";
+import { LogOutIcon } from "lucide-react";
+import { Link, useNavigate } from "react-router";
+import { notification } from "@/utils/toast";
+import axios from "axios";
+import AuthContext from "@/contexts/AuthContext";
+
+const useLogout = () => {
+  const { userLogout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const logout = () => {
+    axios
+      .post("/api/v1/auth/logout")
+      .then((res) => {
+        userLogout();
+
+        notification.success("Log out successfully.");
+        navigate("/auth/login");
+      })
+      .catch((error) => {
+        console.log(error);
+        notification.error("Something went wrong, Please try again later.");
+      });
+  };
+
+  return logout;
+};
 
 export function UserProfileDesktop({ user }) {
+  const logout = useLogout();
+
   const getInitials = (name) =>
     name
       ?.trim()
@@ -48,7 +76,11 @@ export function UserProfileDesktop({ user }) {
           </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" className="cursor-pointer">
+        <DropdownMenuItem
+          variant="destructive"
+          className="cursor-pointer"
+          onClick={logout}
+        >
           <LogOutIcon />
           Log Out
         </DropdownMenuItem>
@@ -58,6 +90,8 @@ export function UserProfileDesktop({ user }) {
 }
 
 export function UserProfileMobile({ user }) {
+  const logout = useLogout();
+
   const getInitials = (name) =>
     name
       ?.trim()
@@ -84,7 +118,7 @@ export function UserProfileMobile({ user }) {
         </Button>
       </Link>
       <Link>
-        <Button variant="destructive" className="w-full">
+        <Button variant="destructive" className="w-full" onClick={logout}>
           <LogOutIcon />
           Log Out
         </Button>
