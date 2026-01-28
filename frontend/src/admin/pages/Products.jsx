@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { ProductColumns } from "../components/Columns";
-import { DataTable } from "../components/Data-Table";
+import { ProductColumns } from "../../components/DataTable/Columns";
+import { DataTable } from "../../components/DataTable/Data-Table";
 
 export default function ProductsTable() {
   const [searchValue, setSearchValue] = useState("");

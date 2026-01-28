@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { userColumns } from "../components/Columns";
-import { DataTable } from "../components/Data-Table";
+import { userColumns } from "../../components/DataTable/Columns";
+import { DataTable } from "../../components/DataTable/Data-Table";
 import { Input } from "@/components/ui/input";
 
 export default function Users() {

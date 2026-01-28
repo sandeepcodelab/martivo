@@ -1,4 +1,4 @@
-import { AdminSidebar } from "@/admin/components/AdminSidebar";
+import { AdminSidebar } from "@/components/AdminSidebar/Sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,

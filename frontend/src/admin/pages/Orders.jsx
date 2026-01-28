@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { OrderColumns } from "../components/Columns";
-import { DataTable } from "../components/Data-Table";
+import { OrderColumns } from "../../components/DataTable/Columns";
+import { DataTable } from "../../components/DataTable/Data-Table";
 import { Input } from "@/components/ui/input";
 
 export default function Orders() {

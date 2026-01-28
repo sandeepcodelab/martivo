@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { CategoryColumns } from "../components/Columns";
-import { DataTable } from "../components/Data-Table";
+import { CategoryColumns } from "../../components/DataTable/Columns";
+import { DataTable } from "../../components/DataTable/Data-Table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
