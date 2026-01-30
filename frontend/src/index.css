@@ -111,26 +111,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.488 0.243 264.376);
-
-  /* React Quill dark mode custom css */
-  .ql-toolbar,
-  .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-options {
-    @apply border-neutral-700!;
-  }
-  .ql-container {
-    @apply border-neutral-700!;
-  }
-  /* React quill dark mode placeholder */
-  .ql-snow .ql-editor.ql-blank::before {
-    @apply text-card-foreground;
-  }
-  /* React quill dark mode icons */
-  .ql-snow .ql-picker {
-    @apply text-neutral-400!;
-  }
-  .ql-snow.ql-toolbar .ql-stroke {
-    stroke: theme("colors.neutral.400");
-  }
 }
 
 @layer base {
@@ -140,15 +120,4 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-/* React Quill custom css */
-.ql-toolbar {
-  @apply rounded-t-md bg-card;
-}
-.ql-container {
-  @apply rounded-b-md bg-card min-h-[299px] max-h-[300px] overflow-auto text-base!;
-}
-.ql-toolbar.ql-snow .ql-picker-options {
-  @apply bg-card;
 }
