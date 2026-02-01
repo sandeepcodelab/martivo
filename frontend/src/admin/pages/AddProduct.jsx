@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 import { Upload, Trash2, CircleX } from "lucide-react";
 import {
   Card,
@@ -21,8 +19,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import Editor from "@/components/Editor/Editor";
 
 export default function AddProduct() {
+  const editorRef = useRef(null);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
@@ -117,7 +117,8 @@ export default function AddProduct() {
     }
 
     setErrors(newErrors);
-
+    const description = editorRef?.current.getJSON();
+    console.log(description);
     if (Object.keys(newErrors).length > 0) {
       return;
     }
@@ -178,11 +179,9 @@ export default function AddProduct() {
               )}
             </div>
 
-            <ReactQuill
-              placeholder="Description..."
-              value={description}
-              onChange={setDescription}
-            />
+            <div>
+              <Editor ref={editorRef} />
+            </div>
 
             {/* Actions */}
             <div className="flex justify-end">
