@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useImperativeHandle } from "react";
 import "./styles.scss";
 import { TextStyleKit } from "@tiptap/extension-text-style";
 import { Tiptap, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
+import { CharacterCount } from "@tiptap/extension-character-count";
 import MenuBar from "./MenuBar";
+import EditorFooter from "./EditorFooter";
 
 const extensions = [
   TextStyleKit,
@@ -13,50 +15,34 @@ const extensions = [
     types: ["heading", "paragraph"],
     alignments: ["left", "center", "right", "justify"],
   }),
+  CharacterCount,
 ];
 
-export default function Editor() {
+export default function Editor({ ref, initialValue = "" }) {
   const editor = useEditor({
     extensions,
-    content: `
-<h2>
-  Hi there,
-</h2>
-<p>
-  this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you'd probably expect from a text editor. But wait until you see the lists:
-</p>
-<ul>
-  <li>
-    That's a bullet list with one …
-  </li>
-  <li>
-    … or two list items.
-  </li>
-</ul>
-<p>
-  Isn't that great? And all of that is editable. But wait, there's more. Let's try a code block:
-</p>
-<pre><code class="language-css">body {
-  display: none;
-}</code></pre>
-<p>
-  I know, I know, this is impressive. It's only the tip of the iceberg though. Give it a try and click a little bit around. Don't forget to check the other examples too.
-</p>
-<blockquote>
-  Wow, that's amazing. Good work, boy! 👏
-  <br />
-  — Mom
-</blockquote>
-`,
+    content: initialValue,
   });
 
+  useImperativeHandle(ref, () => ({
+    getJSON: () => editor?.getJSON(),
+    getHTML: () => editor?.getHTML(),
+  }));
+
+  if (!editor) return null;
+
   return (
-    <div className="border-2 w-full min-w-md">
+    <div className="border-2 w-full min-w-md rounded-lg overflow-hidden">
       <Tiptap instance={editor}>
-        <div className="p-2 border-b-1">
+        <div className=" bg-card p-2 border-b">
           <MenuBar />
         </div>
-        <Tiptap.Content className="tiptap-scrollbar p-5 max-h-[400px] overflow-auto" />
+        <div onClick={() => editor?.commands.focus()}>
+          <Tiptap.Content className="tiptap-scrollbar h-[399px] max-h-100 overflow-auto py-5 px-8" />
+        </div>
+        <div className="border-t px-4 py-1">
+          <EditorFooter editor={editor} />
+        </div>
       </Tiptap>
     </div>
   );
