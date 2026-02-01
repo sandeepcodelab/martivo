@@ -33,7 +33,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -49,7 +48,7 @@ export default function MenuBar() {
 
   return (
     <div className="control-group min-w-md">
-      <div className="Button-group inline-flex h-[32px] gap-2">
+      <div className="Button-group h-10 inline-flex gap-2">
         <div className="group-1 flex gap-1">
           <TooltipContext content="Undo">
             <Button
@@ -83,7 +82,9 @@ export default function MenuBar() {
               variant="ghost"
               onClick={() => editor.chain().focus().toggleBold().run()}
               disabled={!editorState.canBold}
-              className={editorState.isBold ? "bg-neutral-800" : ""}
+              className={
+                editorState.isBold ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Bold {...iconProps} />
             </Button>
@@ -95,7 +96,9 @@ export default function MenuBar() {
               variant="ghost"
               onClick={() => editor.chain().focus().toggleItalic().run()}
               disabled={!editorState.canItalic}
-              className={editorState.isItalic ? "bg-neutral-800" : ""}
+              className={
+                editorState.isItalic ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Italic {...iconProps} />
             </Button>
@@ -107,7 +110,9 @@ export default function MenuBar() {
               variant="ghost"
               onClick={() => editor.chain().focus().toggleUnderline().run()}
               disabled={!editorState.canUnderline}
-              className={editorState.isUnderline ? "bg-neutral-800" : ""}
+              className={
+                editorState.isUnderline ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Underline {...iconProps} />
             </Button>
@@ -119,7 +124,9 @@ export default function MenuBar() {
               variant="ghost"
               onClick={() => editor.chain().focus().toggleStrike().run()}
               disabled={!editorState.canStrike}
-              className={editorState.isStrike ? "bg-neutral-800" : ""}
+              className={
+                editorState.isStrike ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Strikethrough {...iconProps} />
             </Button>
@@ -131,7 +138,9 @@ export default function MenuBar() {
               variant="ghost"
               onClick={() => editor.chain().focus().toggleCode().run()}
               disabled={!editorState.canCode}
-              className={editorState.isCode ? "bg-neutral-800" : ""}
+              className={
+                editorState.isCode ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Code {...iconProps} />
             </Button>
@@ -165,7 +174,7 @@ export default function MenuBar() {
             size="icon"
             variant="ghost"
             onClick={() => editor.chain().focus().toggleParagraph().run()}
-            className={editorState.isParagraph ? "bg-neutral-800" : ""}
+            className={editorState.isParagraph ? "bg-gray-300 dark:bg-neutral-800" : ""}
           >
             <Pilcrow {...iconProps} />
           </Button> */}
@@ -177,7 +186,9 @@ export default function MenuBar() {
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 1 }).run()
               }
-              className={editorState.isHeading1 ? "bg-neutral-800" : ""}
+              className={
+                editorState.isHeading1 ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Heading1 {...iconProps} />
             </Button>
@@ -190,7 +201,9 @@ export default function MenuBar() {
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 2 }).run()
               }
-              className={editorState.isHeading2 ? "bg-neutral-800" : ""}
+              className={
+                editorState.isHeading2 ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Heading2 {...iconProps} />
             </Button>
@@ -203,7 +216,9 @@ export default function MenuBar() {
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 3 }).run()
               }
-              className={editorState.isHeading3 ? "bg-neutral-800" : ""}
+              className={
+                editorState.isHeading3 ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Heading3 {...iconProps} />
             </Button>
@@ -216,14 +231,16 @@ export default function MenuBar() {
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 4 }).run()
               }
-              className={editorState.isHeading4 ? "bg-neutral-800" : ""}
+              className={
+                editorState.isHeading4 ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <Heading4 {...iconProps} />
             </Button>
           </TooltipContext>
         </div>
 
-        <Separator orientation="vertical" className="hidden md:block" />
+        <Separator orientation="vertical" className="hidden sm:block" />
 
         <div className="group-4 hidden lg:flex gap-1">
           <TooltipContext content="Bullet list">
@@ -231,7 +248,11 @@ export default function MenuBar() {
               size="icon"
               variant="ghost"
               onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={editorState.isBulletList ? "bg-neutral-800" : ""}
+              className={
+                editorState.isBulletList
+                  ? "bg-gray-300 dark:bg-neutral-800"
+                  : ""
+              }
             >
               <List {...iconProps} />
             </Button>
@@ -242,7 +263,11 @@ export default function MenuBar() {
               size="icon"
               variant="ghost"
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={editorState.isOrderedList ? "bg-neutral-800" : ""}
+              className={
+                editorState.isOrderedList
+                  ? "bg-gray-300 dark:bg-neutral-800"
+                  : ""
+              }
             >
               <ListOrdered {...iconProps} />
             </Button>
@@ -257,7 +282,9 @@ export default function MenuBar() {
               size="icon"
               variant="ghost"
               onClick={() => editor.chain().focus().setTextAlign("left").run()}
-              className={editorState.isAlignLeft ? "bg-neutral-800" : ""}
+              className={
+                editorState.isAlignLeft ? "bg-gray-300 dark:bg-neutral-800" : ""
+              }
             >
               <AlignLeft {...iconProps} />
             </Button>
@@ -270,7 +297,11 @@ export default function MenuBar() {
               onClick={() =>
                 editor.chain().focus().setTextAlign("center").run()
               }
-              className={editorState.isAlignCenter ? "bg-neutral-800" : ""}
+              className={
+                editorState.isAlignCenter
+                  ? "bg-gray-300 dark:bg-neutral-800"
+                  : ""
+              }
             >
               <AlignCenter {...iconProps} />
             </Button>
@@ -281,7 +312,11 @@ export default function MenuBar() {
               size="icon"
               variant="ghost"
               onClick={() => editor.chain().focus().setTextAlign("right").run()}
-              className={editorState.isAlignRight ? "bg-neutral-800" : ""}
+              className={
+                editorState.isAlignRight
+                  ? "bg-gray-300 dark:bg-neutral-800"
+                  : ""
+              }
             >
               <AlignRight {...iconProps} />
             </Button>
@@ -294,7 +329,11 @@ export default function MenuBar() {
               onClick={() =>
                 editor.chain().focus().setTextAlign("justify").run()
               }
-              className={editorState.isAlignJustify ? "bg-neutral-800" : ""}
+              className={
+                editorState.isAlignJustify
+                  ? "bg-gray-300 dark:bg-neutral-800"
+                  : ""
+              }
             >
               <AlignJustify {...iconProps} />
             </Button>
@@ -307,7 +346,11 @@ export default function MenuBar() {
               size="icon"
               variant="ghost"
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
-              className={editorState.isBlockquote ? "bg-neutral-800" : ""}
+              className={
+                editorState.isBlockquote
+                  ? "bg-gray-300 dark:bg-neutral-800"
+                  : ""
+              }
             >
               <Quote {...iconProps} />
             </Button>
@@ -344,7 +387,11 @@ export default function MenuBar() {
                       onClick={() =>
                         editor.chain().focus().toggleHeading({ level: 1 }).run()
                       }
-                      className={editorState.isHeading1 ? "bg-neutral-800" : ""}
+                      className={
+                        editorState.isHeading1
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
+                      }
                     >
                       <Heading1 {...iconProps} />
                     </Button>
@@ -357,7 +404,11 @@ export default function MenuBar() {
                       onClick={() =>
                         editor.chain().focus().toggleHeading({ level: 2 }).run()
                       }
-                      className={editorState.isHeading2 ? "bg-neutral-800" : ""}
+                      className={
+                        editorState.isHeading2
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
+                      }
                     >
                       <Heading2 {...iconProps} />
                     </Button>
@@ -370,7 +421,11 @@ export default function MenuBar() {
                       onClick={() =>
                         editor.chain().focus().toggleHeading({ level: 3 }).run()
                       }
-                      className={editorState.isHeading3 ? "bg-neutral-800" : ""}
+                      className={
+                        editorState.isHeading3
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
+                      }
                     >
                       <Heading3 {...iconProps} />
                     </Button>
@@ -383,7 +438,11 @@ export default function MenuBar() {
                       onClick={() =>
                         editor.chain().focus().toggleHeading({ level: 4 }).run()
                       }
-                      className={editorState.isHeading4 ? "bg-neutral-800" : ""}
+                      className={
+                        editorState.isHeading4
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
+                      }
                     >
                       <Heading4 {...iconProps} />
                     </Button>
@@ -403,7 +462,9 @@ export default function MenuBar() {
                         editor.chain().focus().toggleBulletList().run()
                       }
                       className={
-                        editorState.isBulletList ? "bg-neutral-800" : ""
+                        editorState.isBulletList
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
                       }
                     >
                       <List {...iconProps} />
@@ -418,7 +479,9 @@ export default function MenuBar() {
                         editor.chain().focus().toggleOrderedList().run()
                       }
                       className={
-                        editorState.isOrderedList ? "bg-neutral-800" : ""
+                        editorState.isOrderedList
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
                       }
                     >
                       <ListOrdered {...iconProps} />
@@ -440,7 +503,9 @@ export default function MenuBar() {
                         editor.chain().focus().setTextAlign("left").run()
                       }
                       className={
-                        editorState.isAlignLeft ? "bg-neutral-800" : ""
+                        editorState.isAlignLeft
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
                       }
                     >
                       <AlignLeft {...iconProps} />
@@ -455,7 +520,9 @@ export default function MenuBar() {
                         editor.chain().focus().setTextAlign("center").run()
                       }
                       className={
-                        editorState.isAlignCenter ? "bg-neutral-800" : ""
+                        editorState.isAlignCenter
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
                       }
                     >
                       <AlignCenter {...iconProps} />
@@ -470,7 +537,9 @@ export default function MenuBar() {
                         editor.chain().focus().setTextAlign("right").run()
                       }
                       className={
-                        editorState.isAlignRight ? "bg-neutral-800" : ""
+                        editorState.isAlignRight
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
                       }
                     >
                       <AlignRight {...iconProps} />
@@ -485,7 +554,9 @@ export default function MenuBar() {
                         editor.chain().focus().setTextAlign("justify").run()
                       }
                       className={
-                        editorState.isAlignJustify ? "bg-neutral-800" : ""
+                        editorState.isAlignJustify
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
                       }
                     >
                       <AlignJustify {...iconProps} />
@@ -507,7 +578,9 @@ export default function MenuBar() {
                         editor.chain().focus().toggleBlockquote().run()
                       }
                       className={
-                        editorState.isBlockquote ? "bg-neutral-800" : ""
+                        editorState.isBlockquote
+                          ? "bg-gray-300 dark:bg-neutral-800"
+                          : ""
                       }
                     >
                       <Quote {...iconProps} />
