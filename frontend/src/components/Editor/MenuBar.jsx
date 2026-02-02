@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useTiptap, useTiptapState } from "@tiptap/react";
 import { menuBarStateSelector } from "./menuBarState";
 import TooltipContext from "./Tooltip";
@@ -37,25 +37,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useContainerWidth } from "@/hooks/useContainerWidth";
 
 export default function MenuBar() {
   const { editor, isReady } = useTiptap();
+  const isDisabled = !editor;
+
   const editorState = useTiptapState(menuBarStateSelector);
 
-  if (!isReady || !editor) return null;
+  const containerRef = useRef(null);
+  const width = useContainerWidth(containerRef);
 
   const iconProps = { size: 16, strokeWidth: 2 };
 
+  console.log("Menubar width:", width);
+
+  // if (!isReady || !editor) return null;
+
   return (
-    <div className="control-group min-w-md">
-      <div className="Button-group h-10 inline-flex gap-2">
+    <div className="control-group w-full">
+      <div
+        ref={containerRef}
+        className="Button-group h-10 flex gap-2 w-full overflow-hidden"
+      >
         <div className="group-1 flex gap-1">
           <TooltipContext content="Undo">
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().undo().run()}
-              disabled={!editorState.canUndo}
+              onClick={() => editor?.chain().focus().undo().run()}
+              disabled={isDisabled || !editorState.canUndo}
             >
               <Undo {...iconProps} />
             </Button>
@@ -65,8 +76,8 @@ export default function MenuBar() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().redo().run()}
-              disabled={!editorState.canRedo}
+              onClick={() => editor?.chain().focus().redo().run()}
+              disabled={isDisabled || !editorState.canRedo}
             >
               <Redo {...iconProps} />
             </Button>
@@ -80,8 +91,8 @@ export default function MenuBar() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              disabled={!editorState.canBold}
+              onClick={() => editor?.chain().focus().toggleBold().run()}
+              disabled={isDisabled || !editorState.canBold}
               className={
                 editorState.isBold ? "bg-gray-300 dark:bg-neutral-800" : ""
               }
@@ -94,8 +105,8 @@ export default function MenuBar() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              disabled={!editorState.canItalic}
+              onClick={() => editor?.chain().focus().toggleItalic().run()}
+              disabled={isDisabled || !editorState.canItalic}
               className={
                 editorState.isItalic ? "bg-gray-300 dark:bg-neutral-800" : ""
               }
@@ -108,8 +119,8 @@ export default function MenuBar() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().toggleUnderline().run()}
-              disabled={!editorState.canUnderline}
+              onClick={() => editor?.chain().focus().toggleUnderline().run()}
+              disabled={isDisabled || !editorState.canUnderline}
               className={
                 editorState.isUnderline ? "bg-gray-300 dark:bg-neutral-800" : ""
               }
@@ -122,8 +133,8 @@ export default function MenuBar() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().toggleStrike().run()}
-              disabled={!editorState.canStrike}
+              onClick={() => editor?.chain().focus().toggleStrike().run()}
+              disabled={isDisabled || !editorState.canStrike}
               className={
                 editorState.isStrike ? "bg-gray-300 dark:bg-neutral-800" : ""
               }
@@ -136,8 +147,8 @@ export default function MenuBar() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().toggleCode().run()}
-              disabled={!editorState.canCode}
+              onClick={() => editor?.chain().focus().toggleCode().run()}
+              disabled={isDisabled || !editorState.canCode}
               className={
                 editorState.isCode ? "bg-gray-300 dark:bg-neutral-800" : ""
               }
@@ -150,7 +161,8 @@ export default function MenuBar() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().unsetAllMarks().run()}
+              onClick={() => editor?.chain().focus().unsetAllMarks().run()}
+              disabled={isDisabled || !editorState.canClearMarks}
             >
               <RemoveFormatting {...iconProps} />
             </Button>
@@ -160,7 +172,8 @@ export default function MenuBar() {
             <Button
               size="icon"
               variant="ghost"
-              onClick={() => editor.chain().focus().clearNodes().run()}
+              onClick={() => editor?.chain().focus().clearNodes().run()}
+              disabled={isDisabled || !editorState.canClearNodes}
             >
               <Eraser {...iconProps} />
             </Button>
@@ -169,440 +182,501 @@ export default function MenuBar() {
 
         <Separator orientation="vertical" />
 
-        <div className="group-3 hidden sm:flex gap-1">
-          {/* <Button
+        {width < 595 ? null : (
+          <div className="group-3 flex gap-1">
+            {/* <Button
             size="icon"
             variant="ghost"
-            onClick={() => editor.chain().focus().toggleParagraph().run()}
+            onClick={() => editor?.chain().focus().toggleParagraph().run()}
             className={editorState.isParagraph ? "bg-gray-300 dark:bg-neutral-800" : ""}
           >
             <Pilcrow {...iconProps} />
           </Button> */}
 
-          <TooltipContext content="Heading 1">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 1 }).run()
-              }
-              className={
-                editorState.isHeading1 ? "bg-gray-300 dark:bg-neutral-800" : ""
-              }
-            >
-              <Heading1 {...iconProps} />
-            </Button>
-          </TooltipContext>
-
-          <TooltipContext content="Heading 2">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 2 }).run()
-              }
-              className={
-                editorState.isHeading2 ? "bg-gray-300 dark:bg-neutral-800" : ""
-              }
-            >
-              <Heading2 {...iconProps} />
-            </Button>
-          </TooltipContext>
-
-          <TooltipContext content="Heading 3">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 3 }).run()
-              }
-              className={
-                editorState.isHeading3 ? "bg-gray-300 dark:bg-neutral-800" : ""
-              }
-            >
-              <Heading3 {...iconProps} />
-            </Button>
-          </TooltipContext>
-
-          <TooltipContext content="Heading 4">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 4 }).run()
-              }
-              className={
-                editorState.isHeading4 ? "bg-gray-300 dark:bg-neutral-800" : ""
-              }
-            >
-              <Heading4 {...iconProps} />
-            </Button>
-          </TooltipContext>
-        </div>
-
-        <Separator orientation="vertical" className="hidden sm:block" />
-
-        <div className="group-4 hidden lg:flex gap-1">
-          <TooltipContext content="Bullet list">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-              className={
-                editorState.isBulletList
-                  ? "bg-gray-300 dark:bg-neutral-800"
-                  : ""
-              }
-            >
-              <List {...iconProps} />
-            </Button>
-          </TooltipContext>
-
-          <TooltipContext content="Ordered list">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => editor.chain().focus().toggleOrderedList().run()}
-              className={
-                editorState.isOrderedList
-                  ? "bg-gray-300 dark:bg-neutral-800"
-                  : ""
-              }
-            >
-              <ListOrdered {...iconProps} />
-            </Button>
-          </TooltipContext>
-        </div>
-
-        <Separator orientation="vertical" className="hidden lg:block" />
-
-        <div className="group-5 hidden lg:flex gap-1 ">
-          <TooltipContext content="Align left">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => editor.chain().focus().setTextAlign("left").run()}
-              className={
-                editorState.isAlignLeft ? "bg-gray-300 dark:bg-neutral-800" : ""
-              }
-            >
-              <AlignLeft {...iconProps} />
-            </Button>
-          </TooltipContext>
-
-          <TooltipContext content="Align center">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() =>
-                editor.chain().focus().setTextAlign("center").run()
-              }
-              className={
-                editorState.isAlignCenter
-                  ? "bg-gray-300 dark:bg-neutral-800"
-                  : ""
-              }
-            >
-              <AlignCenter {...iconProps} />
-            </Button>
-          </TooltipContext>
-
-          <TooltipContext content="Align right">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => editor.chain().focus().setTextAlign("right").run()}
-              className={
-                editorState.isAlignRight
-                  ? "bg-gray-300 dark:bg-neutral-800"
-                  : ""
-              }
-            >
-              <AlignRight {...iconProps} />
-            </Button>
-          </TooltipContext>
-
-          <TooltipContext content="Align justify">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() =>
-                editor.chain().focus().setTextAlign("justify").run()
-              }
-              className={
-                editorState.isAlignJustify
-                  ? "bg-gray-300 dark:bg-neutral-800"
-                  : ""
-              }
-            >
-              <AlignJustify {...iconProps} />
-            </Button>
-          </TooltipContext>
-        </div>
-
-        <div className="group-6 hidden lg:flex gap-1">
-          <TooltipContext content="Block quote">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => editor.chain().focus().toggleBlockquote().run()}
-              className={
-                editorState.isBlockquote
-                  ? "bg-gray-300 dark:bg-neutral-800"
-                  : ""
-              }
-            >
-              <Quote {...iconProps} />
-            </Button>
-          </TooltipContext>
-
-          <TooltipContext content="Hard break">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => editor.chain().focus().setHardBreak().run()}
-            >
-              <CornerDownLeft {...iconProps} />
-            </Button>
-          </TooltipContext>
-        </div>
-
-        <div className="lg:hidden">
-          <DropdownMenu>
-            <TooltipContext content="More">
-              <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="outline">
-                  <EllipsisVertical />
-                </Button>
-              </DropdownMenuTrigger>
+            <TooltipContext content="Heading 1">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  editor?.chain().focus().toggleHeading({ level: 1 }).run()
+                }
+                disabled={isDisabled || !editorState.canHeading1}
+                className={
+                  editorState.isHeading1
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <Heading1 {...iconProps} />
+              </Button>
             </TooltipContext>
-            <DropdownMenuContent align="end">
-              <DropdownMenuGroup className="sm:hidden">
-                <DropdownMenuLabel>Headings</DropdownMenuLabel>
-                <div className="group-3 flex gap-1">
-                  <TooltipContext content="Heading 1">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().toggleHeading({ level: 1 }).run()
-                      }
-                      className={
-                        editorState.isHeading1
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <Heading1 {...iconProps} />
-                    </Button>
-                  </TooltipContext>
 
-                  <TooltipContext content="Heading 2">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().toggleHeading({ level: 2 }).run()
-                      }
-                      className={
-                        editorState.isHeading2
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <Heading2 {...iconProps} />
-                    </Button>
-                  </TooltipContext>
+            <TooltipContext content="Heading 2">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  editor?.chain().focus().toggleHeading({ level: 2 }).run()
+                }
+                disabled={isDisabled || !editorState.canHeading2}
+                className={
+                  editorState.isHeading2
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <Heading2 {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-                  <TooltipContext content="Heading 3">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().toggleHeading({ level: 3 }).run()
-                      }
-                      className={
-                        editorState.isHeading3
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <Heading3 {...iconProps} />
-                    </Button>
-                  </TooltipContext>
+            <TooltipContext content="Heading 3">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  editor?.chain().focus().toggleHeading({ level: 3 }).run()
+                }
+                disabled={isDisabled || !editorState.canHeading3}
+                className={
+                  editorState.isHeading3
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <Heading3 {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-                  <TooltipContext content="Heading 4">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().toggleHeading({ level: 4 }).run()
-                      }
-                      className={
-                        editorState.isHeading4
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <Heading4 {...iconProps} />
-                    </Button>
-                  </TooltipContext>
-                </div>
-                <DropdownMenuSeparator />
-              </DropdownMenuGroup>
+            <TooltipContext content="Heading 4">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  editor?.chain().focus().toggleHeading({ level: 4 }).run()
+                }
+                disabled={isDisabled || !editorState.canHeading4}
+                className={
+                  editorState.isHeading4
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <Heading4 {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Lists</DropdownMenuLabel>
-                <div className="group-4 flex gap-1">
-                  <TooltipContext content="Bullet list">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().toggleBulletList().run()
-                      }
-                      className={
-                        editorState.isBulletList
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <List {...iconProps} />
-                    </Button>
-                  </TooltipContext>
+            <Separator orientation="vertical" />
+          </div>
+        )}
+        {width < 768 ? null : (
+          <div className="group-4 flex gap-1">
+            <TooltipContext content="Bullet list">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => editor?.chain().focus().toggleBulletList().run()}
+                disabled={isDisabled || !editorState.canBulletList}
+                className={
+                  editorState.isBulletList
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <List {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-                  <TooltipContext content="Ordered list">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().toggleOrderedList().run()
-                      }
-                      className={
-                        editorState.isOrderedList
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <ListOrdered {...iconProps} />
-                    </Button>
-                  </TooltipContext>
-                </div>
-              </DropdownMenuGroup>
+            <TooltipContext content="Ordered list">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                disabled={isDisabled || !editorState.canOrderedList}
+                className={
+                  editorState.isOrderedList
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <ListOrdered {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-              <DropdownMenuSeparator />
+            <TooltipContext content="Block quote">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => editor?.chain().focus().toggleBlockquote().run()}
+                disabled={isDisabled || !editorState.canBlockquote}
+                className={
+                  editorState.isBlockquote
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <Quote {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Text alignments</DropdownMenuLabel>
-                <div className="group-5 flex gap-1 ">
-                  <TooltipContext content="Align left">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().setTextAlign("left").run()
-                      }
-                      className={
-                        editorState.isAlignLeft
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <AlignLeft {...iconProps} />
-                    </Button>
-                  </TooltipContext>
+            <TooltipContext content="Hard break">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => editor?.chain().focus().setHardBreak().run()}
+                disabled={isDisabled || !editorState.canHardBreak}
+              >
+                <CornerDownLeft {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-                  <TooltipContext content="Align center">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().setTextAlign("center").run()
-                      }
-                      className={
-                        editorState.isAlignCenter
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <AlignCenter {...iconProps} />
-                    </Button>
-                  </TooltipContext>
+            <Separator orientation="vertical" />
+          </div>
+        )}
 
-                  <TooltipContext content="Align right">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().setTextAlign("right").run()
-                      }
-                      className={
-                        editorState.isAlignRight
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <AlignRight {...iconProps} />
-                    </Button>
-                  </TooltipContext>
+        {width < 890 ? null : (
+          <div className="group-5 flex gap-1">
+            <TooltipContext content="Align left">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  editor?.chain().focus().setTextAlign("left").run()
+                }
+                disabled={isDisabled || !editorState.canAlignLeft}
+                className={
+                  editorState.isAlignLeft
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <AlignLeft {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-                  <TooltipContext content="Align justify">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().setTextAlign("justify").run()
-                      }
-                      className={
-                        editorState.isAlignJustify
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <AlignJustify {...iconProps} />
-                    </Button>
-                  </TooltipContext>
-                </div>
-              </DropdownMenuGroup>
+            <TooltipContext content="Align center">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  editor?.chain().focus().setTextAlign("center").run()
+                }
+                disabled={isDisabled || !editorState.canAlignCenter}
+                className={
+                  editorState.isAlignCenter
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <AlignCenter {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-              <DropdownMenuSeparator />
+            <TooltipContext content="Align right">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  editor?.chain().focus().setTextAlign("right").run()
+                }
+                disabled={isDisabled || !editorState.canAlignRight}
+                className={
+                  editorState.isAlignRight
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <AlignRight {...iconProps} />
+              </Button>
+            </TooltipContext>
 
-              <DropdownMenuGroup>
-                <DropdownMenuLabel>Quote & Break</DropdownMenuLabel>
-                <div className="group-6 flex gap-1">
-                  <TooltipContext content="Block quote">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().toggleBlockquote().run()
-                      }
-                      className={
-                        editorState.isBlockquote
-                          ? "bg-gray-300 dark:bg-neutral-800"
-                          : ""
-                      }
-                    >
-                      <Quote {...iconProps} />
-                    </Button>
-                  </TooltipContext>
+            <TooltipContext content="Align justify">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() =>
+                  editor?.chain().focus().setTextAlign("justify").run()
+                }
+                disabled={isDisabled || !editorState.canAlignJustify}
+                className={
+                  editorState.isAlignJustify
+                    ? "bg-gray-300 dark:bg-neutral-800"
+                    : ""
+                }
+              >
+                <AlignJustify {...iconProps} />
+              </Button>
+            </TooltipContext>
+          </div>
+        )}
 
-                  <TooltipContext content="Hard break">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() =>
-                        editor.chain().focus().setHardBreak().run()
-                      }
-                    >
-                      <CornerDownLeft {...iconProps} />
-                    </Button>
-                  </TooltipContext>
-                </div>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        {width < 890 ? (
+          <div>
+            <DropdownMenu>
+              <TooltipContext content="More">
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" variant="outline">
+                    <EllipsisVertical />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipContext>
+              <DropdownMenuContent align="end">
+                {width < 595 ? (
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>Headings</DropdownMenuLabel>
+                    <div className="group-3 flex gap-1">
+                      <TooltipContext content="Heading 1">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor
+                              ?.chain()
+                              .focus()
+                              .toggleHeading({ level: 1 })
+                              .run()
+                          }
+                          disabled={isDisabled || !editorState.canHeading1}
+                          className={
+                            editorState.isHeading1
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <Heading1 {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Heading 2">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor
+                              ?.chain()
+                              .focus()
+                              .toggleHeading({ level: 2 })
+                              .run()
+                          }
+                          disabled={isDisabled || !editorState.canHeading2}
+                          className={
+                            editorState.isHeading2
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <Heading2 {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Heading 3">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor
+                              ?.chain()
+                              .focus()
+                              .toggleHeading({ level: 3 })
+                              .run()
+                          }
+                          disabled={isDisabled || !editorState.canHeading3}
+                          className={
+                            editorState.isHeading3
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <Heading3 {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Heading 4">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor
+                              ?.chain()
+                              .focus()
+                              .toggleHeading({ level: 4 })
+                              .run()
+                          }
+                          disabled={isDisabled || !editorState.canHeading4}
+                          className={
+                            editorState.isHeading4
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <Heading4 {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+                    </div>
+                    <DropdownMenuSeparator />
+                  </DropdownMenuGroup>
+                ) : null}
+
+                {width < 768 ? (
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>Lists</DropdownMenuLabel>
+                    <div className="group-4 flex gap-1">
+                      <TooltipContext content="Bullet list">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor?.chain().focus().toggleBulletList().run()
+                          }
+                          disabled={isDisabled || !editorState.canBulletList}
+                          className={
+                            editorState.isBulletList
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <List {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Ordered list">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor.chain().focus().toggleOrderedList().run()
+                          }
+                          disabled={isDisabled || !editorState.canOrderedList}
+                          className={
+                            editorState.isOrderedList
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <ListOrdered {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Block quote">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor?.chain().focus().toggleBlockquote().run()
+                          }
+                          disabled={isDisabled || !editorState.canBlockquote}
+                          className={
+                            editorState.isBlockquote
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <Quote {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Hard break">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor?.chain().focus().setHardBreak().run()
+                          }
+                          disabled={isDisabled || !editorState.canHardBreak}
+                        >
+                          <CornerDownLeft {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+                    </div>
+                    <DropdownMenuSeparator />
+                  </DropdownMenuGroup>
+                ) : null}
+
+                {width < 890 ? (
+                  <DropdownMenuGroup>
+                    <DropdownMenuLabel>Text alignments</DropdownMenuLabel>
+                    <div className="group-5 flex gap-1">
+                      <TooltipContext content="Align left">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor?.chain().focus().setTextAlign("left").run()
+                          }
+                          disabled={isDisabled || !editorState.canAlignLeft}
+                          className={
+                            editorState.isAlignLeft
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <AlignLeft {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Align center">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor?.chain().focus().setTextAlign("center").run()
+                          }
+                          disabled={isDisabled || !editorState.canAlignCenter}
+                          className={
+                            editorState.isAlignCenter
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <AlignCenter {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Align right">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor?.chain().focus().setTextAlign("right").run()
+                          }
+                          disabled={isDisabled || !editorState.canAlignRight}
+                          className={
+                            editorState.isAlignRight
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <AlignRight {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+
+                      <TooltipContext content="Align justify">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() =>
+                            editor
+                              ?.chain()
+                              .focus()
+                              .setTextAlign("justify")
+                              .run()
+                          }
+                          disabled={isDisabled || !editorState.canAlignJustify}
+                          className={
+                            editorState.isAlignJustify
+                              ? "bg-gray-300 dark:bg-neutral-800"
+                              : ""
+                          }
+                        >
+                          <AlignJustify {...iconProps} />
+                        </Button>
+                      </TooltipContext>
+                    </div>
+                  </DropdownMenuGroup>
+                ) : null}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : null}
       </div>
     </div>
   );
