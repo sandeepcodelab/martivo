@@ -50,7 +50,7 @@ export default function MenuBar() {
 
   const iconProps = { size: 16, strokeWidth: 2 };
 
-  console.log("Menubar width:", width);
+  // console.log("Menubar width:", width);
 
   // if (!isReady || !editor) return null;
 
