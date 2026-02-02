@@ -34,7 +34,7 @@ export default function Editor({ ref, initialValue = "" }) {
   return (
     <div className="border-2 w-full min-w-md rounded-lg overflow-hidden">
       <Tiptap instance={editor}>
-        <div className=" bg-card p-2 border-b">
+        <div className="w-full bg-card p-2 border-b">
           <MenuBar />
         </div>
         <div onClick={() => editor?.commands.focus()}>
