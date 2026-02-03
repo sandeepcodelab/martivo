@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Container from "@/components/Container/Container";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,58 +9,74 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import axios from "axios";
+import { useParams } from "react-router";
 
 export default function ProductDetails() {
+  const { id } = useParams();
+  const [product, setProduct] = useState();
+
+  useEffect(() => {
+    axios
+      .get(`/api/v1/product/singleProduct/${id}`)
+      .then((res) => setProduct(res.data?.data.product))
+      .catch((err) => console.log(err));
+  }, []);
+
+  console.log(product);
+
   return (
     <Container>
       <section className="mt-4">
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
           {/* Gallery */}
           <div className="flex gap-4">
-            <div>
-              <Carousel
-                opts={{
-                  align: "start",
-                }}
-                orientation="vertical"
-                className="relative w-full max-w-20"
-              >
-                <CarouselContent className="-mt-1 h-80 sm:h-100 lg:h-100">
-                  {Array.from({ length: 9 }).map((_, index) => (
-                    <CarouselItem key={index} className="pt-1 basis-1/5">
-                      <Card className="py-0 w-15 h-18 md:w-20 md:h-22 overflow-hidden">
-                        <CardContent className="px-0">
+            <Carousel
+              opts={{
+                align: "start",
+              }}
+              orientation="vertical"
+              className="relative w-full max-w-20"
+            >
+              <CarouselContent className="-mt-1 h-[350px] md:h-[450px]">
+                {product?.images.map((image) => (
+                  <CarouselItem key={image.url} className="pt-1 basis-1/5">
+                    <Card className="py-0 w-18 h-20 md:w-20 md:h-22 overflow-hidden">
+                      <CardContent className="px-0">
+                        <div className="w-full h-full">
                           <img
-                            src="https://placehold.co/600x600/gray/FFFFFF/png"
-                            alt=""
-                            className="w-full h-full object-cover"
+                            src={image.url}
+                            alt="product-image"
+                            className="w-full h-full aspect-square"
                           />
-                        </CardContent>
-                      </Card>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute top-0" />
-                <CarouselNext className="absolute bottom-0" />
-              </Carousel>
-            </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute top-0" />
+              <CarouselNext className="absolute bottom-0" />
+            </Carousel>
             <div>
-              <Card className="py-0 min-w-58 w-full h-80 sm:h-100 lg:h-100 overflow-hidden">
+              <Card className="py-0 w-full overflow-hidden">
                 <CardContent className="px-0">
-                  <img
-                    src="https://placehold.co/600x600/gray/FFFFFF/png"
-                    alt=""
-                    className="object-contain md:object-cover"
-                  />
+                  <div className="w-full h-[350px] md:h-[450px]">
+                    <img
+                      src={product?.thumbnail.url}
+                      alt={product?.name}
+                      className="w-full h-full aspect-square"
+                    />
+                  </div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
           {/* Product details */}
-          <div className="w-full px-10 md:pr-5 ">
+          <div className="w-full md:px-5 md:pr-5 ">
             <h1 className="text-2xl font-medium dark:text-white">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae
+              {product?.title}
             </h1>
             <div className="my-2 dark:text-white">
               <p>Star</p>
@@ -119,7 +136,7 @@ export default function ProductDetails() {
               <Button variant="outline" className="w-full cursor-pointer">
                 Buy Now
               </Button>
-              <Button className="w-full mt-3 cursor-pointer">
+              <Button className="w-full mt-3 text-white cursor-pointer">
                 Add to Cart
               </Button>
             </div>
@@ -132,25 +149,7 @@ export default function ProductDetails() {
         <div className="text-2xl font-medium mb-3 dark:text-white">
           Product Description
         </div>
-        <div className="dark:text-white">
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maiores sed
-          veritatis hic a laborum asperiores suscipit quos iure cupiditate quae
-          odio blanditiis recusandae commodi ipsam corrupti, accusantium
-          repellendus? Aliquid, atque? Eligendi velit ratione aut, earum illo a
-          perspiciatis saepe corporis odit doloribus excepturi in ad quos
-          distinctio error quas inventore culpa commodi temporibus nihil
-          repudiandae officiis fugit numquam maiores. Nemo! Velit iste vitae
-          tempore delectus? Quam voluptates quo impedit veritatis aliquid quia
-          maxime sint at doloremque ullam recusandae atque consequatur officia
-          facere ad asperiores magni, saepe optio odio, autem repellendus.
-          Pariatur quas sed cum, nemo quaerat consequuntur animi maiores dicta
-          obcaecati corporis quod, inventore praesentium iusto, recusandae a.
-          Inventore veniam iure quos dolorum eos ea temporibus sint vel vero
-          nam? Aliquam consequatur laborum optio porro ut obcaecati quia debitis
-          voluptatum. Ad, hic doloribus? Consectetur, tempore hic dicta maiores
-          quo error nostrum accusamus, pariatur modi nihil velit, quasi
-          excepturi eos fugit!
-        </div>
+        <div className="dark:text-white">{product?.description}</div>
       </section>
 
       {/* Description Section */}
@@ -168,7 +167,7 @@ export default function ProductDetails() {
             {Array.from({ length: 9 }).map((_, index) => (
               <CarouselItem
                 key={index}
-                className="sm:basis-1/2 md:basis-1/3 lg:basis-1/5"
+                className="basis-1/2 md:basis-1/3 lg:basis-1/5"
               >
                 <div className="p-1">
                   <Card className="py-0 overflow-hidden">
