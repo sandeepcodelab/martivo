@@ -21,6 +21,7 @@ import { roleCheck } from "../middlewares/roleMiddleware.js";
 const router = Router();
 
 router.route("/all").get(getAllProducts);
+router.route("/singleProduct/:id").get(getProductById);
 
 // Secured routes
 router.route("/add").post(
