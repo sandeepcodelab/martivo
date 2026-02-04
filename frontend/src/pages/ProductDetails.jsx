@@ -11,19 +11,79 @@ import {
 } from "@/components/ui/carousel";
 import axios from "axios";
 import { useParams } from "react-router";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 export default function ProductDetails() {
   const { id } = useParams();
-  const [product, setProduct] = useState();
+  const [product, setProduct] = useState({});
+  const [variants, setVariants] = useState([]);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setColor] = useState(null);
+  const [selectedSize, setSize] = useState(null);
+  // const category = product?.category;
 
   useEffect(() => {
+    // Get product
     axios
       .get(`/api/v1/product/singleProduct/${id}`)
       .then((res) => setProduct(res.data?.data.product))
       .catch((err) => console.log(err));
+
+    // Get variants
+    axios
+      .get(`/api/v1/product-variant/${id}/all`)
+      .then((res) => setVariants(res.data?.data.variants))
+      .catch((err) => console.log(err));
+
+    // if (!category) {
+    //   // Get variants
+    //   axios
+    //     .get(`/api/v1/product-variant/${id}/all`)
+    //     .then((res) => setVariants(res.data?.data.variants))
+    //     .catch((err) => console.log(err));
+    // }
   }, []);
 
-  console.log(product);
+  // console.log("Products: ", product);
+  // console.log("Variants: ", variants);
+
+  useEffect(() => {
+    if (!selectedSize || !selectedColor) return;
+
+    const filteredVariant = variants.find(
+      (variant) =>
+        variant.color === selectedColor && variant.size === selectedSize,
+    );
+
+    console.log("filteredVariant", filteredVariant);
+
+    if (filteredVariant) {
+      console.log(
+        `Comination exists ${filteredVariant?.size} : ${selectedSize}`,
+      );
+    } else {
+      console.log(
+        `Sorry, this combination does not exist ${filteredVariant?.size} : ${selectedSize}`,
+      );
+    }
+  }, [selectedColor, selectedSize]);
+
+  const addToCartHandler = (e) => {
+    e.preventDefault();
+
+    console.log(quantity);
+
+    // const variantId = varia;
+  };
 
   return (
     <Container>
@@ -39,13 +99,13 @@ export default function ProductDetails() {
               className="relative w-full max-w-20"
             >
               <CarouselContent className="-mt-1 h-[350px] md:h-[450px]">
-                {product?.images.map((image) => (
-                  <CarouselItem key={image.url} className="pt-1 basis-1/5">
+                {product.images?.map((image) => (
+                  <CarouselItem key={image?.url} className="pt-1 basis-1/5">
                     <Card className="py-0 w-18 h-20 md:w-20 md:h-22 overflow-hidden">
                       <CardContent className="px-0">
                         <div className="w-full h-full">
                           <img
-                            src={image.url}
+                            src={image?.url}
                             alt="product-image"
                             className="w-full h-full aspect-square"
                           />
@@ -63,7 +123,7 @@ export default function ProductDetails() {
                 <CardContent className="px-0">
                   <div className="w-full h-[350px] md:h-[450px]">
                     <img
-                      src={product?.thumbnail.url}
+                      src={product?.thumbnail?.url}
                       alt={product?.name}
                       className="w-full h-full aspect-square"
                     />
@@ -90,53 +150,63 @@ export default function ProductDetails() {
                 <span className="pl-3">50% off</span>
               </div>
             </div>
-            <div className="mt-4 dark:text-white">
-              <span className="font-medium">Select Size</span>
-              <div className="flex flex-wrap gap-2 mt-2">
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  S
-                </span>
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  M
-                </span>
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  L
-                </span>
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  XL
-                </span>
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  XXL
-                </span>
+
+            <div className="flex gap-2">
+              <div className="mt-4 grid justify-items-end gap-5">
+                <Label>Color:</Label>
+                <Label>Size: </Label>
+                <Label>Quantity:</Label>
               </div>
-            </div>
-            <div className="mt-5">
-              <span className="font-medium">Select Colour</span>
-              <div className="flex flex-wrap gap-2 mt-2">
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  Red
-                </span>
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  Green
-                </span>
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  Yellow
-                </span>
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  Pink
-                </span>
-                <span className="border-black dark:border-white border-2 rounded px-3">
-                  Purple
-                </span>
+              <div className="mt-4 grid gap-5">
+                <Select onValueChange={setColor}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Select a color" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {variants?.map((variant) => (
+                        <SelectItem key={variant?._id} value={variant?.color}>
+                          {variant?.color}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+
+                <Select onValueChange={setSize}>
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Select a size" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {variants?.map((variant) => (
+                        <SelectItem key={variant?._id} value={variant?.size}>
+                          {variant?.size}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <div className="w-[150px]">
+                  <Input
+                    type="number"
+                    defaultValue={quantity}
+                    min={1}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
 
             {/* Buttons */}
             <div className="mt-5 w-full lg:w-100">
-              <Button variant="outline" className="w-full cursor-pointer">
+              {/* <Button variant="outline" className="w-full cursor-pointer">
                 Buy Now
-              </Button>
-              <Button className="w-full mt-3 text-white cursor-pointer">
+              </Button> */}
+              <Button
+                onClick={addToCartHandler}
+                className="w-full mt-3 text-white cursor-pointer"
+              >
                 Add to Cart
               </Button>
             </div>
