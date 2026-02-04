@@ -29,6 +29,7 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setColor] = useState(null);
   const [selectedSize, setSize] = useState(null);
+  const [selectedVariant, setSelectedVariant] = useState({});
   // const category = product?.category;
 
   useEffect(() => {
@@ -64,9 +65,8 @@ export default function ProductDetails() {
         variant.color === selectedColor && variant.size === selectedSize,
     );
 
-    console.log("filteredVariant", filteredVariant);
-
     if (filteredVariant) {
+      setSelectedVariant(filteredVariant);
       console.log(
         `Comination exists ${filteredVariant?.size} : ${selectedSize}`,
       );
@@ -84,6 +84,8 @@ export default function ProductDetails() {
 
     // const variantId = varia;
   };
+
+  // console.log("selectedVariant : ", selectedVariant);
 
   return (
     <Container>
@@ -143,7 +145,10 @@ export default function ProductDetails() {
             </div>
             <div>
               <div className="text-2xl font-medium dark:text-white">
-                Rs. 5000
+                Rs.{" "}
+                {Object.keys(selectedVariant).length > 0
+                  ? selectedVariant.price
+                  : variants[0]?.price}
               </div>
               <div className="text-lg dark:text-white">
                 Rs. 10000
@@ -152,20 +157,23 @@ export default function ProductDetails() {
             </div>
 
             <div className="flex gap-2">
-              <div className="mt-4 grid justify-items-end gap-5">
+              <div className="mt-5 grid justify-items-end gap-5">
                 <Label>Color:</Label>
                 <Label>Size: </Label>
                 <Label>Quantity:</Label>
               </div>
-              <div className="mt-4 grid gap-5">
-                <Select onValueChange={setColor}>
+              <div className="mt-5 grid gap-5">
+                <Select
+                  onValueChange={setColor}
+                  value={selectedColor ? selectedColor : variants[0]?.color}
+                >
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Select a color" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
                       {variants?.map((variant) => (
-                        <SelectItem key={variant?._id} value={variant?.color}>
+                        <SelectItem key={variant?.color} value={variant?.color}>
                           {variant?.color}
                         </SelectItem>
                       ))}
@@ -173,7 +181,10 @@ export default function ProductDetails() {
                   </SelectContent>
                 </Select>
 
-                <Select onValueChange={setSize}>
+                <Select
+                  onValueChange={setSize}
+                  value={selectedSize ? selectedSize : variants[0]?.size}
+                >
                   <SelectTrigger className="w-[150px]">
                     <SelectValue placeholder="Select a size" />
                   </SelectTrigger>
