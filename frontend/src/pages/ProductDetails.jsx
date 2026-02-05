@@ -21,15 +21,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Minus, Plus } from "lucide-react";
 
 export default function ProductDetails() {
   const { id } = useParams();
   const [product, setProduct] = useState({});
   const [variants, setVariants] = useState([]);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setColor] = useState(null);
-  const [selectedSize, setSize] = useState(null);
+  const [selectedColor, setColor] = useState("");
+  const [selectedSize, setSize] = useState("");
   const [selectedVariant, setSelectedVariant] = useState({});
+  const [combinationError, setCombinationError] = useState("");
+  const [errors, setError] = useState({});
   // const category = product?.category;
 
   useEffect(() => {
@@ -57,6 +60,7 @@ export default function ProductDetails() {
   // console.log("Products: ", product);
   // console.log("Variants: ", variants);
 
+  // Check variant
   useEffect(() => {
     if (!selectedSize || !selectedColor) return;
 
@@ -67,25 +71,45 @@ export default function ProductDetails() {
 
     if (filteredVariant) {
       setSelectedVariant(filteredVariant);
-      console.log(
-        `Comination exists ${filteredVariant?.size} : ${selectedSize}`,
-      );
+      setCombinationError("");
     } else {
-      console.log(
-        `Sorry, this combination does not exist ${filteredVariant?.size} : ${selectedSize}`,
+      setCombinationError(
+        `This combination (${selectedColor}, ${selectedSize}) is not in stock.`,
       );
     }
   }, [selectedColor, selectedSize]);
 
-  const addToCartHandler = (e) => {
-    e.preventDefault();
+  // Add to cart
+  // const addToCartHandler = (e) => {
+  //   e.preventDefault();
 
-    console.log(quantity);
+  //   const nextErrors = {};
 
-    // const variantId = varia;
-  };
+  //   if (!selectedColor) {
+  //     nextErrors.color = "Select a color.";
+  //   }
 
-  // console.log("selectedVariant : ", selectedVariant);
+  //   if (!selectedSize) {
+  //     nextErrors.size = "Select a size.";
+  //   }
+
+  //   if (!quantity || quantity <= 0) {
+  //     nextErrors.quantity = "Select quantity.";
+  //   }
+
+  //   setError(nextErrors);
+
+  //   if (combinationError) return;
+
+  //   if (Object.keys(errors).length > 0) return;
+
+  //   if (Object.keys(selectedVariant).length === 0) return;
+
+  //   axios
+  //     .post("/api/v1/cart/add", { variantId: selectedVariant._id, quantity })
+  //     .then((res) => console.log(res))
+  //     .catch((err) => console.log(err));
+  // };
 
   return (
     <Container>
@@ -154,6 +178,11 @@ export default function ProductDetails() {
                 Rs. 10000
                 <span className="pl-3">50% off</span>
               </div>
+              <div>
+                <span className="text-sm text-red-500 mt-4">
+                  {combinationError}
+                </span>
+              </div>
             </div>
 
             <div className="flex gap-2">
@@ -163,11 +192,8 @@ export default function ProductDetails() {
                 <Label>Quantity:</Label>
               </div>
               <div className="mt-5 grid gap-5">
-                <Select
-                  onValueChange={setColor}
-                  value={selectedColor ? selectedColor : variants[0]?.color}
-                >
-                  <SelectTrigger className="w-[150px]">
+                <Select onValueChange={setColor} value={selectedColor}>
+                  <SelectTrigger className="w-[200px]">
                     <SelectValue placeholder="Select a color" />
                   </SelectTrigger>
                   <SelectContent>
@@ -181,11 +207,8 @@ export default function ProductDetails() {
                   </SelectContent>
                 </Select>
 
-                <Select
-                  onValueChange={setSize}
-                  value={selectedSize ? selectedSize : variants[0]?.size}
-                >
-                  <SelectTrigger className="w-[150px]">
+                <Select onValueChange={setSize} value={selectedSize}>
+                  <SelectTrigger className="w-[200px]">
                     <SelectValue placeholder="Select a size" />
                   </SelectTrigger>
                   <SelectContent>
@@ -198,13 +221,40 @@ export default function ProductDetails() {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                <div className="w-[150px]">
+                <div className="w-[200px] flex gap-2">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => setQuantity((prev) => prev - 1)}
+                  >
+                    <Minus />
+                  </Button>
                   <Input
                     type="number"
-                    defaultValue={quantity}
+                    value={quantity}
                     min={1}
                     onChange={(e) => setQuantity(e.target.value)}
                   />
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => setQuantity((prev) => prev + 1)}
+                  >
+                    <Plus />
+                  </Button>
+                </div>
+              </div>
+              <div className="mt-5 grid gap-5">
+                <div>
+                  <span className="text-sm text-red-500">{errors?.color}</span>
+                </div>
+                <div>
+                  <span className="text-sm text-red-500">{errors?.size}</span>
+                </div>
+                <div>
+                  <span className="text-sm text-red-500">
+                    {errors?.quantity}
+                  </span>
                 </div>
               </div>
             </div>
