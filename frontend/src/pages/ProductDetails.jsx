@@ -80,36 +80,36 @@ export default function ProductDetails() {
   }, [selectedColor, selectedSize]);
 
   // Add to cart
-  // const addToCartHandler = (e) => {
-  //   e.preventDefault();
+  const addToCartHandler = (e) => {
+    e.preventDefault();
 
-  //   const nextErrors = {};
+    const nextErrors = {};
 
-  //   if (!selectedColor) {
-  //     nextErrors.color = "Select a color.";
-  //   }
+    if (!selectedColor) {
+      nextErrors.color = "Select a color.";
+    }
 
-  //   if (!selectedSize) {
-  //     nextErrors.size = "Select a size.";
-  //   }
+    if (!selectedSize) {
+      nextErrors.size = "Select a size.";
+    }
 
-  //   if (!quantity || quantity <= 0) {
-  //     nextErrors.quantity = "Select quantity.";
-  //   }
+    if (!quantity || quantity <= 0) {
+      nextErrors.quantity = "Select quantity.";
+    }
 
-  //   setError(nextErrors);
+    setError(nextErrors);
 
-  //   if (combinationError) return;
+    if (combinationError) return;
 
-  //   if (Object.keys(errors).length > 0) return;
+    if (Object.keys(errors).length > 0) return;
 
-  //   if (Object.keys(selectedVariant).length === 0) return;
+    if (Object.keys(selectedVariant).length === 0) return;
 
-  //   axios
-  //     .post("/api/v1/cart/add", { variantId: selectedVariant._id, quantity })
-  //     .then((res) => console.log(res))
-  //     .catch((err) => console.log(err));
-  // };
+    axios
+      .post("/api/v1/cart/add", { variantId: selectedVariant._id, quantity })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  };
 
   return (
     <Container>
