@@ -9,6 +9,7 @@ import {
   forgotPasswordRequest,
   resetForgotPassword,
   changeCurrentPassword,
+  refreshAccessToken,
 } from "../controllers/authController.js";
 import { validate } from "../middlewares/validatorMiddleware.js";
 import {
@@ -33,9 +34,10 @@ router
 router
   .route("/reset-password/:resetToken")
   .post(resetForgotPasswordValidator(), validate, resetForgotPassword);
+router.route("/refresh").post(refreshAccessToken);
+router.route("/logout").post(logoutUser);
 
 // Secure routes
-router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/user").get(verifyJWT, getCurrentUser);
 router
   .route("/change-password")
