@@ -123,7 +123,7 @@ const login = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { user: loggedInUser, accessToken, refreshToken },
+        { user: loggedInUser, accessToken },
         "Login successful"
       )
     );
@@ -237,7 +237,8 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToekn = req.cookies.refreshToken || req.body.accessToken;
+  const incomingRefreshToekn =
+    req.cookies.refreshToken || req?.body?.accessToken;
 
   if (!incomingRefreshToekn) {
     throw new ApiError(401, "Unauthorized access");
@@ -277,7 +278,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       .json(
         new ApiResponse(
           200,
-          { accessToken, refreshToken: newRefreshToken },
+          { accessToken },
           "Access token refreshed successfully"
         )
       );
