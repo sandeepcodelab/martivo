@@ -22,6 +22,9 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Minus, Plus } from "lucide-react";
+import { notification } from "@/utils/toast";
+import { useContext } from "react";
+import AuthContext from "@/contexts/AuthContext";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -33,7 +36,7 @@ export default function ProductDetails() {
   const [selectedVariant, setSelectedVariant] = useState({});
   const [combinationError, setCombinationError] = useState("");
   const [errors, setError] = useState({});
-  // const category = product?.category;
+  const { updateCartCount } = useContext(AuthContext);
 
   useEffect(() => {
     // Get product
@@ -47,18 +50,7 @@ export default function ProductDetails() {
       .get(`/api/v1/product-variant/${id}/all`)
       .then((res) => setVariants(res.data?.data.variants))
       .catch((err) => console.log(err));
-
-    // if (!category) {
-    //   // Get variants
-    //   axios
-    //     .get(`/api/v1/product-variant/${id}/all`)
-    //     .then((res) => setVariants(res.data?.data.variants))
-    //     .catch((err) => console.log(err));
-    // }
   }, []);
-
-  // console.log("Products: ", product);
-  // console.log("Variants: ", variants);
 
   // Check variant
   useEffect(() => {
@@ -84,6 +76,7 @@ export default function ProductDetails() {
     e.preventDefault();
 
     const nextErrors = {};
+    const qty = Number(quantity);
 
     if (!selectedColor) {
       nextErrors.color = "Select a color.";
@@ -93,22 +86,43 @@ export default function ProductDetails() {
       nextErrors.size = "Select a size.";
     }
 
-    if (!quantity || quantity <= 0) {
-      nextErrors.quantity = "Select quantity.";
+    if (!Number.isInteger(qty) || qty <= 0) {
+      nextErrors.quantity = "Quantity must be a valid number.";
     }
-
-    setError(nextErrors);
 
     if (combinationError) return;
 
-    if (Object.keys(errors).length > 0) return;
+    setError(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) return;
 
     if (Object.keys(selectedVariant).length === 0) return;
 
-    axios
-      .post("/api/v1/cart/add", { variantId: selectedVariant._id, quantity })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    // Store cart in localStorage
+    const cart = JSON.parse(localStorage.getItem("guestCartItems")) || [];
+
+    const itemExist = cart.find(
+      (item) => item.variantId === selectedVariant._id,
+    );
+
+    let updateCart;
+
+    if (itemExist) {
+      updateCart = cart.map((item) =>
+        item.variantId === selectedVariant._id
+          ? { ...item, quantity: item.quantity + quantity }
+          : item,
+      );
+    } else {
+      updateCart = [...cart, { variantId: selectedVariant._id, quantity }];
+    }
+
+    localStorage.setItem("guestCartItems", JSON.stringify(updateCart));
+
+    updateCartCount();
+
+    // Notification
+    notification.success("Item added to cart.");
   };
 
   return (
@@ -226,6 +240,7 @@ export default function ProductDetails() {
                     size="icon"
                     variant="outline"
                     onClick={() => setQuantity((prev) => prev - 1)}
+                    disabled={quantity <= 1 ? true : false}
                   >
                     <Minus />
                   </Button>
@@ -233,7 +248,7 @@ export default function ProductDetails() {
                     type="number"
                     value={quantity}
                     min={1}
-                    onChange={(e) => setQuantity(e.target.value)}
+                    onChange={(e) => setQuantity(Number(e.target.value))}
                   />
                   <Button
                     size="icon"
@@ -244,7 +259,7 @@ export default function ProductDetails() {
                   </Button>
                 </div>
               </div>
-              <div className="mt-5 grid gap-5">
+              <div className="mt-5 grid items-center gap-5">
                 <div>
                   <span className="text-sm text-red-500">{errors?.color}</span>
                 </div>
