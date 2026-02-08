@@ -18,7 +18,7 @@ import { UserProfileDesktop, UserProfileMobile } from "../Profile/UserProfile";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const { user } = useContext(AuthContext);
+  const { user, itemsCount } = useContext(AuthContext);
 
   const navMenus = [
     {
@@ -73,8 +73,8 @@ export default function Header() {
                 <Button variant="ghost" size="icon" className="cursor-pointer">
                   <ShoppingCart />
                 </Button>
-                <div className="absolute -top-1 -right-1 bg-primary text-white text-[10px] rounded px-1">
-                  10
+                <div className="absolute -top-1 right-0 bg-primary text-white text-[10px] rounded px-1">
+                  {itemsCount > 0 ? itemsCount : null}
                 </div>
               </Link>
             </div>
@@ -98,8 +98,8 @@ export default function Header() {
                 <Button variant="ghost" size="icon" className="cursor-pointer">
                   <ShoppingCart />
                 </Button>
-                <div className="absolute -top-1 -right-1 bg-primary text-[10px] rounded px-1">
-                  10
+                <div className="absolute -top-1 right-0 bg-primary text-[10px] rounded px-1">
+                  {itemsCount > 0 ? itemsCount : null}
                 </div>
               </Link>
             </div>
