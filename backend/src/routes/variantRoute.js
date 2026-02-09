@@ -7,6 +7,7 @@ import {
   getVariantById,
   updateVariant,
   deleteVariant,
+  getCartVariant,
 } from "../controllers/variantController.js";
 
 import { validate } from "../middlewares/validatorMiddleware.js";
@@ -18,6 +19,7 @@ import {
 const router = Router();
 
 router.route("/:productId/all").get(getAllVariants);
+router.route("/single/:id").post(getCartVariant);
 
 // Secured routes
 router
