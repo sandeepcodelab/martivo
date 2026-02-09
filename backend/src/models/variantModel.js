@@ -2,9 +2,9 @@ import mongoose, { Schema } from "mongoose";
 
 const variantSchema = new Schema(
   {
-    productId: {
+    product: {
       type: Schema.Types.ObjectId,
-      ref: "product",
+      ref: "Product",
       required: true,
     },
     size: {
