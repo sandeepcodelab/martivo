@@ -16,7 +16,7 @@ const addVariant = asyncHandler(async (req, res) => {
   }
 
   const variant = await Variant.create({
-    productId,
+    product: productId,
     size,
     color,
     price,
@@ -48,7 +48,7 @@ const getAllVariants = asyncHandler(async (req, res) => {
     );
   }
 
-  const variants = await Variant.find({ productId });
+  const variants = await Variant.find({ product: productId });
 
   if (!variants) {
     throw new ApiError(
@@ -178,10 +178,33 @@ const deleteVariant = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Product variant deleted successfully."));
 });
 
+const getCartVariant = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    throw new ApiError(400, "Parameter missing");
+  }
+
+  const getVariant = await Variant.findById(id).populate("product");
+
+  if (!getVariant) return;
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { variant: getVariant },
+        "Product variant fetched successfully."
+      )
+    );
+});
+
 export {
   addVariant,
   getAllVariants,
   getVariantById,
   updateVariant,
   deleteVariant,
+  getCartVariant,
 };
