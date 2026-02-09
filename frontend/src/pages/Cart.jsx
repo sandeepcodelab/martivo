@@ -9,94 +9,210 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Trash2, X, ArrowRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import axios from "axios";
+import { Trash2, X, ArrowRight, Minus, Plus, IndianRupee } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 export default function Cart() {
+  const [variants, setVariant] = useState([]);
+
+  useEffect(() => {
+    const fetchCartData = async () => {
+      const cart = JSON.parse(localStorage.getItem("guestCartItems")) || [];
+
+      if (!cart.length) return;
+
+      try {
+        // Fetch variants
+        const variantsData = await Promise.all(
+          cart.map((item) =>
+            axios
+              .post(`/api/v1/product-variant/single-variant/${item.variantId}`)
+              .then((res) => ({
+                variant: res.data?.data.variant,
+                quantity: item.quantity,
+              })),
+          ),
+        );
+
+        setVariant(variantsData);
+      } catch {}
+    };
+
+    fetchCartData();
+  }, []);
+
+  console.log("all", variants);
+
   return (
     <section>
       <Container>
-        <div className="flex flex-wrap">
-          {/* Left Side */}
-          <div className="w-full md:w-[70%] p-3">
-            <Card className="w-full">
+        {/* PAGE HEADER */}
+        {/* <div className="mb-6">
+          <h1 className="text-2xl font-bold">Shopping Cart</h1>
+          <p className="text-sm text-muted-foreground">
+            Review your items before checkout
+          </p>
+        </div> */}
+
+        <div className="flex flex-col md:flex-row gap-6 mt-8">
+          {/* LEFT : CART ITEMS */}
+          <div className="w-full md:w-[70%]">
+            <Card>
               <CardHeader>
-                <CardTitle className="font-bold">
-                  Cart <span>(3 products)</span>
-                </CardTitle>
-                <CardAction className="flex text-sm text-red-600 cursor-pointer">
-                  <X size={20} />
-                  Clear cart
+                <CardTitle>Cart ({variants.length} items)</CardTitle>
+                <CardDescription>
+                  Review your items before checkout
+                </CardDescription>
+                <CardAction>
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-1 text-sm text-red-600 hover:text-red-600 cursor-pointer"
+                  >
+                    <X size={16} />
+                    Clear cart
+                  </Button>
                 </CardAction>
               </CardHeader>
-              <CardContent>
-                <div className="hidden md:flex w-full border-b border-gray-300 pb-2">
-                  <div className="w-[58%]">Product</div>
-                  <div className="w-[24%]">Quantity</div>
-                  <div className="w-[18%]">Price</div>
+
+              <CardContent className="p-0">
+                {/* DESKTOP HEADER */}
+                <div className="hidden md:flex items-center mx-4 pb-2 border-b text-sm font-medium text-muted-foreground">
+                  <div className="flex-1">Product</div>
+                  <div className="w-[140px] text-center">Quantity</div>
+                  <div className="w-[100px] text-right">Price</div>
+                  <div className="w-[80px]" />
                 </div>
-                <Card className="mt-3 py-3">
-                  <CardContent className="px-3">
-                    <div className="flex flex-wrap md:items-center w-full">
-                      <div className="flex flex-wrap md:flex-nowrap justify-center md:justify-start w-full md:w-[50%]">
-                        <div className="w-50 h-50 md:w-25 md:min-w-25 md:h-30 rounded-2xl overflow-hidden">
-                          <img
-                            src="https://placehold.co/400x600/gray/FFFFFF/png"
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="px-3 py-5 md:py-0">
-                          <div>
-                            Product Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit.
+
+                {/* CART LIST */}
+                <div className="px-4 py-4 space-y-4">
+                  {variants.map((item) => (
+                    <Card key={item._id} className="py-2">
+                      <CardContent className="px-2">
+                        <div className="flex flex-col md:flex-row gap-4 md:items-center">
+                          {/* PRODUCT */}
+                          <div className="flex items-center gap-3 md:flex-1">
+                            <div className="w-[72px] h-[90px] rounded-lg overflow-hidden">
+                              <img
+                                src={item.variant.product.thumbnail.url}
+                                alt=""
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+
+                            <div>
+                              <div className="font-medium w-30 max-w-40 truncate">
+                                {/* {item.variant.product.title} */}
+                                jkhdf hdsfkjhskdf sdhfkhskdf sdfkjhskdfm
+                                sdfkjsdbhfj
+                              </div>
+                              <div className="grid text-xs text-muted-foreground">
+                                <span>Size: {item.variant.size}</span>
+                                <span>Color: {item.variant.color}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div>Size: M</div>
-                          <div>Color: Red</div>
+
+                          {/* QTY */}
+                          <div className="flex justify-center md:w-[140px]">
+                            <div className="flex w-[140px] md:w-[120px]">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className="rounded-r-none"
+                              >
+                                <Minus size={14} />
+                              </Button>
+                              <Input
+                                readOnly
+                                value={item.quantity}
+                                className="text-center rounded-none h-9"
+                              />
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className="rounded-l-none"
+                              >
+                                <Plus size={14} />
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* PRICE */}
+                          <div className="flex justify-center md:justify-end items-center gap-1 md:w-[100px] font-semibold">
+                            <span className="md:hidden">Price: </span>
+                            <span className="flex items-center">
+                              <IndianRupee size={14} />
+                              {item.variant.price}
+                            </span>
+                          </div>
+
+                          {/* REMOVE */}
+                          <div className="flex justify-end md:w-[40px]">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="p-2 rounded-full text-red-600 hover:text-red-600 cursor-pointer"
+                            >
+                              <Trash2 size={18} />
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      <div className="w-full md:w-[25%] py-3 text-center">
-                        Quantity
-                      </div>
-                      <div className="w-full md:w-[20%] py-3 text-center">
-                        Price
-                      </div>
-                      <div className="flex justify-center w-full md:w-[5%] py-3">
-                        <Trash2
-                          size={20}
-                          className="cursor-pointer text-red-600"
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Right Side */}
-          <div className="w-full md:w-[30%] p-3">
-            <Card className="w-full gap-2">
+          {/* RIGHT : SUMMARY */}
+          <div className="w-full md:w-[30%]">
+            <Card className="md:sticky md:top-22">
               <CardHeader>
-                <CardTitle className="font-bold">Price Details</CardTitle>
+                <CardTitle>Order Summary</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="font-medium">1 Items</div>
-                <div className="flex justify-between border-b-2 py-3">
-                  <div>
-                    <p>Product 1</p>
-                  </div>
-                  <div>
-                    <p>12300</p>
-                  </div>
+
+              <CardContent className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span>Items</span>
+                  <span>{variants.length}</span>
                 </div>
-                <div className="flex justify-between font-semibold my-3">
-                  <div>Total</div>
-                  <div>12300</div>
+
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal</span>
+                  <span className="flex items-center">
+                    <IndianRupee size={13} />
+                    {variants.reduce(
+                      (t, i) => t + i.variant.price * i.quantity,
+                      0,
+                    )}
+                  </span>
                 </div>
+
+                <div className="flex justify-between text-sm">
+                  <span>Shipping</span>
+                  <span className="text-green-600">Free</span>
+                </div>
+
+                <hr />
+
+                <div className="flex justify-between font-semibold text-lg">
+                  <span>Total</span>
+                  <span className="flex items-center">
+                    <IndianRupee size={16} />
+                    {variants.reduce(
+                      (t, i) => t + i.variant.price * i.quantity,
+                      0,
+                    )}
+                  </span>
+                </div>
+
                 <Link to="/checkout">
-                  <Button className="w-full">
-                    Place order <ArrowRight />
+                  <Button className="w-full text-white cursor-pointer">
+                    Proceed to Checkout <ArrowRight />
                   </Button>
                 </Link>
               </CardContent>
