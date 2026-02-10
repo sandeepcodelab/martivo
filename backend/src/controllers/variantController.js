@@ -178,14 +178,16 @@ const deleteVariant = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Product variant deleted successfully."));
 });
 
-const getCartVariant = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+const getCartVariants = asyncHandler(async (req, res) => {
+  const { variantIds } = req.body || {};
 
-  if (!id) {
-    throw new ApiError(400, "Parameter missing");
+  if (!Array.isArray(variantIds) || variantIds.length === 0) {
+    throw new ApiError(400, "variantIds must be a non-empty array.");
   }
 
-  const getVariant = await Variant.findById(id).populate("product");
+  const getVariant = await Variant.find({ _id: { $in: variantIds } }).populate(
+    "product"
+  );
 
   if (!getVariant) return;
 
@@ -194,7 +196,7 @@ const getCartVariant = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         200,
-        { variant: getVariant },
+        { variants: getVariant },
         "Product variant fetched successfully."
       )
     );
@@ -206,5 +208,5 @@ export {
   getVariantById,
   updateVariant,
   deleteVariant,
-  getCartVariant,
+  getCartVariants,
 };
