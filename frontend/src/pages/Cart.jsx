@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 
 export default function Cart() {
-  const [variants, setVariant] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
     const fetchCartData = async () => {
@@ -24,45 +24,71 @@ export default function Cart() {
 
       if (!cart.length) return;
 
+      const variantIds = cart.map((item) => item.variantId);
+
       try {
         // Fetch variants
-        const variantsData = await Promise.all(
-          cart.map((item) =>
-            axios
-              .post(`/api/v1/product-variant/single-variant/${item.variantId}`)
-              .then((res) => ({
-                variant: res.data?.data.variant,
-                quantity: item.quantity,
-              })),
-          ),
-        );
 
-        setVariant(variantsData);
-      } catch {}
+        const res = await axios.post(`/api/v1/product-variant/bulk/`, {
+          variantIds,
+        });
+
+        const mergedCart = res.data.data.variants.map((variant) => {
+          const matchedItem = cart.find(
+            (item) => item.variantId === variant._id,
+          );
+
+          return {
+            ...variant,
+            quantity: matchedItem?.quantity ?? 1,
+          };
+        });
+
+        setCartItems(mergedCart);
+      } catch (error) {
+        console.error("Failed to fetch cart data", error);
+      }
     };
 
     fetchCartData();
   }, []);
 
-  console.log("all", variants);
+  // Update quantity
+  const updateQuantity = (variantId, type) => {
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item._id !== variantId) return item;
+
+        let newQty = item.quantity;
+
+        if (type === "PLUS") {
+          newQty = item.quantity + 1;
+        }
+        if (type === "MINUS") {
+          newQty = item.quantity - 1;
+        }
+
+        if (newQty < 1) return item;
+
+        if (item.stock && newQty > item.stock) return item;
+
+        return {
+          ...item,
+          quantity: newQty,
+        };
+      }),
+    );
+  };
 
   return (
     <section>
       <Container>
-        {/* PAGE HEADER */}
-        {/* <div className="mb-6">
-          <h1 className="text-2xl font-bold">Shopping Cart</h1>
-          <p className="text-sm text-muted-foreground">
-            Review your items before checkout
-          </p>
-        </div> */}
-
         <div className="flex flex-col md:flex-row gap-6 mt-8">
           {/* LEFT : CART ITEMS */}
           <div className="w-full md:w-[70%]">
             <Card>
               <CardHeader>
-                <CardTitle>Cart ({variants.length} items)</CardTitle>
+                <CardTitle>Cart ({cartItems.length} items)</CardTitle>
                 <CardDescription>
                   Review your items before checkout
                 </CardDescription>
@@ -82,79 +108,88 @@ export default function Cart() {
                 <div className="hidden md:flex items-center mx-4 pb-2 border-b text-sm font-medium text-muted-foreground">
                   <div className="flex-1">Product</div>
                   <div className="w-[140px] text-center">Quantity</div>
-                  <div className="w-[100px] text-right">Price</div>
-                  <div className="w-[80px]" />
+                  <div className="w-[100px] text-center">Price</div>
+                  <div className="w-[70px]" />
                 </div>
 
                 {/* CART LIST */}
                 <div className="px-4 py-4 space-y-4">
-                  {variants.map((item) => (
+                  {cartItems.map((item) => (
                     <Card key={item._id} className="py-2">
                       <CardContent className="px-2">
-                        <div className="flex flex-col md:flex-row gap-4 md:items-center">
-                          {/* PRODUCT */}
-                          <div className="flex items-center gap-3 md:flex-1">
-                            <div className="w-[72px] h-[90px] rounded-lg overflow-hidden">
+                        <div className="flex flex-col md:flex-row md:items-center gap-4">
+                          {/* 🔹 GROUP 1 : IMAGE + TITLE */}
+                          <div className="flex items-center gap-3 md:flex-1 min-w-0">
+                            <div className="w-[72px] h-[90px] rounded-lg overflow-hidden shrink-0">
                               <img
-                                src={item.variant.product.thumbnail.url}
+                                src={item.product.thumbnail.url}
                                 alt=""
                                 className="w-full h-full object-cover"
                               />
                             </div>
 
-                            <div>
-                              <div className="font-medium w-30 max-w-40 truncate">
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium overflow-hidden text-ellipsis whitespace-nowrap">
                                 {/* {item.variant.product.title} */}
-                                jkhdf hdsfkjhskdf sdhfkhskdf sdfkjhskdfm
-                                sdfkjsdbhfj
+                                Lorem ipsum dolor sit amet consectetur
+                                adipisicing elit.
                               </div>
+
                               <div className="grid text-xs text-muted-foreground">
-                                <span>Size: {item.variant.size}</span>
-                                <span>Color: {item.variant.color}</span>
+                                <span>Size: {item.size}</span>
+                                <span>Color: {item.color}</span>
                               </div>
                             </div>
                           </div>
 
-                          {/* QTY */}
-                          <div className="flex justify-center md:w-[140px]">
-                            <div className="flex w-[140px] md:w-[120px]">
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                className="rounded-r-none"
-                              >
-                                <Minus size={14} />
-                              </Button>
-                              <Input
-                                readOnly
-                                value={item.quantity}
-                                className="text-center rounded-none h-9"
-                              />
-                              <Button
-                                size="icon"
-                                variant="outline"
-                                className="rounded-l-none"
-                              >
-                                <Plus size={14} />
-                              </Button>
+                          {/* 🔹 GROUP 2 : QTY + PRICE (parallel on mobile) */}
+                          <div className="flex items-center justify-between md:justify-start gap-4 md:gap-0">
+                            {/* Quantity */}
+                            <div className="md:w-[140px] flex justify-start md:justify-center">
+                              <div className="flex w-[120px]">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="rounded-r-none"
+                                  onClick={() =>
+                                    updateQuantity(item._id, "MINUS")
+                                  }
+                                >
+                                  <Minus size={14} />
+                                </Button>
+
+                                <Input
+                                  readOnly
+                                  value={item.quantity}
+                                  className="text-center rounded-none h-9"
+                                />
+
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="rounded-l-none"
+                                  onClick={() =>
+                                    updateQuantity(item._id, "PLUS")
+                                  }
+                                >
+                                  <Plus size={14} />
+                                </Button>
+                              </div>
+                            </div>
+
+                            {/* Price */}
+                            <div className="md:w-[100px] text-right font-semibold flex justify-center items-center">
+                              <IndianRupee size={14} />
+                              {item.price}
                             </div>
                           </div>
 
-                          {/* PRICE */}
-                          <div className="flex justify-center md:justify-end items-center gap-1 md:w-[100px] font-semibold">
-                            <span className="md:hidden">Price: </span>
-                            <span className="flex items-center">
-                              <IndianRupee size={14} />
-                              {item.variant.price}
-                            </span>
-                          </div>
-
-                          {/* REMOVE */}
-                          <div className="flex justify-end md:w-[40px]">
+                          {/* 🔹 REMOVE (desktop aligned) */}
+                          <div className="flex justify-end md:justify-start md:w-[40px]">
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="p-2 rounded-full text-red-600 hover:text-red-600 cursor-pointer"
+                              className="p-2 rounded-full text-red-600 hover:text-red-600"
                             >
                               <Trash2 size={18} />
                             </Button>
@@ -178,17 +213,14 @@ export default function Cart() {
               <CardContent className="space-y-4">
                 <div className="flex justify-between text-sm">
                   <span>Items</span>
-                  <span>{variants.length}</span>
+                  <span>{cartItems.length}</span>
                 </div>
 
                 <div className="flex justify-between text-sm">
                   <span>Subtotal</span>
                   <span className="flex items-center">
                     <IndianRupee size={13} />
-                    {variants.reduce(
-                      (t, i) => t + i.variant.price * i.quantity,
-                      0,
-                    )}
+                    {cartItems.reduce((t, i) => t + i.price * i.quantity, 0)}
                   </span>
                 </div>
 
@@ -203,10 +235,7 @@ export default function Cart() {
                   <span>Total</span>
                   <span className="flex items-center">
                     <IndianRupee size={16} />
-                    {variants.reduce(
-                      (t, i) => t + i.variant.price * i.quantity,
-                      0,
-                    )}
+                    {cartItems.reduce((t, i) => t + i.price * i.quantity, 0)}
                   </span>
                 </div>
 
