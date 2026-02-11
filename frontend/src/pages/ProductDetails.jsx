@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Minus, Plus } from "lucide-react";
+import { IndianRupee, Minus, Plus } from "lucide-react";
 import { notification } from "@/utils/toast";
 import { useContext } from "react";
 import AuthContext from "@/contexts/AuthContext";
@@ -71,6 +71,16 @@ export default function ProductDetails() {
     }
   }, [selectedColor, selectedSize]);
 
+  const inputQTY = (e) => {
+    const qty = Number(e.target.value);
+
+    if (!isNaN(qty)) {
+      setQuantity(qty);
+    } else {
+      setQuantity(0);
+    }
+  };
+
   // Add to cart
   const addToCartHandler = (e) => {
     e.preventDefault();
@@ -88,6 +98,10 @@ export default function ProductDetails() {
 
     if (!Number.isInteger(qty) || qty <= 0) {
       nextErrors.quantity = "Quantity must be a valid number.";
+    }
+
+    if (qty >= selectedVariant?.stock) {
+      nextErrors.quantityLimit = `Only ${selectedVariant?.stock} items available in stock.`;
     }
 
     if (combinationError) return;
@@ -110,7 +124,7 @@ export default function ProductDetails() {
     if (itemExist) {
       updateCart = cart.map((item) =>
         item.variantId === selectedVariant._id
-          ? { ...item, quantity: item.quantity + quantity }
+          ? { ...item, quantity: quantity }
           : item,
       );
     } else {
@@ -182,8 +196,8 @@ export default function ProductDetails() {
               <p>Star</p>
             </div>
             <div>
-              <div className="text-2xl font-medium dark:text-white">
-                Rs.{" "}
+              <div className="flex items-center text-2xl font-medium dark:text-white">
+                <IndianRupee size={20} className="mt-1" />
                 {Object.keys(selectedVariant).length > 0
                   ? selectedVariant.price
                   : variants[0]?.price}
@@ -245,15 +259,17 @@ export default function ProductDetails() {
                     <Minus />
                   </Button>
                   <Input
-                    type="number"
+                    type="text"
                     value={quantity}
                     min={1}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    onChange={inputQTY}
+                    className="text-center"
                   />
                   <Button
                     size="icon"
                     variant="outline"
                     onClick={() => setQuantity((prev) => prev + 1)}
+                    disabled={quantity >= selectedVariant?.stock ? true : false}
                   >
                     <Plus />
                   </Button>
@@ -269,6 +285,9 @@ export default function ProductDetails() {
                 <div>
                   <span className="text-sm text-red-500">
                     {errors?.quantity}
+                  </span>
+                  <span className="text-sm text-red-500">
+                    {errors?.quantityLimit}
                   </span>
                 </div>
               </div>
