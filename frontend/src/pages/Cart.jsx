@@ -15,25 +15,29 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
 
 export default function Cart() {
-  const { updateCartCount } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
+  const { updateCartCount } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchCartData = async () => {
-      const cart = JSON.parse(localStorage.getItem("guestCartItems")) || [];
-
-      if (!cart.length) return;
-
-      const variantIds = cart.map((item) => item.variantId);
-
       try {
+        setLoading(true);
+
+        const localCart =
+          JSON.parse(localStorage.getItem("guestCartItems")) || [];
+
+        if (!localCart.length) return;
+
+        const variantIds = localCart.map((item) => item.variantId);
+
         // Fetch variants
         const res = await axios.post(`/api/v1/product-variant/bulk/`, {
           variantIds,
         });
 
         const mergedCart = res.data.data.variants.map((variant) => {
-          const matchedItem = cart.find(
+          const matchedItem = localCart.find(
             (item) => item.variantId === variant._id,
           );
 
@@ -46,6 +50,8 @@ export default function Cart() {
         setCartItems(mergedCart);
       } catch (error) {
         console.error("Failed to fetch cart data", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -98,6 +104,28 @@ export default function Cart() {
     setCartItems((prev) => prev.filter((item) => item._id !== variantId));
   };
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-70">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Empty cart state
+  if (!cartItems.length) {
+    return (
+      <div className="flex flex-col items-center justify-center h-70 gap-4">
+        <p className="text-lg font-medium">Your cart is empty</p>
+        <Link to="/products">
+          <Button className="text-white cursor-pointer">Shop Now</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  // Items in cart state
   return (
     <section>
       <Container>
