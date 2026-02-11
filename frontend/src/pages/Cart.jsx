@@ -2,20 +2,20 @@ import Container from "@/components/Container/Container";
 import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import AuthContext from "@/contexts/AuthContext";
 import axios from "axios";
 import { Trash2, X, ArrowRight, Minus, Plus, IndianRupee } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
 
 export default function Cart() {
+  const { updateCartCount } = useContext(AuthContext);
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
@@ -28,7 +28,6 @@ export default function Cart() {
 
       try {
         // Fetch variants
-
         const res = await axios.post(`/api/v1/product-variant/bulk/`, {
           variantIds,
         });
@@ -53,20 +52,34 @@ export default function Cart() {
     fetchCartData();
   }, []);
 
+  // Update Cart
+  useEffect(() => {
+    localStorage.setItem(
+      "guestCartItems",
+      JSON.stringify(
+        cartItems.map((item) => ({
+          variantId: item._id,
+          quantity: item.quantity,
+        })),
+      ),
+    );
+
+    // Update globle cart
+    updateCartCount();
+  }, [cartItems]);
+
   // Update quantity
   const updateQuantity = (variantId, type) => {
+    // Current cart
     setCartItems((prev) =>
       prev.map((item) => {
         if (item._id !== variantId) return item;
 
         let newQty = item.quantity;
 
-        if (type === "PLUS") {
-          newQty = item.quantity + 1;
-        }
-        if (type === "MINUS") {
-          newQty = item.quantity - 1;
-        }
+        const calculte = type === "PLUS" ? 1 : -1;
+
+        newQty = item.quantity + calculte;
 
         if (newQty < 1) return item;
 
@@ -78,6 +91,11 @@ export default function Cart() {
         };
       }),
     );
+  };
+
+  // Remove Item
+  const removeCartItem = (variantId) => {
+    setCartItems((prev) => prev.filter((item) => item._id !== variantId));
   };
 
   return (
@@ -92,15 +110,6 @@ export default function Cart() {
                 <CardDescription>
                   Review your items before checkout
                 </CardDescription>
-                <CardAction>
-                  <Button
-                    variant="ghost"
-                    className="flex items-center gap-1 text-sm text-red-600 hover:text-red-600 cursor-pointer"
-                  >
-                    <X size={16} />
-                    Clear cart
-                  </Button>
-                </CardAction>
               </CardHeader>
 
               <CardContent className="p-0">
@@ -151,6 +160,7 @@ export default function Cart() {
                                   size="icon"
                                   variant="outline"
                                   className="rounded-r-none"
+                                  disabled={item.quantity <= 1 ? true : false}
                                   onClick={() =>
                                     updateQuantity(item._id, "MINUS")
                                   }
@@ -168,6 +178,9 @@ export default function Cart() {
                                   size="icon"
                                   variant="outline"
                                   className="rounded-l-none"
+                                  disabled={
+                                    item.quantity >= item.stock ? true : false
+                                  }
                                   onClick={() =>
                                     updateQuantity(item._id, "PLUS")
                                   }
@@ -180,7 +193,7 @@ export default function Cart() {
                             {/* Price */}
                             <div className="md:w-[100px] text-right font-semibold flex justify-center items-center">
                               <IndianRupee size={14} />
-                              {item.price}
+                              {item.price * item.quantity}
                             </div>
                           </div>
 
@@ -190,6 +203,7 @@ export default function Cart() {
                               size="icon"
                               variant="ghost"
                               className="p-2 rounded-full text-red-600 hover:text-red-600"
+                              onClick={() => removeCartItem(item._id)}
                             >
                               <Trash2 size={18} />
                             </Button>
