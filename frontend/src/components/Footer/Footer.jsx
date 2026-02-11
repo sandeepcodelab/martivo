@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-gray-600 bg-white mt-12 dark:bg-gray-950/10 dark:text-white">
       <Container>
-        <div className="py-10">
+        <div className="pt-8 pb-5">
           <div className="flex flex-col md:flex-row md:justify-between gap-6">
             {/* Brand */}
             <div>
@@ -48,7 +48,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="border-t border-gray-600 mt-8 pt-6 text-center text-sm text-muted-foreground">
+          <div className="border-t border-gray-600 mt-5 pt-5 text-center text-sm text-muted-foreground">
             © {new Date().getFullYear()} Martivo. All rights reserved.
           </div>
         </div>
