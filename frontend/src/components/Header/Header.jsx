@@ -18,7 +18,7 @@ import { UserProfileDesktop, UserProfileMobile } from "../Profile/UserProfile";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const { user, itemsCount } = useContext(AuthContext);
+  const { userData, itemsCount } = useContext(AuthContext);
 
   const navMenus = [
     {
@@ -81,8 +81,8 @@ export default function Header() {
             {/* Mode toggle */}
             <ModeToggle />
 
-            {Object.keys(user).length > 0 ? (
-              <UserProfileDesktop user={user} />
+            {userData.user ? (
+              <UserProfileDesktop user={userData.user} />
             ) : (
               <Link to="/auth/login">
                 <Button className="text-white cursor-pointer">Login</Button>
@@ -141,9 +141,9 @@ export default function Header() {
                     ))}
                   </nav>
                   <SheetFooter>
-                    {Object.keys(user).length > 0 ? (
+                    {userData.user ? (
                       <div>
-                        <UserProfileMobile user={user} />
+                        <UserProfileMobile user={userData.user} />
                       </div>
                     ) : (
                       <Link to="/auth/login">
