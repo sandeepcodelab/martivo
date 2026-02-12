@@ -4,13 +4,16 @@ import {
   getCart,
   updateCart,
   deleteCartItem,
+  mergeCart,
 } from "../controllers/cartController.js";
+import { verifyJWT } from "../middlewares/authMiddleware.js";
 
 const router = Router();
 
-router.route("/add").post(addItem);
-router.route("/all").post(getCart);
-router.route("/update").post(updateCart);
-router.route("/delete").delete(deleteCartItem);
+router.route("/add").post(verifyJWT, addItem);
+router.route("/all").post(verifyJWT, getCart);
+router.route("/update").post(verifyJWT, updateCart);
+router.route("/delete").delete(verifyJWT, deleteCartItem);
+router.route("/merge").post(verifyJWT, mergeCart);
 
 export default router;
