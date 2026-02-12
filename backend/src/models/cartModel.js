@@ -7,10 +7,6 @@ const cartModel = new Schema(
       ref: "User",
       default: undefined,
     },
-    guestId: {
-      type: String,
-      default: undefined,
-    },
     items: [
       {
         variantId: {
@@ -26,13 +22,6 @@ const cartModel = new Schema(
         },
       },
     ],
-    expiryAt: {
-      type: Date,
-      default: null,
-      index: {
-        expires: 0,
-      },
-    },
   },
   { timestamps: true }
 );
