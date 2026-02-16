@@ -7,17 +7,21 @@ const cartModel = new Schema(
       ref: "User",
       default: undefined,
     },
-    variantId: {
-      type: Schema.Types.ObjectId,
-      ref: "Variant",
-      required: true,
-    },
-    quantity: {
-      type: Number,
-      required: true,
-      min: 1,
-      default: 1,
-    },
+    items: [
+      {
+        variantId: {
+          type: Schema.Types.ObjectId,
+          ref: "Variant",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+          min: 1,
+          default: 1,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
