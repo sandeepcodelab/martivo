@@ -17,9 +17,59 @@ import { Link } from "react-router";
 export default function Cart() {
   const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
-  const { updateCartCount } = useContext(AuthContext);
+  const { updateCartCount, userData, token } = useContext(AuthContext);
 
+  // Cart for login user
   useEffect(() => {
+    if (!userData.isAuthenticated) return;
+
+    const fetchCartData = async () => {
+      try {
+        setLoading(true);
+
+        const cartRes = await axios.get("/api/v1/cart/all", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const cartData = cartRes?.data?.data?.cart?.items || [];
+
+        if (!cartData.length) return;
+
+        const variantIds = cartData.map((item) => item.variantId);
+
+        // Fetch variants
+        const res = await axios.post(`/api/v1/product-variant/bulk/`, {
+          variantIds,
+        });
+
+        const mergedCart = res.data.data.variants.map((variant) => {
+          const matchedItem = cartData.find(
+            (item) => item.variantId === variant._id,
+          );
+
+          return {
+            ...variant,
+            quantity: matchedItem?.quantity ?? 1,
+          };
+        });
+
+        setCartItems(mergedCart);
+      } catch (error) {
+        console.error("Failed to fetch cart data", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCartData();
+  }, [userData]);
+
+  // localCart (without login)
+  useEffect(() => {
+    if (userData.isAuthenticated) return;
+
     const fetchCartData = async () => {
       try {
         setLoading(true);
@@ -60,15 +110,19 @@ export default function Cart() {
 
   // Update Cart
   useEffect(() => {
-    localStorage.setItem(
-      "guestCartItems",
-      JSON.stringify(
-        cartItems.map((item) => ({
-          variantId: item._id,
-          quantity: item.quantity,
-        })),
-      ),
-    );
+    if (userData.isAuthenticated) {
+      // console.log("cartItems : ", cartItems);
+    } else {
+      localStorage.setItem(
+        "guestCartItems",
+        JSON.stringify(
+          cartItems.map((item) => ({
+            variantId: item._id,
+            quantity: item.quantity,
+          })),
+        ),
+      );
+    }
 
     // Update globle cart
     updateCartCount();
