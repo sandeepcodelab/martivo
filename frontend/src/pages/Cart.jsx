@@ -11,13 +11,15 @@ import { Input } from "@/components/ui/input";
 import AuthContext from "@/contexts/AuthContext";
 import axios from "axios";
 import { Trash2, X, ArrowRight, Minus, Plus, IndianRupee } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 
 export default function Cart() {
+  const debounceRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
-  const { updateCartCount, userData, token } = useContext(AuthContext);
+  const { updateCartCount, userData, token, tokenRefresh } =
+    useContext(AuthContext);
 
   // Cart for login user
   useEffect(() => {
@@ -57,7 +59,10 @@ export default function Cart() {
 
         setCartItems(mergedCart);
       } catch (error) {
-        console.error("Failed to fetch cart data", error);
+        if (error.status === 401) {
+          tokenRefresh();
+        }
+        // console.error("Failed to fetch cart data", error.status);
       } finally {
         setLoading(false);
       }
@@ -108,25 +113,25 @@ export default function Cart() {
     fetchCartData();
   }, []);
 
-  // Update Cart
-  useEffect(() => {
-    if (userData.isAuthenticated) {
-      // console.log("cartItems : ", cartItems);
-    } else {
-      localStorage.setItem(
-        "guestCartItems",
-        JSON.stringify(
-          cartItems.map((item) => ({
-            variantId: item._id,
-            quantity: item.quantity,
-          })),
-        ),
-      );
+  // Sync backend cart
+  const syncCartToBackend = (variantId, newQty) => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
     }
 
-    // Update globle cart
-    updateCartCount();
-  }, [cartItems]);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        await axios.patch(
+          `/api/v1/cart/update/${variantId}`,
+          { quantity: newQty },
+          { headers: { Authorization: `Bearer ${token}` } },
+        );
+      } catch (err) {
+        if (err.status === 401) tokenRefresh();
+        // console.log(err);
+      }
+    }, 500);
+  };
 
   // Update quantity
   const updateQuantity = (variantId, type) => {
@@ -137,13 +142,27 @@ export default function Cart() {
 
         let newQty = item.quantity;
 
-        const calculte = type === "PLUS" ? 1 : -1;
+        const calculate = type === "PLUS" ? 1 : -1;
 
-        newQty = item.quantity + calculte;
+        newQty = item.quantity + calculate;
 
         if (newQty < 1) return item;
 
         if (item.stock && newQty > item.stock) return item;
+
+        if (userData.isAuthenticated) {
+          syncCartToBackend(variantId, newQty);
+        } else {
+          const updatedGuestCart = prev.map((i) =>
+            i._id === variantId
+              ? { variantId: i._id, quantity: newQty }
+              : { variantId: i._id, quantity: i.quantity },
+          );
+          localStorage.setItem(
+            "guestCartItems",
+            JSON.stringify(updatedGuestCart),
+          );
+        }
 
         return {
           ...item,
@@ -154,8 +173,18 @@ export default function Cart() {
   };
 
   // Remove Item
-  const removeCartItem = (variantId) => {
-    setCartItems((prev) => prev.filter((item) => item._id !== variantId));
+  const removeCartItem = async (variantId) => {
+    try {
+      if (userData.isAuthenticated) {
+        await axios.delete(`/api/v1/cart/delete/${variantId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+
+      setCartItems((prev) => prev.filter((item) => item._id !== variantId));
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   // Loading state
