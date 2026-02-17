@@ -11,9 +11,9 @@ import { verifyJWT } from "../middlewares/authMiddleware.js";
 const router = Router();
 
 router.route("/add").post(verifyJWT, addItem);
-router.route("/all").post(verifyJWT, getCart);
-router.route("/update").post(verifyJWT, updateCart);
-router.route("/delete").delete(verifyJWT, deleteCartItem);
+router.route("/all").get(verifyJWT, getCart);
+router.route("/update/:variantId").patch(verifyJWT, updateCart);
+router.route("/delete/:variantId").delete(verifyJWT, deleteCartItem);
 router.route("/merge").post(verifyJWT, mergeCart);
 
 export default router;
