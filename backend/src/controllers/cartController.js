@@ -142,48 +142,66 @@ const getCart = asyncHandler(async (req, res) => {
 });
 
 const updateCart = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { userId, quantity } = req.body;
+  const userId = req?.user?._id;
+  const { variantId } = req.params;
+  const { quantity } = req.body;
 
-  const item = await Cart.findOne({
-    $or: [{ userId }, { guestId }],
-    "items._id": id,
-  });
+  if (!variantId) {
+    throw new ApiError(400, "Variant ID is required");
+  }
 
-  if (!item) {
+  if (typeof quantity !== "number" || quantity < 0) {
+    throw new ApiError(400, "Invalid quantity");
+  }
+
+  const cart = await Cart.findOne({ userId });
+
+  if (!cart) {
     throw new ApiError(404, "Item not found.", []);
   }
 
-  item.items[0].quantity = quantity;
-  await item.save({ validateBeforeSave: false });
+  const item = cart.items.find(
+    (i) => i.variantId.toString() === variantId.toString()
+  );
+
+  if (quantity === 0) {
+    cart.items = cart.items.filter(
+      (i) => i.variantId.toString() !== variantId.toString()
+    );
+  } else {
+    item.quantity = quantity;
+  }
+
+  await cart.save();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, { item }, "Item updated successfully."));
+    .json(new ApiResponse(200, { cart }, "Item updated successfully."));
 });
 
 const deleteCartItem = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { userId } = req.body;
+  const { variantId } = req.params;
+  const userId = req.user._id;
 
-  const item = await Cart.findOne({
-    $or: [{ userId }, { guestId: userId }],
-    "items._id": id,
-  });
-
-  if (!item) {
-    throw new ApiError(404, "Item not found.", []);
+  if (!variantId) {
+    throw new ApiError(400, "Variant ID is required");
   }
 
-  const deleteItem = await Cart.findByIdAndDelete(item.items[0]._id);
+  const updatedCart = await Cart.findOneAndUpdate(
+    { userId },
+    { $pull: { items: { variantId } } },
+    { new: true }
+  );
 
-  if (!deleteItem) {
-    throw new ApiError(500, "Failed to delete item.", []);
+  if (!updatedCart) {
+    throw new ApiError(404, "Item not found.", []);
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Item deleted successfully."));
+    .json(
+      new ApiResponse(200, { cart: updatedCart }, "Item deleted successfully.")
+    );
 });
 
 const mergeCart = asyncHandler(async (req, res) => {
