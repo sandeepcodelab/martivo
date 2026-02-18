@@ -36,7 +36,8 @@ export default function ProductDetails() {
   const [selectedVariant, setSelectedVariant] = useState({});
   const [combinationError, setCombinationError] = useState("");
   const [errors, setError] = useState({});
-  const { updateCartCount } = useContext(AuthContext);
+  const { updateCartCount, userData, token, tokenRefresh } =
+    useContext(AuthContext);
 
   useEffect(() => {
     // Get product
@@ -112,29 +113,41 @@ export default function ProductDetails() {
 
     if (Object.keys(selectedVariant).length === 0) return;
 
-    // Store cart in localStorage
-    const cart = JSON.parse(localStorage.getItem("guestCartItems")) || [];
-
-    const itemExist = cart.find(
-      (item) => item.variantId === selectedVariant._id,
-    );
-
-    let updateCart;
-
-    if (itemExist) {
-      updateCart = cart.map((item) =>
-        item.variantId === selectedVariant._id
-          ? { ...item, quantity: quantity }
-          : item,
-      );
+    if (userData.isAuthenticated) {
+      axios
+        .post(
+          "/api/v1/cart/add",
+          { variantId: selectedVariant._id, quantity },
+          { headers: { Authorization: `Bearer ${token}` } },
+        )
+        .then((res) => updateCartCount(res.data?.data.cart.items.length))
+        .catch((err) => {
+          if (err.status === 401) tokenRefresh();
+        });
     } else {
-      updateCart = [...cart, { variantId: selectedVariant._id, quantity }];
+      // Store cart in localStorage
+      const cart = JSON.parse(localStorage.getItem("guestCartItems")) || [];
+
+      const itemExist = cart.find(
+        (item) => item.variantId === selectedVariant._id,
+      );
+
+      let updateCart;
+
+      if (itemExist) {
+        updateCart = cart.map((item) =>
+          item.variantId === selectedVariant._id
+            ? { ...item, quantity: quantity }
+            : item,
+        );
+      } else {
+        updateCart = [...cart, { variantId: selectedVariant._id, quantity }];
+      }
+
+      localStorage.setItem("guestCartItems", JSON.stringify(updateCart));
+
+      updateCartCount();
     }
-
-    localStorage.setItem("guestCartItems", JSON.stringify(updateCart));
-
-    updateCartCount();
-
     // Notification
     notification.success("Item added to cart.");
   };
