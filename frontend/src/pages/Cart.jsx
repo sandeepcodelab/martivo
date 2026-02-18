@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import AuthContext from "@/contexts/AuthContext";
 import axios from "axios";
-import { Trash2, X, ArrowRight, Minus, Plus, IndianRupee } from "lucide-react";
+import { Trash2, ArrowRight, Minus, Plus, IndianRupee } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 
@@ -176,9 +176,11 @@ export default function Cart() {
   const removeCartItem = async (variantId) => {
     try {
       if (userData.isAuthenticated) {
-        await axios.delete(`/api/v1/cart/delete/${variantId}`, {
+        const res = await axios.delete(`/api/v1/cart/delete/${variantId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        updateCartCount(res.data?.data.cart.items.length);
       }
 
       setCartItems((prev) => prev.filter((item) => item._id !== variantId));
