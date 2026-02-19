@@ -9,6 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import AuthContext from "@/contexts/AuthContext";
+import {
+  getCartWithVariants,
+  getGuestCartWithVariants,
+  removeItemFromCart,
+} from "@/services/cartService";
 import axios from "axios";
 import { Trash2, ArrowRight, Minus, Plus, IndianRupee } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -21,99 +26,32 @@ export default function Cart() {
   const { updateCartCount, userData, token, tokenRefresh } =
     useContext(AuthContext);
 
-  // Cart for login user
+  // Load cart
   useEffect(() => {
-    if (!userData.isAuthenticated) return;
-
-    const fetchCartData = async () => {
+    const fetchCart = async () => {
       try {
         setLoading(true);
 
-        const cartRes = await axios.get("/api/v1/cart/all", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        let cart;
 
-        const cartData = cartRes?.data?.data?.cart?.items || [];
-
-        if (!cartData.length) return;
-
-        const variantIds = cartData.map((item) => item.variantId);
-
-        // Fetch variants
-        const res = await axios.post(`/api/v1/product-variant/bulk/`, {
-          variantIds,
-        });
-
-        const mergedCart = res.data.data.variants.map((variant) => {
-          const matchedItem = cartData.find(
-            (item) => item.variantId === variant._id,
-          );
-
-          return {
-            ...variant,
-            quantity: matchedItem?.quantity ?? 1,
-          };
-        });
-
-        setCartItems(mergedCart);
-      } catch (error) {
-        if (error.status === 401) {
-          tokenRefresh();
+        if (userData?.isAuthenticated) {
+          cart = await getCartWithVariants();
+        } else {
+          cart = await getGuestCartWithVariants();
         }
-        // console.error("Failed to fetch cart data", error.status);
+
+        setCartItems(cart);
+      } catch (error) {
+        setError("Failed to load cart");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCartData();
+    fetchCart();
   }, [userData]);
 
-  // localCart (without login)
-  useEffect(() => {
-    if (userData.isAuthenticated) return;
-
-    const fetchCartData = async () => {
-      try {
-        setLoading(true);
-
-        const localCart =
-          JSON.parse(localStorage.getItem("guestCartItems")) || [];
-
-        if (!localCart.length) return;
-
-        const variantIds = localCart.map((item) => item.variantId);
-
-        // Fetch variants
-        const res = await axios.post(`/api/v1/product-variant/bulk/`, {
-          variantIds,
-        });
-
-        const mergedCart = res.data.data.variants.map((variant) => {
-          const matchedItem = localCart.find(
-            (item) => item.variantId === variant._id,
-          );
-
-          return {
-            ...variant,
-            quantity: matchedItem?.quantity ?? 1,
-          };
-        });
-
-        setCartItems(mergedCart);
-      } catch (error) {
-        console.error("Failed to fetch cart data", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCartData();
-  }, []);
-
-  // Sync backend cart
+  // Sync cart to backend
   const syncCartToBackend = (variantId, newQty) => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -121,70 +59,64 @@ export default function Cart() {
 
     debounceRef.current = setTimeout(async () => {
       try {
-        await axios.patch(
-          `/api/v1/cart/update/${variantId}`,
-          { quantity: newQty },
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
+        await updateCartAPI(variantId, newQty);
       } catch (err) {
-        if (err.status === 401) tokenRefresh();
-        // console.log(err);
+        console.log(err.response?.data);
       }
     }, 500);
   };
 
   // Update quantity
   const updateQuantity = (variantId, type) => {
-    // Current cart
-    setCartItems((prev) =>
-      prev.map((item) => {
+    let updatedItem = null;
+
+    setCartItems((prev) => {
+      const updatedCart = prev.map((item) => {
         if (item._id !== variantId) return item;
 
-        let newQty = item.quantity;
-
         const calculate = type === "PLUS" ? 1 : -1;
-
-        newQty = item.quantity + calculate;
+        const newQty = item.quantity + calculate;
 
         if (newQty < 1) return item;
-
         if (item.stock && newQty > item.stock) return item;
 
-        if (userData.isAuthenticated) {
-          syncCartToBackend(variantId, newQty);
-        } else {
-          const updatedGuestCart = prev.map((i) =>
-            i._id === variantId
-              ? { variantId: i._id, quantity: newQty }
-              : { variantId: i._id, quantity: i.quantity },
-          );
-          localStorage.setItem(
-            "guestCartItems",
-            JSON.stringify(updatedGuestCart),
-          );
-        }
+        updatedItem = { ...item, quantity: newQty };
 
-        return {
-          ...item,
-          quantity: newQty,
-        };
-      }),
-    );
+        return updatedItem;
+      });
+
+      return updatedCart;
+    });
+
+    // 🔥 Side effects AFTER state update
+    if (!updatedItem) return;
+
+    if (userData.isAuthenticated) {
+      syncCartToBackend(variantId, updatedItem.quantity);
+    } else {
+      const guestCart = cartItems.map((item) =>
+        item._id === variantId
+          ? { variantId: item._id, quantity: updatedItem.quantity }
+          : { variantId: item._id, quantity: item.quantity },
+      );
+
+      localStorage.setItem("guestCartItems", JSON.stringify(guestCart));
+    }
   };
 
   // Remove Item
   const removeCartItem = async (variantId) => {
+    const previousItems = cartItems;
+
+    setCartItems((prev) => prev.filter((item) => item._id !== variantId));
+
     try {
       if (userData.isAuthenticated) {
-        const res = await axios.delete(`/api/v1/cart/delete/${variantId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        updateCartCount(res.data?.data.cart.items.length);
+        const res = await removeItemFromCart(variantId);
+        updateCartCount(res.data?.data?.cart?.items?.length);
       }
-
-      setCartItems((prev) => prev.filter((item) => item._id !== variantId));
     } catch (err) {
+      setCartItems(previousItems);
       console.log(err);
     }
   };
