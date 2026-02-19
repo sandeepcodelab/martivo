@@ -25,6 +25,8 @@ import { IndianRupee, Minus, Plus } from "lucide-react";
 import { notification } from "@/utils/toast";
 import { useContext } from "react";
 import AuthContext from "@/contexts/AuthContext";
+import { addItemToCart, addItemToGuestCart } from "@/services/cartService";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -36,6 +38,7 @@ export default function ProductDetails() {
   const [selectedVariant, setSelectedVariant] = useState({});
   const [combinationError, setCombinationError] = useState("");
   const [errors, setError] = useState({});
+  const [loader, setLoader] = useState(false);
   const { updateCartCount, userData, token, tokenRefresh } =
     useContext(AuthContext);
 
@@ -83,7 +86,7 @@ export default function ProductDetails() {
   };
 
   // Add to cart
-  const addToCartHandler = (e) => {
+  const addToCartHandler = async (e) => {
     e.preventDefault();
 
     const nextErrors = {};
@@ -101,7 +104,7 @@ export default function ProductDetails() {
       nextErrors.quantity = "Quantity must be a valid number.";
     }
 
-    if (qty >= selectedVariant?.stock) {
+    if (qty > selectedVariant?.stock) {
       nextErrors.quantityLimit = `Only ${selectedVariant?.stock} items available in stock.`;
     }
 
@@ -111,45 +114,25 @@ export default function ProductDetails() {
 
     if (Object.keys(nextErrors).length > 0) return;
 
-    if (Object.keys(selectedVariant).length === 0) return;
+    if (!selectedVariant?._id) return;
 
-    if (userData.isAuthenticated) {
-      axios
-        .post(
-          "/api/v1/cart/add",
-          { variantId: selectedVariant._id, quantity },
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
-        .then((res) => updateCartCount(res.data?.data.cart.items.length))
-        .catch((err) => {
-          if (err.status === 401) tokenRefresh();
-        });
-    } else {
-      // Store cart in localStorage
-      const cart = JSON.parse(localStorage.getItem("guestCartItems")) || [];
+    setLoader(true);
 
-      const itemExist = cart.find(
-        (item) => item.variantId === selectedVariant._id,
-      );
-
-      let updateCart;
-
-      if (itemExist) {
-        updateCart = cart.map((item) =>
-          item.variantId === selectedVariant._id
-            ? { ...item, quantity: quantity }
-            : item,
-        );
+    try {
+      if (userData.isAuthenticated) {
+        await addItemToCart(selectedVariant._id, quantity);
       } else {
-        updateCart = [...cart, { variantId: selectedVariant._id, quantity }];
+        addItemToGuestCart(selectedVariant._id, quantity);
       }
 
-      localStorage.setItem("guestCartItems", JSON.stringify(updateCart));
-
       updateCartCount();
+      // Notification
+      notification.success("Item added to cart.");
+    } catch (err) {
+      notification.error("Failed to add item.");
+    } finally {
+      setLoader(false);
     }
-    // Notification
-    notification.success("Item added to cart.");
   };
 
   return (
@@ -314,8 +297,15 @@ export default function ProductDetails() {
               <Button
                 onClick={addToCartHandler}
                 className="w-full mt-3 text-white cursor-pointer"
+                disabled={loader}
               >
-                Add to Cart
+                {loader ? (
+                  <>
+                    <Spinner /> Add to Cart
+                  </>
+                ) : (
+                  "Add to Cart"
+                )}
               </Button>
             </div>
           </div>
