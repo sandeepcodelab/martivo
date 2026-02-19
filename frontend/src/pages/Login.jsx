@@ -16,6 +16,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { EyeOff, Eye } from "lucide-react";
 import axios from "axios";
 import AuthContext from "@/contexts/AuthContext";
+import { notification } from "@/utils/toast";
+import { login } from "@/services/authService";
 
 export default function Login() {
   const {
@@ -29,9 +31,10 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [spinner, setSpinner] = useState(false);
   const { userLogin } = useContext(AuthContext);
+
   const navigate = useNavigate();
 
-  const onSubmit = (formData) => {
+  const onSubmit = async (formData) => {
     const payload = {
       email: formData.email.trim().toLowerCase(),
       password: formData.password,
@@ -39,23 +42,22 @@ export default function Login() {
 
     setSpinner(true);
 
-    // API request
-    axios
-      .post("/api/v1/auth/login", payload)
-      .then((res) => {
-        userLogin(res?.data);
-        navigate("/");
-      })
-      .catch((error) => {
-        // console.log("Error: ", error);
-        console.log("Error: ", error?.response?.data?.message);
-      })
-      .finally(() => {
-        setSpinner(false);
-      });
-  };
+    try {
+      const res = await login(payload);
+      userLogin(res);
 
-  // console.log(watch("example")); // watch input value by passing the name of it
+      notification.success("Logged in successfully.");
+      navigate("/");
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Login failed. Please check your credentials.";
+
+      notification.error(message);
+    } finally {
+      setSpinner(false);
+    }
+  };
 
   return (
     <Container>
