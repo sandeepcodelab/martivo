@@ -14,10 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { EyeOff, Eye } from "lucide-react";
-import axios from "axios";
 import AuthContext from "@/contexts/AuthContext";
 import { notification } from "@/utils/toast";
-import { login } from "@/services/authService";
+import { userLogin } from "@/services/authService";
 
 export default function Login() {
   const {
@@ -30,7 +29,7 @@ export default function Login() {
   const showPasswordIcon = watch("password");
   const [showPassword, setShowPassword] = useState(false);
   const [spinner, setSpinner] = useState(false);
-  const { userLogin } = useContext(AuthContext);
+  const { loggedInUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -43,8 +42,8 @@ export default function Login() {
     setSpinner(true);
 
     try {
-      const res = await login(payload);
-      userLogin(res);
+      const res = await userLogin(payload);
+      loggedInUser(res);
 
       notification.success("Logged in successfully.");
       navigate("/");

@@ -9,7 +9,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import axios from "axios";
 import { useParams } from "react-router";
 import { Input } from "@/components/ui/input";
 import {
@@ -27,6 +26,7 @@ import { useContext } from "react";
 import AuthContext from "@/contexts/AuthContext";
 import { addItemToCart, addItemToGuestCart } from "@/services/cartService";
 import { Spinner } from "@/components/ui/spinner";
+import { getAllVariants, getProduct } from "@/services/productService";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -39,22 +39,33 @@ export default function ProductDetails() {
   const [combinationError, setCombinationError] = useState("");
   const [errors, setError] = useState({});
   const [loader, setLoader] = useState(false);
-  const { updateCartCount, userData, token, tokenRefresh } =
-    useContext(AuthContext);
+  const [btnLoader, setBtnLoader] = useState(false);
+  const { updateCartCount, userData } = useContext(AuthContext);
 
   useEffect(() => {
-    // Get product
-    axios
-      .get(`/api/v1/product/singleProduct/${id}`)
-      .then((res) => setProduct(res.data?.data.product))
-      .catch((err) => console.log(err));
+    const fetchProductDetails = async () => {
+      try {
+        setLoader(true);
 
-    // Get variants
-    axios
-      .get(`/api/v1/product-variant/${id}/all`)
-      .then((res) => setVariants(res.data?.data.variants))
-      .catch((err) => console.log(err));
-  }, []);
+        // Get product and variant
+        const [productRes, variantsRes] = await Promise.all([
+          getProduct(id),
+          getAllVariants(id),
+        ]);
+
+        setProduct(productRes?.data?.data?.product);
+        setVariants(variantsRes?.data?.data?.variants);
+      } catch (err) {
+        notification.error("Failed to load product details.");
+      } finally {
+        setLoader(false);
+      }
+    };
+
+    if (id) {
+      fetchProductDetails();
+    }
+  }, [id]);
 
   // Check variant
   useEffect(() => {
@@ -116,24 +127,36 @@ export default function ProductDetails() {
 
     if (!selectedVariant?._id) return;
 
-    setLoader(true);
+    setBtnLoader(true);
 
     try {
+      let totalItems = null;
       if (userData.isAuthenticated) {
-        await addItemToCart(selectedVariant._id, quantity);
+        const res = await addItemToCart(selectedVariant._id, quantity);
+        totalItems = res?.data?.data?.cart.items?.length;
       } else {
-        addItemToGuestCart(selectedVariant._id, quantity);
+        const res = addItemToGuestCart(selectedVariant._id, quantity);
+        totalItems = res?.length;
       }
 
-      updateCartCount();
+      updateCartCount(totalItems);
       // Notification
       notification.success("Item added to cart.");
     } catch (err) {
       notification.error("Failed to add item.");
     } finally {
-      setLoader(false);
+      setBtnLoader(false);
     }
   };
+
+  // Loading state
+  if (loader) {
+    return (
+      <div className="flex justify-center items-center h-70">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <Container>
@@ -290,16 +313,16 @@ export default function ProductDetails() {
             </div>
 
             {/* Buttons */}
-            <div className="mt-5 w-full lg:w-100">
+            <div className="mt-5 w-full">
               {/* <Button variant="outline" className="w-full cursor-pointer">
                 Buy Now
               </Button> */}
               <Button
                 onClick={addToCartHandler}
                 className="w-full mt-3 text-white cursor-pointer"
-                disabled={loader}
+                disabled={btnLoader}
               >
-                {loader ? (
+                {btnLoader ? (
                   <>
                     <Spinner /> Add to Cart
                   </>

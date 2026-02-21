@@ -12,29 +12,30 @@ import {
 import { LogOutIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { notification } from "@/utils/toast";
-import axios from "axios";
 import AuthContext from "@/contexts/AuthContext";
+import { logout } from "@/services/authService";
 
 const useLogout = () => {
   const { userLogout } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const logout = () => {
-    axios
-      .post("/api/v1/auth/logout")
-      .then((res) => {
-        userLogout();
+  const handleLogout = async () => {
+    try {
+      await logout();
 
-        notification.success("Log out successfully.");
-        navigate("/auth/login");
-      })
-      .catch((error) => {
-        console.log(error);
-        notification.error("Something went wrong, Please try again later.");
-      });
+      userLogout();
+
+      notification.success("Logged out successfully.");
+      navigate("/auth/login");
+    } catch (error) {
+      notification.error(
+        error.response?.data?.message ||
+          "Something went wrong. Please try again.",
+      );
+    }
   };
 
-  return logout;
+  return handleLogout;
 };
 
 export function UserProfileDesktop({ user }) {

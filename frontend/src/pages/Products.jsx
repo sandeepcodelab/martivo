@@ -1,31 +1,42 @@
 import Container from "@/components/Container/Container";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
+import { getAllProducts } from "@/services/productService";
+import { notification } from "@/utils/toast";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const [loader, setLoader] = useState(false);
 
   useEffect(() => {
-    axios
-      .get("/api/v1/product/all")
-      .then((res) => {
-        setProducts(res.data?.data.products);
-        return;
-      })
-      .catch((err) => console.log(err));
+    const fetchAllProducts = async () => {
+      try {
+        setLoader(true);
+
+        const res = await getAllProducts();
+        setProducts(res.data?.data?.products);
+      } catch (err) {
+        // console.log(err);
+        notification.error("Failed to load products.");
+      } finally {
+        setLoader(false);
+      }
+    };
+
+    fetchAllProducts();
   }, []);
 
-  // console.log(products);
+  // Loading state
+  if (loader) {
+    return (
+      <div className="flex justify-center items-center h-70">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <section className="py-2 text-white">
@@ -53,13 +64,15 @@ export default function Products() {
               </CardContent>
               <CardFooter className="grid px-4">
                 <Link to={`/product-details/${product?._id}`}>
-                  <p className="text-lg py-1">{product?.title}</p>
+                  <p className="text-lg py-1 hover:underline">
+                    {product?.title}
+                  </p>
                 </Link>
                 <p className="text-muted-foreground mb-2">$99.00</p>
-
+                {/* 
                 <Button size="sm" className="w-full text-white cursor-pointer">
                   Add to Cart
-                </Button>
+                </Button> */}
               </CardFooter>
             </Card>
           ))}

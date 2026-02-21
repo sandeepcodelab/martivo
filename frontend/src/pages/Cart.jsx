@@ -13,8 +13,8 @@ import {
   getCartWithVariants,
   getGuestCartWithVariants,
   removeItemFromCart,
+  updateCartAPI,
 } from "@/services/cartService";
-import axios from "axios";
 import { Trash2, ArrowRight, Minus, Plus, IndianRupee } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
@@ -23,8 +23,7 @@ export default function Cart() {
   const debounceRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
-  const { updateCartCount, userData, token, tokenRefresh } =
-    useContext(AuthContext);
+  const { updateCartCount, userData } = useContext(AuthContext);
 
   // Load cart
   useEffect(() => {
@@ -42,7 +41,8 @@ export default function Cart() {
 
         setCartItems(cart);
       } catch (error) {
-        setError("Failed to load cart");
+        // setError("Failed to load cart");
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -68,10 +68,8 @@ export default function Cart() {
 
   // Update quantity
   const updateQuantity = (variantId, type) => {
-    let updatedItem = null;
-
-    setCartItems((prev) => {
-      const updatedCart = prev.map((item) => {
+    setCartItems((prev) =>
+      prev.map((item) => {
         if (item._id !== variantId) return item;
 
         const calculate = type === "PLUS" ? 1 : -1;
@@ -80,28 +78,20 @@ export default function Cart() {
         if (newQty < 1) return item;
         if (item.stock && newQty > item.stock) return item;
 
-        updatedItem = { ...item, quantity: newQty };
+        if (userData.isAuthenticated) {
+          syncCartToBackend(variantId, newQty);
+        } else {
+          const guestCart = prev.map((item) =>
+            item._id === variantId
+              ? { variantId: item._id, quantity: newQty }
+              : { variantId: item._id, quantity: item.quantity },
+          );
+          localStorage.setItem("guestCartItems", JSON.stringify(guestCart));
+        }
 
-        return updatedItem;
-      });
-
-      return updatedCart;
-    });
-
-    // 🔥 Side effects AFTER state update
-    if (!updatedItem) return;
-
-    if (userData.isAuthenticated) {
-      syncCartToBackend(variantId, updatedItem.quantity);
-    } else {
-      const guestCart = cartItems.map((item) =>
-        item._id === variantId
-          ? { variantId: item._id, quantity: updatedItem.quantity }
-          : { variantId: item._id, quantity: item.quantity },
-      );
-
-      localStorage.setItem("guestCartItems", JSON.stringify(guestCart));
-    }
+        return { ...item, quantity: newQty };
+      }),
+    );
   };
 
   // Remove Item
@@ -114,6 +104,12 @@ export default function Cart() {
       if (userData.isAuthenticated) {
         const res = await removeItemFromCart(variantId);
         updateCartCount(res.data?.data?.cart?.items?.length);
+      } else {
+        const updateCartItems = previousItems
+          .filter((item) => item._id !== variantId)
+          .map((item) => ({ variantId: item._id, quantity: item.quantity }));
+
+        localStorage.setItem("guestCartItems", JSON.stringify(updateCartItems));
       }
     } catch (err) {
       setCartItems(previousItems);
