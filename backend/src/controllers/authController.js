@@ -255,11 +255,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const user = await User.findById(decodedToken._id);
 
-    // console.log("Token: ", incomingRefreshToken);
-    // console.log("User token: ", user.refreshToken);
-    // console.log(incomingRefreshToken !== user.refreshToken);
-    // return;
-
     if (!user || incomingRefreshToken !== user.refreshToken) {
       throw new ApiError(401, "Unauthorized");
     }
@@ -281,19 +276,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       sameSite: "lax",
     };
 
-    return (
-      res
-        .status(200)
-        // .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
-        .json(
-          new ApiResponse(
-            200,
-            { accessToken },
-            "Access token refreshed successfully"
-          )
+    return res
+      .status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", newRefreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken },
+          "Access token refreshed successfully"
         )
-    );
+      );
   } catch (error) {
     throw new ApiError(401, "Unauthorized");
   }
