@@ -10,7 +10,7 @@ export const getCartWithVariants = async () => {
   const variantIds = cartItems.map((item) => item.variantId);
 
   // Get variant details
-  const variantRes = await api.post("/v1/product-variant/bulk", {
+  const variantRes = await api.post("/product-variant/bulk", {
     variantIds,
   });
 
@@ -90,4 +90,12 @@ export const updateCartAPI = (variantId, newQty) => {
 
 export const removeItemFromCart = (variantId) => {
   return api.delete(`/cart/delete/${variantId}`);
+};
+
+export const mergeCart = (localCart) => {
+  return api.post("/cart/merge", { items: localCart });
+};
+
+export const getCartItems = () => {
+  return api.get("/cart/all");
 };
