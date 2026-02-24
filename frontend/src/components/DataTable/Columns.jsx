@@ -53,7 +53,7 @@ export const OrderColumns = [
 // Category columns
 export const CategoryColumns = (onEdit, onDelete) => [
   {
-    accessorKey: "categoryName",
+    accessorKey: "name",
     header: "Category Name",
   },
   {
@@ -79,7 +79,7 @@ export const CategoryColumns = (onEdit, onDelete) => [
         <Button
           size="icon"
           variant="destructive"
-          onClick={() => onDelete(row.original.id)}
+          onClick={() => onDelete(row.original)}
         >
           <Trash />
         </Button>
