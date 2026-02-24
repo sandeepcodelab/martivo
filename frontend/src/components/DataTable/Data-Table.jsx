@@ -16,8 +16,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { DataTablePagination } from "../Pagination/Pagination";
-
 export function DataTable({ columns, data }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -40,7 +38,7 @@ export function DataTable({ columns, data }) {
   return (
     <div>
       {/* Table */}
-      <div className="overflow-hidden rounded-md border">
+      <div className="overflow-hidden rounded-md border min-h-[400px]">
         <Table>
           <TableHeader className="dark:bg-neutral-800 bg-neutral-300 pointer-events-none">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -88,11 +86,6 @@ export function DataTable({ columns, data }) {
             )}
           </TableBody>
         </Table>
-      </div>
-
-      {/* Pagination controls */}
-      <div className="pt-4">
-        <DataTablePagination table={table} />
       </div>
     </div>
   );
