@@ -40,17 +40,50 @@ const addCategory = asyncHandler(async (req, res) => {
 });
 
 const getAllCategories = asyncHandler(async (req, res) => {
-  const categories = await Category.find();
+  let { search = "", page = "1", limit = "10" } = req.query;
+
+  page = Number(page);
+  limit = Number(limit);
+
+  if (page < 1) page = 1;
+  if (limit < 10) page = 10;
+
+  const skip = (page - 1) * limit;
+
+  const query = {};
+
+  if (search.trim) {
+    query.name = { $regex: search, $options: "i" };
+  }
+
+  // Get total document
+  const total = await Category.countDocuments(query);
+
+  const categories = await Category.find(query)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+  console.log(categories);
 
   if (!categories) {
     throw new ApiError(404, "Category not found.", []);
   }
 
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, { categories }, "Categories fetched successfully.")
-    );
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        categories,
+        pageInfo: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      "Categories fetched successfully."
+    )
+  );
 });
 
 const editCategory = asyncHandler(async (req, res) => {
@@ -88,10 +121,10 @@ const updateCategory = asyncHandler(async (req, res) => {
     category._id,
     {
       $set: {
-        name: name || category.name,
-        slug: categorySlug || category.slug,
-        parentId: parentId || category.parentId,
-        status: status || category.status,
+        name: name ?? category.name,
+        slug: categorySlug ?? category.slug,
+        parentId: parentId ?? category.parentId,
+        status: status ?? category.status,
       },
     },
     {
@@ -125,7 +158,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Category deleted successfully."));
+    .json(new ApiResponse(200, { category }, "Category deleted successfully."));
 });
 
 export {
