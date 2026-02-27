@@ -15,6 +15,7 @@ import { Link, NavLink } from "react-router";
 import { ModeToggle } from "../Providers/ModeToggle";
 import AuthContext from "@/contexts/AuthContext";
 import { UserProfileDesktop, UserProfileMobile } from "../Profile/UserProfile";
+import logo from "../../assets/img/logo.png";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -43,9 +44,10 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b backdrop-blur-lg">
       <Container>
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <div className="text-xl font-bold dark:text-white">
-            <Link>Martivo</Link>
+          <div className="w-[150px]">
+            <Link to="/">
+              <img src={logo} alt="Logo" className="w-full h-full" />
+            </Link>
           </div>
 
           {/* Desktop Menu */}

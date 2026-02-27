@@ -1,5 +1,6 @@
 import Container from "../Container/Container";
 import { Facebook, Twitter, Github, Instagram } from "lucide-react";
+import logo from "../../assets/img/logo.png";
 
 export default function Footer() {
   return (
@@ -9,7 +10,9 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row md:justify-between gap-6">
             {/* Brand */}
             <div>
-              <h2 className="text-xl font-bold">Martivo</h2>
+              <div className="w-[120px]">
+                <img src={logo} alt="Logo" className="w-full h-full" />
+              </div>
               <p className="text-sm text-muted-foreground mt-2">
                 The best products, at the best prices.
               </p>
