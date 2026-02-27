@@ -13,12 +13,16 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router";
 import { EyeOff, Eye } from "lucide-react";
 import { useState } from "react";
+import { signupUser } from "@/services/authService";
+import { notification } from "@/utils/toast";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Signup() {
   const {
     register,
     handleSubmit,
     watch,
+    setError,
     formState: { errors },
   } = useForm();
 
@@ -26,16 +30,38 @@ export default function Signup() {
   const showConfirmPasswordIcon = watch("confirmPassword");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loader, setLoader] = useState(false);
 
-  const onSubmit = (formData) => {
+  const onSubmit = async (formData) => {
+    const { password, confirmPassword } = formData;
+
+    if (confirmPassword !== password) {
+      setError("confirmPassword", {
+        type: "manual",
+        message: "Passwords do not match",
+      });
+      return;
+    }
+
     const payload = {
       ...formData,
       email: formData.email.trim().toLowerCase(),
     };
-    console.log(payload);
-  };
 
-  // console.log(watch("example")); // watch input value by passing the name of it
+    try {
+      setLoader(true);
+
+      const res = await signupUser(payload);
+      notification.success(res?.data?.message);
+    } catch (error) {
+      if (error.status === 409) {
+        notification.error(error?.response?.data?.message);
+      }
+      // console.error("Signup failed 2:", error?.response?.data || error.message);
+    } finally {
+      setLoader(false);
+    }
+  };
 
   return (
     <Container>
@@ -53,7 +79,7 @@ export default function Signup() {
                 <Input
                   id="fullname"
                   type="text"
-                  {...register("fullname", { required: true })}
+                  {...register("name", { required: true })}
                 />
                 {errors.fullname && (
                   <p className="text-sm text-red-500">Full Name is required.</p>
@@ -108,7 +134,9 @@ export default function Signup() {
                   />
                   {showConfirmPasswordIcon && (
                     <Button
-                      onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      onClick={() => {
+                        setShowConfirmPassword((prev) => !prev);
+                      }}
                       type="button"
                       size="icon"
                       className="absolute top-0 right-0 rounded-l-none text-white bg-transparent hover:bg-transparent"
@@ -126,8 +154,16 @@ export default function Signup() {
               <Button
                 type="submit"
                 className="w-full text-white cursor-pointer mt-6"
+                disabled={loader}
               >
-                Sign Up
+                {loader ? (
+                  <div className="flex justify-center items-center gap-2">
+                    <Spinner />
+                    <span>Creating account...</span>
+                  </div>
+                ) : (
+                  "Sign Up"
+                )}
               </Button>
             </form>
           </CardContent>
