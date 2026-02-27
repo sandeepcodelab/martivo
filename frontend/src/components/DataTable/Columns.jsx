@@ -63,6 +63,12 @@ export const CategoryColumns = (onEdit, onDelete) => [
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) =>
+      row?.original?.status ? (
+        <span className="text-green-500">Active</span>
+      ) : (
+        <span className="text-red-500">Inactive</span>
+      ),
   },
   {
     id: "action",
