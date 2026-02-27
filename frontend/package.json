@@ -45,6 +45,7 @@
     "embla-carousel-react": "^8.6.0",
     "lodash": "^4.17.23",
     "lucide-react": "^0.544.0",
+    "radix-ui": "^1.4.3",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-error-boundary": "^6.1.0",
