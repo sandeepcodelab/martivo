@@ -1,6 +1,6 @@
 import Container from "../Container/Container";
 import { Facebook, Twitter, Github, Instagram } from "lucide-react";
-import logo from "../../assets/img/logo.png";
+import logo from "../../assets/logo.png";
 
 export default function Footer() {
   return (

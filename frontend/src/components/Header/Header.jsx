@@ -15,7 +15,7 @@ import { Link, NavLink } from "react-router";
 import { ModeToggle } from "../Providers/ModeToggle";
 import AuthContext from "@/contexts/AuthContext";
 import { UserProfileDesktop, UserProfileMobile } from "../Profile/UserProfile";
-import logo from "../../assets/img/logo.png";
+import logo from "../../assets/logo.png";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
