@@ -5,6 +5,7 @@ import {
   updateCart,
   deleteCartItem,
   mergeCart,
+  clearCart,
 } from "../controllers/cartController.js";
 import { verifyJWT } from "../middlewares/authMiddleware.js";
 
@@ -15,5 +16,6 @@ router.route("/all").get(verifyJWT, getCart);
 router.route("/update/:variantId").patch(verifyJWT, updateCart);
 router.route("/delete/:variantId").delete(verifyJWT, deleteCartItem);
 router.route("/merge").post(verifyJWT, mergeCart);
+router.route("/clear-cart").get(verifyJWT, clearCart);
 
 export default router;

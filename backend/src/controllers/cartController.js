@@ -211,4 +211,24 @@ const mergeCart = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { cart }, "Cart merged successfully."));
 });
 
-export { addItem, getCart, updateCart, deleteCartItem, mergeCart };
+const clearCart = asyncHandler(async (req, res) => {
+  const user = req.user;
+
+  const updateUserCart = await Cart.findOneAndUpdate(
+    { userId: user._id },
+    { $set: { items: [] } },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { cart: updateUserCart },
+        "Cart cleared successfully."
+      )
+    );
+});
+
+export { addItem, getCart, updateCart, deleteCartItem, mergeCart, clearCart };
