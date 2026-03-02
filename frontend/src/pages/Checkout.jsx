@@ -1,412 +1,370 @@
-import React, { useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import React, { useEffect, useState } from "react";
 import Container from "@/components/Container/Container";
-
-import { Card, CardContent } from "@/components/ui/card";
-
-import { Check, Circle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { ShoppingCart, CreditCard, Truck, IndianRupee } from "lucide-react";
+import { useForm } from "react-hook-form";
+import {
+  clearCart,
+  createOrder,
+  getCartWithVariants,
+} from "@/services/cartService";
+import { notification } from "@/utils/toast";
+import { useNavigate } from "react-router";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function Checkout() {
-  const paymentMethods = [
-    "Card",
-    "Paypal",
-    "Phone Pe",
-    "Google Pay",
-    "Paytm",
-    "Apple Pay",
-    "Amazon Pay",
-  ];
+  const [paymentMethod, setPaymentMethod] = useState("Card");
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const navigate = useNavigate();
 
-  const [paymentMethodSelected, setPaymentMethodSelected] = useState("");
-
-  const [step, setStep] = useState(1);
-
-  // Initialize React Hook Form
-  const methods = useForm({
-    mode: "onChange",
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
     defaultValues: {
-      name: "",
-      email: "",
+      fullName: "",
+      phone: "",
       address: "",
       city: "",
+      state: "",
+      postalCode: "",
     },
   });
 
-  const { register, handleSubmit, formState, getValues } = methods;
-  const { errors } = formState;
+  const itemsPrice = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0,
+  );
 
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => prev - 1);
+  const shippingPrice = 0;
+  // const taxPrice = Math.round((itemsPrice * 5) / 100);
+  const taxPrice = 0;
+  const totalPrice = itemsPrice + shippingPrice + taxPrice;
 
-  const onSubmit = (data) => {
-    console.log("✅ Final Submitted Data:", data);
+  // Fetch cart Items
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        setLoading(true);
+
+        const res = await getCartWithVariants();
+        setCartItems(res);
+
+        if (!res.length) {
+          navigate("/cart");
+        }
+      } catch (err) {
+        console.log(err.response.data.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
+  // Submit checkout form
+  const onSubmit = async (formData) => {
+    if (!paymentMethod) return;
+
+    const checkoutPayload = { ...formData, paymentMethod };
+
+    try {
+      setProcessing(true);
+
+      const res = await createOrder(checkoutPayload);
+
+      const cartRes = await clearCart();
+      console.log(cartRes.data.data.cart.items.length);
+
+      // navigate("/order-success", { state: { order: res.data.data } });
+    } catch (err) {
+      if (err.response.status === 400) {
+        notification.error(err.response.data.message);
+      }
+      if (err.response.status === 500) {
+        notification.error(err.response.data.message);
+      }
+    } finally {
+      setProcessing(false);
+    }
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-70">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <Container>
-      <div className="max-w-full md:max-w-xl mx-auto mt-10 bg-card border p-6 rounded-2xl shadow-sm">
-        <h2 className="text-xl font-bold text-center mb-4">Checkout</h2>
-        {/* <h2 className="text-xl font-semibold text-center mb-4">
-          Step {step} of 4
-        </h2> */}
+      <div className="min-h-screen flex flex-wrap-reverse md:flex-nowrap gap-6 p-4 md:p-6 pb-24 md:pb-6">
+        <div className="w-full md:w-3/5">
+          <Card className="shadow-sm rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-xl">Shipping Address</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <form id="checkout-form" onSubmit={handleSubmit(onSubmit)}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="pb-2">Full Name</Label>
+                    <Input
+                      placeholder="Enter your full name"
+                      {...register("fullName", {
+                        required: "Full Name is required",
+                      })}
+                    />
+                    {errors.fullName && (
+                      <span className="text-red-600 text-sm">
+                        {errors.fullName.message}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="pb-2">Phone</Label>
+                    <Input
+                      placeholder="10-digit phone number"
+                      {...register("phone", {
+                        required: "Phone is required",
+                        pattern: {
+                          value: /^[6-9]\d{9}$/,
+                          message: "Enter a valid phone number",
+                        },
+                      })}
+                    />
+                    {errors.phone && (
+                      <span className="text-red-600 text-sm">
+                        {errors.phone.message}
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-        {/* progress bar */}
-        <div className="flex flex-col items-center w-full mb-10">
-          {/* Circle */}
-          <div className="flex items-center w-full max-w-md justify-between">
-            <div className="flex flex-col items-center">
-              <span
-                className={
-                  step >= 1
-                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white text-xs`
-                    : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
-                }
-              >
-                1
-              </span>
-            </div>
+                <div className="my-6">
+                  <Label className="pb-2">Address</Label>
+                  <Input
+                    placeholder="Street address"
+                    {...register("address", {
+                      required: "Address is required",
+                    })}
+                  />
+                  {errors.address && (
+                    <span className="text-red-600 text-sm">
+                      {errors.address.message}
+                    </span>
+                  )}
+                </div>
 
-            <div
-              className={
-                step >= 2
-                  ? `flex-1 h-0.5 bg-primary`
-                  : `flex-1 h-0.5 bg-gray-300`
-              }
-            ></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="pb-2">City</Label>
+                    <Input
+                      placeholder="City"
+                      {...register("city", { required: "City is required" })}
+                    />
+                    {errors.city && (
+                      <span className="text-red-600 text-sm">
+                        {errors.city.message}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="pb-2">State</Label>
+                    <Input
+                      placeholder="State"
+                      {...register("state", { required: "State is required" })}
+                    />
+                    {errors.state && (
+                      <span className="text-red-600 text-sm">
+                        {errors.state.message}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="pb-2">Postal Code</Label>
+                    <Input
+                      placeholder="Postal code"
+                      {...register("postalCode", {
+                        required: "Postal code is required",
+                      })}
+                    />
+                    {errors.postalCode && (
+                      <span className="text-red-600 text-sm">
+                        {errors.postalCode.message}
+                      </span>
+                    )}
+                  </div>
+                </div>
 
-            <div className="flex flex-col items-center">
-              <span
-                className={
-                  step >= 2
-                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white text-xs`
-                    : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
-                }
-              >
-                2
-              </span>
-            </div>
+                {/* Payment Section */}
+                <div className="mt-8">
+                  <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
 
-            <div
-              className={
-                step >= 3
-                  ? `flex-1 h-0.5 bg-primary`
-                  : `flex-1 h-0.5 bg-gray-300`
-              }
-            ></div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Card Payment */}
+                    <div
+                      onClick={() => setPaymentMethod("Card")}
+                      className={`cursor-pointer rounded-2xl border p-4 transition-all ${
+                        paymentMethod === "Card"
+                          ? "border-primary ring-2 ring-primary"
+                          : "border-muted"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <CreditCard className="w-5 h-5" />
+                        <div>
+                          <p className="font-medium">Credit / Debit Card</p>
+                          <p className="text-sm text-muted-foreground">
+                            Pay securely using your card
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
-            <div className="flex flex-col items-center">
-              <span
-                className={
-                  step >= 3
-                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white text-xs`
-                    : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
-                }
-              >
-                3
-              </span>
-            </div>
-
-            <div
-              className={
-                step === 4
-                  ? `flex-1 h-0.5 bg-primary`
-                  : `flex-1 h-0.5 bg-gray-300`
-              }
-            ></div>
-
-            <div className="flex flex-col items-center">
-              <span
-                className={
-                  step === 4
-                    ? `w-6 h-6 flex justify-center items-center border-2 rounded-full border-primary bg-primary text-white text-xs`
-                    : `w-6 h-6 flex justify-center items-center border-2 rounded-full text-xs`
-                }
-              >
-                4
-              </span>
-            </div>
-          </div>
-
-          {/* Title */}
-          <div className="flex justify-between w-full max-w-md">
-            <span className="text-xs text-center w-8 -ml-2">Name</span>
-            <span className="text-xs text-center w-8 -ml-2">Address</span>
-            <span className="text-xs text-center w-8 -ml-1">Payment</span>
-            <span className="text-xs text-center w-8">Review</span>
-          </div>
+                    {/* Cash on Delivery */}
+                    <div
+                      onClick={() => setPaymentMethod("COD")}
+                      className={`cursor-pointer rounded-2xl border p-4 transition-all ${
+                        paymentMethod === "COD"
+                          ? "border-primary ring-2 ring-primary"
+                          : "border-muted"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Truck className="w-5 h-5" />
+                        <div>
+                          <p className="font-medium">Cash on Delivery</p>
+                          <p className="text-sm text-muted-foreground">
+                            Pay when your order arrives
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Multi-step form */}
-        <FormProvider {...methods}>
-          <Form {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* STEP 1 */}
-              {step === 1 && (
-                <div className="space-y-4">
-                  <FormField
-                    control={methods.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your name"
-                            {...register("name", {
-                              required: "Name is required",
-                            })}
-                          />
-                        </FormControl>
-                        <FormMessage>{errors.name?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={methods.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your email"
-                            {...register("email", {
-                              required: "Email is required",
-                              pattern: {
-                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                message: "Invalid email format",
-                              },
-                            })}
-                          />
-                        </FormControl>
-                        <FormMessage>{errors.email?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={methods.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Mobile Number</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your mobile number"
-                            {...register("email", {
-                              required: "Email is required",
-                              pattern: {
-                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                message: "Invalid email format",
-                              },
-                            })}
-                          />
-                        </FormControl>
-                        <FormMessage>{errors.email?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
+        {/* Order Summary */}
+        <div className="w-full md:w-2/5">
+          <Card className="shadow-sm rounded-2xl md:sticky md:top-20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <ShoppingCart className="w-5 h-5" /> Order Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {cartItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex justify-between items-center text-md my-2"
+                >
+                  <div className="grid">
+                    <span className="w-full max-w-40 overflow-hidden text-ellipsis whitespace-nowrap">
+                      {item.product.title} × {item.quantity}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {item.color} - {item.size}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="flex items-center">
+                      <IndianRupee size={14} />
+                      {item.price * item.quantity}
+                    </span>
+                  </div>
                 </div>
-              )}
+              ))}
 
-              {/* STEP 2 */}
-              {step === 2 && (
-                <div className="space-y-4">
-                  <FormField
-                    control={methods.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Address</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your address"
-                            {...register("address", {
-                              required: "Address is required",
-                            })}
-                          />
-                        </FormControl>
-                        <FormMessage>{errors.address?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
+              <Separator />
 
-                  <FormField
-                    control={methods.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your city"
-                            {...register("city", {
-                              required: "City is required",
-                            })}
-                          />
-                        </FormControl>
-                        <FormMessage>{errors.city?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={methods.control}
-                    name="State"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>State</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your state"
-                            {...register("state", {
-                              required: "State is required",
-                            })}
-                          />
-                        </FormControl>
-                        <FormMessage>{errors.state?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={methods.control}
-                    name="Pin Code"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Pin Code</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your pin code"
-                            {...register("Pin code", {
-                              required: "Pin code is required",
-                            })}
-                          />
-                        </FormControl>
-                        <FormMessage>{errors.zip?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={methods.control}
-                    name="Country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Country</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter your country"
-                            {...register("country", {
-                              required: "Country is required",
-                            })}
-                          />
-                        </FormControl>
-                        <FormMessage>{errors.country?.message}</FormMessage>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
+              <div className="flex justify-between text-sm">
+                <span>Items</span>
+                <span>{cartItems.length}</span>
+              </div>
 
-              {/* STEP 3 */}
-              {step === 3 && (
-                <div className="space-y-4">
-                  {paymentMethods.map((paymentMethod) => (
-                    <Card
-                      key={paymentMethod}
-                      className="w-full py-4"
-                      onClick={() => setPaymentMethodSelected(paymentMethod)}
-                    >
-                      <CardContent className="flex justify-between items-center">
-                        <div className="font-semibold">{paymentMethod}</div>
-                        <div>
-                          {paymentMethodSelected === paymentMethod ? (
-                            <Check
-                              size={20}
-                              className="border-2 border-green-600 rounded-full bg-green-600 text-white"
-                            />
-                          ) : (
-                            <Circle size={20} />
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
+              <div className="flex justify-between text-sm">
+                <span>Subtotal</span>
+                <span className="flex items-center">
+                  <IndianRupee size={13} />
+                  {itemsPrice}
+                </span>
+              </div>
 
-              {/* STEP 4 - REVIEW */}
-              {step === 4 && (
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-lg mb-2">
-                    Review Your Information
-                  </h3>
-                  <p>
-                    <strong>Name:</strong> {getValues("name")}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {getValues("email")}
-                  </p>
-                  <p>
-                    <strong>Address:</strong> {getValues("address")}
-                  </p>
-                  <p>
-                    <strong>City:</strong> {getValues("city")}
-                  </p>
-                </div>
-              )}
+              <div className="flex justify-between text-sm">
+                <span>Shipping</span>
+                <span className="flex items-center">
+                  <IndianRupee size={13} />
+                  {shippingPrice}
+                </span>
+              </div>
 
-              {/* Buttons */}
-              <div className="flex justify-between">
-                {step > 1 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={prevStep}
-                    className="w-28"
-                  >
-                    Back
-                  </Button>
-                )}
+              <div className="flex justify-between text-sm">
+                <span>Tax</span>
+                <span className="flex items-center">
+                  <IndianRupee size={13} />
+                  {taxPrice}
+                </span>
+              </div>
 
-                {step < 4 ? (
-                  <Button
-                    type="button"
-                    onClick={nextStep}
-                    className="ml-auto w-28"
-                  >
-                    Next
-                  </Button>
+              <Separator />
+
+              <div className="flex justify-between font-semibold text-base">
+                <span>Total</span>
+                <span className="flex items-center">
+                  <IndianRupee size={13} strokeWidth={3} />
+                  {totalPrice}
+                </span>
+              </div>
+
+              <Button
+                form="checkout-form"
+                className="w-full mt-4 text-white cursor-pointer hidden md:block"
+                disabled={processing}
+              >
+                {processing ? (
+                  <div className="flex justify-center items-center gap-4">
+                    <Spinner /> Order processing
+                  </div>
                 ) : (
-                  <Button type="submit" className="ml-auto w-28">
-                    Submit
-                  </Button>
+                  "Place Order"
                 )}
-              </div>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
 
-              {/* Progress bar */}
-              <div className="flex justify-center gap-2 mt-4">
-                {[1, 2, 3, 4].map((n) => (
-                  <div
-                    key={n}
-                    className={`h-1.5 w-8 rounded-full ${
-                      step >= n ? "bg-primary" : "bg-muted"
-                    }`}
-                  />
-                ))}
+        {/* Mobile Sticky Button */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg p-4 md:hidden">
+          <Button
+            form="checkout-form"
+            className="w-full text-white"
+            disabled={processing}
+          >
+            {processing ? (
+              <div className="flex items-center gap-4">
+                <Spinner /> Order processing
               </div>
-            </form>
-          </Form>
-        </FormProvider>
+            ) : (
+              `₹ ${totalPrice} • Place Order`
+            )}
+          </Button>
+        </div>
       </div>
     </Container>
   );
