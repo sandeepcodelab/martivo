@@ -99,3 +99,13 @@ export const mergeCart = (localCart) => {
 export const getCartItems = () => {
   return api.get("/cart/all");
 };
+
+export const clearCart = () => {
+  return api.get("/cart/clear-cart");
+};
+
+// Checkout APIs
+
+export const createOrder = (payload) => {
+  return api.post("/order/create", payload);
+};
