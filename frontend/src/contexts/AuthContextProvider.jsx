@@ -1,71 +1,97 @@
 import { useEffect, useState } from "react";
 import AuthContext from "./AuthContext";
-import axios from "axios";
-import { notification } from "@/utils/toast";
-// import { useNavigate } from "react-router";
+import { getCurrentUser } from "@/services/authService";
+import { getCartItems, mergeCart } from "@/services/cartService";
 
 const AuthContaxtProvider = ({ children }) => {
-  const [user, setUser] = useState({});
-  const [itemsCount, setItemCount] = useState();
-
-  // const navigate = useNavigate();
+  const [userData, setUserData] = useState({
+    user: null,
+    isAuthenticated: false,
+  });
+  const [itemsCount, setItemCount] = useState(0);
 
   // Refresh auth on app load
-  // useEffect(() => {
-  //   axios
-  //     .post("/api/v1/auth/refresh", {}, { withCredentials: true })
-  //     .then((res) => console.log("res => ", res))
-  //     .catch((err) => {
-  //       if (err.status === 401) {
-  //         // userLogout();
-  //       }
-  //     });
-
-  //   const storedUser = JSON.parse(localStorage.getItem("userAuth"));
-  //   if (storedUser) {
-  //     setUser(storedUser?.data?.user);
-  //   }
-  // }, []);
-
   useEffect(() => {
-    const cartItems = JSON.parse(localStorage.getItem("guestCartItems")) || [];
-    setItemCount(cartItems.length);
+    const fetchUser = async () => {
+      try {
+        // Get current user
+        const userData = await getCurrentUser();
+        setUserData({ user: userData?.data?.user, isAuthenticated: true });
+      } catch (error) {
+        if (error.response?.status === 401) {
+          userLogout();
+        }
+      }
+    };
+
+    fetchUser();
   }, []);
 
+  useEffect(() => {
+    const fetchCartItem = async () => {
+      try {
+        if (userData.isAuthenticated) {
+          const res = await getCartItems();
+          updateCartCount(res?.data?.data?.cart?.items?.length);
+        } else {
+          updateCartCount();
+        }
+      } catch (err) {
+        if (err.response?.status === 401) {
+          updateCartCount();
+        }
+      }
+    };
+    fetchCartItem();
+  }, [userData]);
+
   // Login
-  const userLogin = (userData) => {
-    setUser(userData?.data?.user);
-    localStorage.setItem("userAuth", JSON.stringify(userData));
+  const loggedInUser = async (userData) => {
+    setUserData({ user: userData?.data?.user, isAuthenticated: true });
+
+    if (!userData.success) return;
+
+    const localCart = JSON.parse(localStorage.getItem("guestCartItems"));
+
+    if (localCart.length > 0) {
+      try {
+        const res = await mergeCart(localCart);
+        updateCartCount(res.data.data.cart.items.length);
+        localStorage.removeItem("guestCartItems");
+      } catch (err) {
+        console.error("Cart merge failed", err);
+      }
+    }
   };
 
   // Logout
   const userLogout = () => {
-    axios
-      .post("/api/v1/auth/logout", {}, { withCredentials: true })
-      .then((res) => {
-        // userLogout();
-
-        notification.success("Log out successfully.");
-        navigate("/auth/login");
-      })
-      .catch((error) => {
-        console.log(error);
-        notification.error("Something went wrong, Please try again later.");
-      });
-
-    setUser({});
-    localStorage.removeItem("userAuth");
+    setUserData({
+      user: null,
+      isAuthenticated: false,
+    });
   };
 
   // Count cart items
-  const updateCartCount = () => {
-    const cartItems = JSON.parse(localStorage.getItem("guestCartItems")) || [];
-    setItemCount(cartItems.length);
+  const updateCartCount = (itemsInCart) => {
+    if (itemsInCart) {
+      setItemCount(itemsInCart);
+    } else {
+      const cartItems =
+        JSON.parse(localStorage.getItem("guestCartItems")) || [];
+      setItemCount(cartItems.length);
+    }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, userLogin, userLogout, itemsCount, updateCartCount }}
+      value={{
+        userData,
+        loggedInUser,
+        userLogout,
+        itemsCount,
+        updateCartCount,
+      }}
     >
       {children}
     </AuthContext.Provider>
