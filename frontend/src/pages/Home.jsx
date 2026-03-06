@@ -1,7 +1,7 @@
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Container from "../components/Container/Container";
-import * as React from "react";
 import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
@@ -12,215 +12,236 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { Heart, LayoutGrid } from "lucide-react";
+import hero1 from "@/assets/img/hero1.jpg";
+import hero2 from "@/assets/img/hero2.jpg";
+import hero3 from "@/assets/img/hero3.jpg";
+import hero4 from "@/assets/img/hero4.jpg";
+import hero5 from "@/assets/img/hero5.jpg";
+import hero6 from "@/assets/img/hero6.jpg";
+import hoodie from "@/assets/img/hoodie.jpg";
+import jacket from "@/assets/img/jacket.jpg";
+import jeans from "@/assets/img/jeans.jpg";
+import shirt from "@/assets/img/shirt.jpg";
+import shorts from "@/assets/img/shorts.jpg";
+import sweater from "@/assets/img/sweater.jpg";
+import tshirt from "@/assets/img/tshirt.jpg";
+import belt from "@/assets/img/belt.jpg";
+import cap from "@/assets/img/cap.jpg";
+import shoes from "@/assets/img/shoes.jpg";
+import watch from "@/assets/img/watch.jpg";
+import { Link } from "react-router";
+import ProductCard from "@/components/Product/ProductCard";
 
 export default function HomePage() {
-  const plugin = React.useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: true })
-  );
+  const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
 
-  const [api, setApi] = React.useState(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const [scrollSnaps, setScrollSnaps] = React.useState([]);
+  const [carouselApi, setCarouselApi] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState([]);
 
-  React.useEffect(() => {
-    if (!api) return;
+  const heroImages = [hero1, hero2, hero3, hero4, hero5, hero6];
+  const categories = [
+    { title: "T-Shirts", url: tshirt },
+    { title: "Shirts", url: shirt },
+    { title: "Jeans", url: jeans },
+    { title: "Jackets", url: jacket },
+    { title: "Hoodies", url: hoodie },
+    { title: "Sweaters", url: sweater },
+    { title: "Shorts", url: shorts },
+    { title: "Shoes", url: shoes },
+    { title: "Watches", url: watch },
+    { title: "Caps", url: cap },
+    { title: "Belts", url: belt },
+  ];
 
-    setScrollSnaps(api.scrollSnapList());
-    setSelectedIndex(api.selectedScrollSnap());
+  const homepageCategories = categories.slice(0, 7);
 
-    api.on("select", () => {
-      setSelectedIndex(api.selectedScrollSnap());
-    });
-  }, [api]);
+  useEffect(() => {
+    if (!carouselApi) return;
+
+    // Safe access to prevent runtime errors
+    setScrollSnaps(carouselApi?.scrollSnapList?.() ?? []);
+    setSelectedIndex(carouselApi?.selectedScrollSnap?.() ?? 0);
+
+    const onSelect = () => {
+      setSelectedIndex(carouselApi?.selectedScrollSnap?.() ?? 0);
+    };
+
+    carouselApi.on("select", onSelect);
+
+    return () => {
+      carouselApi.off?.("select", onSelect);
+    };
+  }, [carouselApi]);
 
   return (
-    <main>
-      {/* Hero Section */}
+    <main className="space-y-20 pb-20">
+      {/* ================= HERO SECTION ================= */}
       <section>
-        <Container>
-          <Carousel
-            plugins={[plugin.current]}
-            className="w-full relative"
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.play}
-            opts={{ loop: true }}
-            setApi={setApi}
-          >
-            <CarouselContent>
-              {Array.from({ length: 5 }).map((_, index) => (
-                <CarouselItem key={index}>
-                  <div>
-                    <Card className="py-0 bg-[url(https://placehold.co/1200x720)] bg-center bg-no-repeat bg-cover">
-                      <CardContent className="h-100 px-0 overflow-hidden">
-                        {/* <span>{index + 1}</span> */}
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious variant="ghost" className="absolute left-0" />
-            <CarouselNext variant="ghost" className="absolute right-0" />
-          </Carousel>
+        <Carousel
+          plugins={[plugin.current]}
+          className="w-full relative"
+          onMouseEnter={() => plugin.current?.stop()}
+          onMouseLeave={() => plugin.current?.play()}
+          opts={{ loop: true }}
+          setApi={setCarouselApi}
+        >
+          <CarouselContent>
+            {heroImages.map((img, index) => (
+              <CarouselItem key={index}>
+                <div className="relative h-[350px] sm:h-[420px] md:h-[500px] overflow-hidden">
+                  <img
+                    src={img}
+                    className="w-full h-full object-cover"
+                    alt="Hero banner"
+                  />
 
-          {/* Dots */}
-          <div className="flex justify-center gap-2 mt-2">
-            {scrollSnaps.map((_, index) => (
-              <Button
-                key={index}
-                size="icon"
-                // variant="ghost"
-                className={cn(
-                  "h-1.5 w-1.5 rounded-full p-0",
-                  index === selectedIndex ? "w-3" : "bg-gray-300"
-                )}
-                onClick={() => api && api.scrollTo(index)}
-              />
+                  <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center md:items-start text-center md:text-left px-6 sm:px-10 md:px-16 text-white">
+                    <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-4">
+                      Discover Your Style
+                    </h1>
+                    <p className="text-sm sm:text-base md:text-lg mb-6 max-w-md">
+                      Premium collections curated just for you. Elevate your
+                      wardrobe today.
+                    </p>
+                    <Button size="lg" className="text-white cursor-pointer">
+                      Shop Now
+                    </Button>
+                  </div>
+                </div>
+              </CarouselItem>
             ))}
-          </div>
-        </Container>
+          </CarouselContent>
+
+          <CarouselPrevious className="left-4 hidden md:flex" />
+          <CarouselNext className="right-4 hidden md:flex" />
+        </Carousel>
+
+        {/* Dots */}
+        <div className="flex justify-center gap-3 mt-6">
+          {scrollSnaps.map((_, index) => (
+            <button
+              key={index}
+              className={cn(
+                "h-2 rounded-full transition-all",
+                index === selectedIndex ? "w-6 bg-primary" : "w-2 bg-gray-300",
+              )}
+              onClick={() => carouselApi?.scrollTo?.(index)}
+            />
+          ))}
+        </div>
       </section>
 
-      {/* Category Section */}
-      <section className="py-8">
+      {/* ================= CATEGORY SECTION ================= */}
+      <section className="bg-gray-200 dark:bg-muted/40 py-10 sm:py-16">
         <Container>
-          <div className="flex">
-            <div className="flex gap-4 flex-1 justify-evenly overflow-hidden">
-              {[
-                {
-                  title: "T-shirt",
-                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=T-Shirt",
-                },
-                {
-                  title: "Shoes",
-                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Shoes",
-                },
-                {
-                  title: "Jeans",
-                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Jeans",
-                },
-                {
-                  title: "Jacket",
-                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Jacket",
-                },
-                {
-                  title: "Watch",
-                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Watch",
-                },
-                {
-                  title: "Cap",
-                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Cap",
-                },
-                {
-                  title: "Bag",
-                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Bag",
-                },
-                {
-                  title: "Sunglasses",
-                  url: "https://placehold.co/200x200/5e5e5e/FFF?font=lora&text=Sunglasses",
-                },
-              ].map((feature, i) => (
-                <div key={i} className="text-center">
-                  <div className="w-30 h-30 ">
-                    <img
-                      src={feature.url}
-                      alt=""
-                      className="w-full h-full rounded-full"
-                    />
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">{feature.title}</p>
-                  </div>
+          <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center">
+            Shop by Category
+          </h2>
+
+          {/* Mobile Layout (Horizontal Scroll) */}
+          <div className="flex md:hidden gap-4 p-1 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory">
+            {homepageCategories.map((item, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 snap-start group text-center cursor-pointer"
+              >
+                <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
+                  <img
+                    src={item.url}
+                    className="w-full h-full object-cover"
+                    alt={item.title}
+                  />
                 </div>
-              ))}
-            </div>
-            <div className="flex px-4">
-              <div className="text-center">
-                <div className="w-30 h-30 bg-gray-200 rounded-full flex items-center justify-center">
-                  <LayoutGrid />
-                </div>
-                <div>
-                  <p className="text-muted-foreground">All Category</p>
-                </div>
+
+                <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
+                  {item.title}
+                </p>
               </div>
+            ))}
+
+            {/* All Categories */}
+            <div className="flex-shrink-0 group text-center cursor-pointer">
+              <div className="w-20 h-20 mx-auto rounded-full bg-gray-400 flex items-center justify-center group-hover:scale-105 transition">
+                <LayoutGrid />
+              </div>
+
+              <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
+                More
+              </p>
+            </div>
+          </div>
+
+          {/* Desktop Layout (Grid) */}
+          <div className="hidden md:grid grid-cols-6 lg:grid-cols-8 gap-6">
+            {homepageCategories.map((item, i) => (
+              <div key={i} className="group text-center cursor-pointer">
+                <div className="w-24 h-24 lg:w-28 lg:h-28 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
+                  <img
+                    src={item.url}
+                    className="w-full h-full object-cover"
+                    alt={item.title}
+                  />
+                </div>
+
+                <p className="mt-3 text-sm lg:text-base font-medium group-hover:text-primary transition">
+                  {item.title}
+                </p>
+              </div>
+            ))}
+
+            {/* All Categories */}
+            <div className="group text-center cursor-pointer">
+              <div className="w-24 h-24 lg:w-28 lg:h-28 mx-auto rounded-full bg-gray-400 flex items-center justify-center group-hover:scale-105 transition">
+                <LayoutGrid />
+              </div>
+
+              <p className="mt-3 text-sm lg:text-base font-medium group-hover:text-primary transition">
+                More
+              </p>
             </div>
           </div>
         </Container>
       </section>
 
-      {/* Featured Products Preview */}
-      <section className="py-10">
-        <Container>
-          <h2 className="text-3xl font-bold mb-8 dark:text-white">
-            Featured Products
-          </h2>
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {[1, 2, 3, 4].map((item) => (
-              <Card
-                key={item}
-                className="hover:shadow-md transition py-0 pb-6 gap-1 dark:bg-gray-950/10 dark:text-white"
-              >
-                <div className="w-full h-50 rounded-t-lg overflow-hidden relative">
-                  <img
-                    src="https://placehold.co/400x400/gray/white"
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-3 right-3 bg-white rounded-full p-1">
-                    <Heart className="size-5 fill-gray-300 text-gray-300" />
-                  </div>
-                </div>
-                <CardHeader className="mt-3">
-                  <CardTitle>Product {item}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-2">$99.00</p>
-                  <Button size="sm" className="w-full cursor-pointer">
-                    Add to Cart
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+      {/* ================= PRODUCT SECTIONS ================= */}
+      <Container>
+        {/* Featured Products */}
+        <section>
+          <div className="flex justify-between items-center mb-10">
+            <h2 className="text-3xl font-bold">Featured Products</h2>
+            <Link to="/products">
+              <Button variant="ghost">View All</Button>
+            </Link>
           </div>
-        </Container>
-      </section>
 
-      {/* Best Sellers Products Preview */}
-      <section className="py-10">
-        <Container>
-          <h2 className="text-3xl font-bold mb-8 dark:text-white">
-            Best Sellers
-          </h2>
-          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {[1, 2, 3, 4].map((item) => (
-              <Card
-                key={item}
-                className="hover:shadow-md transition py-0 pb-6 gap-1 dark:bg-gray-950/10 dark:text-white"
-              >
-                <div className="w-full h-50 rounded-t-lg overflow-hidden relative">
-                  <img
-                    src="https://placehold.co/400x400/gray/white"
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-3 right-3 bg-white rounded-full p-1">
-                    <Heart className="size-5 fill-gray-300 text-gray-300" />
-                  </div>
-                </div>
-                <CardHeader className="mt-3">
-                  <CardTitle>Product {item}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-2">$99.00</p>
-                  <Button size="sm" className="w-full cursor-pointer">
-                    Add to Cart
-                  </Button>
-                </CardContent>
-              </Card>
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {categories.map((item) => (
+              <Link key={item.title} to={`/product-details/${item}`}>
+                <ProductCard item={item} />
+              </Link>
             ))}
           </div>
-        </Container>
-      </section>
+        </section>
+
+        {/* Best Sellers */}
+        <section className="mt-15">
+          <div className="flex justify-between items-center mb-10">
+            <h2 className="text-3xl font-bold">Best Sellers</h2>
+            <Link to="/products">
+              <Button variant="ghost">View All</Button>
+            </Link>
+          </div>
+
+          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {categories.map((item) => (
+              <Link key={item.title} to={`/product-details/${item}`}>
+                <ProductCard item={item} />
+              </Link>
+            ))}
+          </div>
+        </section>
+      </Container>
     </main>
   );
 }
