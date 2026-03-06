@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Container from "@/components/Container/Container";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
 import { notification } from "@/utils/toast";
 import { useNavigate } from "react-router";
 import { Spinner } from "@/components/ui/spinner";
+import AuthContext from "@/contexts/AuthContext";
 
 export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("Card");
@@ -22,11 +23,11 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const navigate = useNavigate();
+  const { updateCartCount } = useContext(AuthContext);
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm({
     mode: "onBlur",
@@ -84,9 +85,9 @@ export default function Checkout() {
       const res = await createOrder(checkoutPayload);
 
       const cartRes = await clearCart();
-      console.log(cartRes.data.data.cart.items.length);
+      updateCartCount(cartRes.data.data.cart.items.length);
 
-      // navigate("/order-success", { state: { order: res.data.data } });
+      navigate("/order-success", { state: { order: res.data.data } });
     } catch (err) {
       if (err.response.status === 400) {
         notification.error(err.response.data.message);
