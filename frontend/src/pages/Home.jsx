@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Container from "../components/Container/Container";
 import Autoplay from "embla-carousel-autoplay";
 import {
@@ -11,7 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { Heart, LayoutGrid } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import hero1 from "@/assets/img/hero1.jpg";
 import hero2 from "@/assets/img/hero2.jpg";
 import hero3 from "@/assets/img/hero3.jpg";
@@ -31,6 +30,7 @@ import shoes from "@/assets/img/shoes.jpg";
 import watch from "@/assets/img/watch.jpg";
 import { Link } from "react-router";
 import ProductCard from "@/components/Product/ProductCard";
+import { getAllProducts } from "@/services/productService";
 
 export default function HomePage() {
   const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
@@ -38,6 +38,9 @@ export default function HomePage() {
   const [carouselApi, setCarouselApi] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const heroImages = [hero1, hero2, hero3, hero4, hero5, hero6];
   const categories = [
@@ -73,6 +76,23 @@ export default function HomePage() {
       carouselApi.off?.("select", onSelect);
     };
   }, [carouselApi]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const res = await getAllProducts({ limit: 12 });
+        setProducts(res?.data?.data?.products);
+      } catch (err) {
+        setErrors(err);
+        console.log("Err: ", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <main className="space-y-20 pb-20">
@@ -205,9 +225,9 @@ export default function HomePage() {
       </section>
 
       {/* ================= PRODUCT SECTIONS ================= */}
-      <Container>
-        {/* Featured Products */}
-        <section>
+      {/* Featured Products */}
+      <section>
+        <Container>
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-3xl font-bold">Featured Products</h2>
             <Link to="/products">
@@ -215,17 +235,25 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {categories.map((item) => (
-              <Link key={item.title} to={`/product-details/${item}`}>
-                <ProductCard item={item} />
-              </Link>
-            ))}
-          </div>
-        </section>
+          {!loading ? (
+            <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {products.map((item) => (
+                <Link key={item.title} to={`/product-details/${item}`}>
+                  <ProductCard item={item} />
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="flex justify-center items-center h-70">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          )}
+        </Container>
+      </section>
 
-        {/* Best Sellers */}
-        <section className="mt-15">
+      {/* Best Sellers */}
+      <section>
+        <Container>
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-3xl font-bold">Best Sellers</h2>
             <Link to="/products">
@@ -233,15 +261,21 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {categories.map((item) => (
-              <Link key={item.title} to={`/product-details/${item}`}>
-                <ProductCard item={item} />
-              </Link>
-            ))}
-          </div>
-        </section>
-      </Container>
+          {!loading ? (
+            <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              {products.map((item) => (
+                <Link key={item.title} to={`/product-details/${item}`}>
+                  <ProductCard item={item} />
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="flex justify-center items-center h-70">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          )}
+        </Container>
+      </section>
     </main>
   );
 }
