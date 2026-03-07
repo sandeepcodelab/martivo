@@ -63,7 +63,6 @@ const getAllCategories = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);
-  console.log(categories);
 
   if (!categories) {
     throw new ApiError(404, "Category not found.", []);
