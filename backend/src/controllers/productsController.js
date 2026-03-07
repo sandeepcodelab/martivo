@@ -80,7 +80,26 @@ const addProduct = asyncHandler(async (req, res) => {
 });
 
 const getAllProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find();
+  let { limit = 12, page = 1, search = "" } = req.query;
+
+  page = Number(page);
+  limit = Number(limit);
+
+  if (page < 1) page = 1;
+  if (limit < 10) page = 10;
+
+  const skip = (page - 1) * limit;
+
+  const query = {};
+
+  if (search.trim) {
+    query.title = { $regex: search, $options: "i" };
+  }
+
+  // Get total document
+  const total = await Product.countDocuments(query);
+
+  const products = await Product.find(query).skip(skip).limit(limit);
 
   if (!products) {
     throw new ApiError(404, "Products not found.", []);
@@ -94,9 +113,21 @@ const getAllProducts = asyncHandler(async (req, res) => {
       );
   }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, { products }, "Products fetched successfully."));
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        products,
+        pageInfo: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      "Products fetched successfully."
+    )
+  );
 });
 
 const getProductById = asyncHandler(async (req, res) => {
