@@ -10,17 +10,17 @@ import {
   updateCategory,
 } from "../controllers/categoryController.js";
 import { categoryValidator } from "../validators/index.js";
+import { upload } from "../middlewares/multerMiddleware.js";
 
 const router = Router();
 
-router
-  .route("/all")
-  .get(verifyJWT, roleCheck(["admin", "user"]), getAllCategories);
+router.route("/all").get(getAllCategories);
 
 router
   .route("/add")
   .post(
     verifyJWT,
+    upload.single("image"),
     roleCheck(["admin"]),
     categoryValidator(),
     validate,

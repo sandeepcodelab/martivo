@@ -3,12 +3,20 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/apiError.js";
 import slugify from "slugify";
+import {
+  deleteFromCloudinary,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.js";
 
 const addCategory = asyncHandler(async (req, res) => {
   const { name, slug, parentId, status } = req.body;
+  const imagePath = req.file?.path;
 
   if (!name) {
     throw new ApiError(400, "Name field cannot be empty.", []);
+  }
+  if (!imagePath) {
+    throw new ApiError(400, "Image field cannot be empty.", []);
   }
 
   const categorySlug = slug ? slug : slugify(name, { lower: true, trim: true });
@@ -23,14 +31,23 @@ const addCategory = asyncHandler(async (req, res) => {
     );
   }
 
+  let image = "";
+  if (imagePath) {
+    image = await uploadOnCloudinary(imagePath);
+  }
+
   const category = await Category.create({
     name,
     slug: categorySlug,
     parentId,
+    image: image.secure_url,
     status,
   });
 
   if (!category) {
+    if (image) {
+      await deleteFromCloudinary(image.public_id);
+    }
     throw new ApiError(500, "Failed to create category. Please try again.", []);
   }
 
@@ -40,7 +57,7 @@ const addCategory = asyncHandler(async (req, res) => {
 });
 
 const getAllCategories = asyncHandler(async (req, res) => {
-  let { search = "", page = "1", limit = "10" } = req.query;
+  let { search = "", page = "1", limit = "10", sort = "desc" } = req.query;
 
   page = Number(page);
   limit = Number(limit);
@@ -51,16 +68,22 @@ const getAllCategories = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const query = {};
-
   if (search.trim) {
     query.name = { $regex: search, $options: "i" };
+  }
+
+  let sorting = {};
+  if (sort === "desc") {
+    sorting = { createdAt: -1 };
+  } else {
+    sorting = { createdAt: 1 };
   }
 
   // Get total document
   const total = await Category.countDocuments(query);
 
   const categories = await Category.find(query)
-    .sort({ createdAt: -1 })
+    .sort(sorting)
     .skip(skip)
     .limit(limit);
 
