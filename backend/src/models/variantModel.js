@@ -19,6 +19,10 @@ const variantSchema = new Schema(
       type: Number,
       required: true,
     },
+    salePrice: {
+      type: Number,
+      required: true,
+    },
     stock: {
       type: Number,
       required: true,
@@ -26,10 +30,6 @@ const variantSchema = new Schema(
     sku: {
       type: String,
       required: true,
-    },
-    discount: {
-      type: Number,
-      default: 0,
     },
     isActive: {
       type: Boolean,
