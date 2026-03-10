@@ -2,7 +2,7 @@ import { Heart, Star } from "lucide-react";
 
 export default function ProductCard({ item = {} }) {
   return (
-    <div className="overflow-hidden rounded-xl bg-gray-200 dark:bg-zinc-900 shadow-sm hover:shadow-lg transition duration-300 border">
+    <div className="overflow-hidden rounded-xl bg-gray-200 dark:bg-zinc-900 shadow-sm hover:shadow-lg transition duration-300 border group">
       {/* Product Image */}
       <div className="relative h-60 overflow-hidden">
         <img
@@ -31,7 +31,9 @@ export default function ProductCard({ item = {} }) {
 
       {/* Product Info */}
       <div className="p-4 space-y-2">
-        <h3 className="text-md font-medium">{item.title}</h3>
+        <h3 className="text-md font-medium group-hover:underline">
+          {item.title}
+        </h3>
 
         <div className="flex items-center gap-1">
           <div className="flex items-center">
@@ -46,9 +48,9 @@ export default function ProductCard({ item = {} }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-semibold">$59</span>
+          <span className="font-semibold">{item.salePrice}</span>
           <span className="text-sm text-muted-foreground line-through">
-            $99
+            {item.price}
           </span>
         </div>
       </div>
