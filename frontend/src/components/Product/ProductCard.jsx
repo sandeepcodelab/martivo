@@ -37,10 +37,9 @@ export default function ProductCard({ item = {} }) {
 
         <div className="flex items-center gap-1">
           <div className="flex items-center">
-            <Star className="size-4 fill-yellow-400 text-yellow-400" />
-            <Star className="size-4 fill-yellow-400 text-yellow-400" />
-            <Star className="size-4 fill-yellow-400 text-yellow-400" />
-            <Star className="size-4 fill-yellow-400 text-yellow-400" />
+            {[...Array(4)].map((_, i) => (
+              <Star className="size-4 fill-yellow-400 text-yellow-400" />
+            ))}
             <Star className="size-4 text-gray-400" />
           </div>
 
