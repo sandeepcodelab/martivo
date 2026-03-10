@@ -2,9 +2,10 @@ import { Variant } from "../models/variantModel.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/apiError.js";
+import { Product } from "../models/productsModel.js";
 
 const addVariant = asyncHandler(async (req, res) => {
-  const { size, color, price, stock, sku, discount, isActive } = req.body;
+  const { size, color, price, salePrice, stock, sku, isActive } = req.body;
   const { productId } = req.params;
 
   if (!productId) {
@@ -15,20 +16,28 @@ const addVariant = asyncHandler(async (req, res) => {
     );
   }
 
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new ApiError(404, "Product not found.");
+  }
+
   const variant = await Variant.create({
-    product: productId,
+    product: product._id,
     size,
     color,
     price,
+    salePrice,
     stock,
     sku,
-    discount,
     isActive,
   });
 
   if (!variant) {
     throw new ApiError(500, "Unable to save variant. Please retry later.", []);
   }
+
+  await updateProductPrice(product._id);
 
   return res
     .status(201)
@@ -143,6 +152,8 @@ const updateVariant = asyncHandler(async (req, res) => {
     );
   }
 
+  await updateProductPrice(variant.product);
+
   return res
     .status(200)
     .json(
@@ -173,6 +184,8 @@ const deleteVariant = asyncHandler(async (req, res) => {
     );
   }
 
+  await updateProductPrice(variant.product);
+
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "Product variant deleted successfully."));
@@ -201,6 +214,23 @@ const getCartVariants = asyncHandler(async (req, res) => {
       )
     );
 });
+
+const updateProductPrice = async (productId) => {
+  if (!productId) return;
+
+  const lowPriceVariant = await Variant.find({ product: productId })
+    .sort({ salePrice: 1 })
+    .limit(1);
+
+  if (!lowPriceVariant) return;
+
+  const updateProduct = await Product.findByIdAndUpdate(
+    lowPriceVariant[0].product,
+    {
+      minPrice: lowPriceVariant[0].salePrice,
+    }
+  );
+};
 
 export {
   addVariant,
