@@ -14,8 +14,12 @@ const categorySchema = new Schema(
     },
     parentId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "parentCategory",
+      ref: "ParentCategory",
       default: null,
+    },
+    image: {
+      type: String,
+      required: true,
     },
     status: {
       type: Boolean,
