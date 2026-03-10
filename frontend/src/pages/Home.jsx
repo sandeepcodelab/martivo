@@ -17,20 +17,10 @@ import hero3 from "@/assets/img/hero3.jpg";
 import hero4 from "@/assets/img/hero4.jpg";
 import hero5 from "@/assets/img/hero5.jpg";
 import hero6 from "@/assets/img/hero6.jpg";
-import hoodie from "@/assets/img/hoodie.jpg";
-import jacket from "@/assets/img/jacket.jpg";
-import jeans from "@/assets/img/jeans.jpg";
-import shirt from "@/assets/img/shirt.jpg";
-import shorts from "@/assets/img/shorts.jpg";
-import sweater from "@/assets/img/sweater.jpg";
-import tshirt from "@/assets/img/tshirt.jpg";
-import belt from "@/assets/img/belt.jpg";
-import cap from "@/assets/img/cap.jpg";
-import shoes from "@/assets/img/shoes.jpg";
-import watch from "@/assets/img/watch.jpg";
 import { Link } from "react-router";
 import ProductCard from "@/components/Product/ProductCard";
 import { getAllProducts } from "@/services/productService";
+import { getAllcategories } from "@/services/admin/categoryService";
 
 export default function HomePage() {
   const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
@@ -39,25 +29,11 @@ export default function HomePage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState([]);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const heroImages = [hero1, hero2, hero3, hero4, hero5, hero6];
-  const categories = [
-    { title: "T-Shirts", url: tshirt },
-    { title: "Shirts", url: shirt },
-    { title: "Jeans", url: jeans },
-    { title: "Jackets", url: jacket },
-    { title: "Hoodies", url: hoodie },
-    { title: "Sweaters", url: sweater },
-    { title: "Shorts", url: shorts },
-    { title: "Shoes", url: shoes },
-    { title: "Watches", url: watch },
-    { title: "Caps", url: cap },
-    { title: "Belts", url: belt },
-  ];
-
-  const homepageCategories = categories.slice(0, 7);
 
   useEffect(() => {
     if (!carouselApi) return;
@@ -81,11 +57,15 @@ export default function HomePage() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const res = await getAllProducts({ limit: 12 });
-        setProducts(res?.data?.data?.products);
+
+        const [productRes, categoriesRes] = await Promise.all([
+          getAllProducts({ limit: 12 }),
+          getAllcategories({ sort: "asc" }),
+        ]);
+        setProducts(productRes?.data?.data?.products);
+        setCategories(categoriesRes?.data?.data?.categories);
       } catch (err) {
         setErrors(err);
-        console.log("Err: ", err);
       } finally {
         setLoading(false);
       }
@@ -161,21 +141,21 @@ export default function HomePage() {
 
           {/* Mobile Layout (Horizontal Scroll) */}
           <div className="flex md:hidden gap-4 p-1 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory">
-            {homepageCategories.map((item, i) => (
+            {categories.slice(0, 7).map((category) => (
               <div
-                key={i}
+                key={category._id}
                 className="flex-shrink-0 snap-start group text-center cursor-pointer"
               >
                 <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
                   <img
-                    src={item.url}
+                    src={category.image}
                     className="w-full h-full object-cover"
-                    alt={item.title}
+                    alt={category.title}
                   />
                 </div>
 
                 <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
-                  {item.title}
+                  {category.title}
                 </p>
               </div>
             ))}
@@ -194,19 +174,24 @@ export default function HomePage() {
 
           {/* Desktop Layout (Grid) */}
           <div className="hidden md:grid grid-cols-6 lg:grid-cols-8 gap-6">
-            {homepageCategories.map((item, i) => (
-              <div key={i} className="group text-center cursor-pointer">
-                <div className="w-24 h-24 lg:w-28 lg:h-28 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
-                  <img
-                    src={item.url}
-                    className="w-full h-full object-cover"
-                    alt={item.title}
-                  />
-                </div>
+            {categories.slice(0, 7).map((category) => (
+              <div
+                key={category._id}
+                className="group text-center cursor-pointer"
+              >
+                <Link to={`/products?category=${category.slug}`}>
+                  <div className="w-24 h-24 lg:w-28 lg:h-28 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
+                    <img
+                      src={category.image}
+                      className="w-full h-full object-cover"
+                      alt={category.name}
+                    />
+                  </div>
 
-                <p className="mt-3 text-sm lg:text-base font-medium group-hover:text-primary transition">
-                  {item.title}
-                </p>
+                  <p className="mt-3 text-sm lg:text-base font-medium group-hover:text-primary transition">
+                    {category.name}
+                  </p>
+                </Link>
               </div>
             ))}
 
@@ -238,7 +223,7 @@ export default function HomePage() {
           {!loading ? (
             <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {products.map((item) => (
-                <Link key={item.title} to={`/product-details/${item}`}>
+                <Link key={item.title} to={`/product-details/${item._id}`}>
                   <ProductCard item={item} />
                 </Link>
               ))}
@@ -264,7 +249,7 @@ export default function HomePage() {
           {!loading ? (
             <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {products.map((item) => (
-                <Link key={item.title} to={`/product-details/${item}`}>
+                <Link key={item.title} to={`/product-details/${item._id}`}>
                   <ProductCard item={item} />
                 </Link>
               ))}
