@@ -1,6 +1,10 @@
 import { Heart, Star } from "lucide-react";
 
 export default function ProductCard({ item = {} }) {
+  const percentage = Math.ceil(
+    ((item.maxPrice - item.minPrice) / item.maxPrice) * 100,
+  );
+
   return (
     <div className="overflow-hidden rounded-xl bg-gray-200 dark:bg-zinc-900 shadow-sm hover:shadow-lg transition duration-300 border group">
       {/* Product Image */}
@@ -38,7 +42,10 @@ export default function ProductCard({ item = {} }) {
         <div className="flex items-center gap-1">
           <div className="flex items-center">
             {[...Array(4)].map((_, i) => (
-              <Star className="size-4 fill-yellow-400 text-yellow-400" />
+              <Star
+                key={i}
+                className="size-4 fill-yellow-400 text-yellow-400"
+              />
             ))}
             <Star className="size-4 text-gray-400" />
           </div>
@@ -47,10 +54,11 @@ export default function ProductCard({ item = {} }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-semibold">{item.salePrice}</span>
+          <span className="font-semibold">₹{item.minPrice}</span>
           <span className="text-sm text-muted-foreground line-through">
-            {item.price}
+            ₹{item.maxPrice}
           </span>
+          <span className="text-green-600 font-medium">{percentage}% OFF</span>
         </div>
       </div>
     </div>
