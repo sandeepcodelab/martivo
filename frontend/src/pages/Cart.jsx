@@ -15,6 +15,7 @@ import {
   removeItemFromCart,
   updateCartAPI,
 } from "@/services/cartService";
+import { notification } from "@/utils/toast";
 import { Trash2, ArrowRight, Minus, Plus, IndianRupee } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
@@ -41,8 +42,7 @@ export default function Cart() {
 
         setCartItems(cart);
       } catch (error) {
-        // setError("Failed to load cart");
-        console.log(error);
+        notification.error("Failed to load cart.");
       } finally {
         setLoading(false);
       }
@@ -61,7 +61,8 @@ export default function Cart() {
       try {
         await updateCartAPI(variantId, newQty);
       } catch (err) {
-        console.log(err.response?.data);
+        // console.log(err.response?.data);
+        notification.error("Failed to update quantity.");
       }
     }, 500);
   };
@@ -110,10 +111,10 @@ export default function Cart() {
           .map((item) => ({ variantId: item._id, quantity: item.quantity }));
 
         localStorage.setItem("guestCartItems", JSON.stringify(updateCartItems));
+        updateCartCount();
       }
     } catch (err) {
       setCartItems(previousItems);
-      console.log(err);
     }
   };
 
@@ -173,16 +174,14 @@ export default function Cart() {
                             <div className="w-[72px] h-[90px] rounded-lg overflow-hidden shrink-0">
                               <img
                                 src={item.product.thumbnail.url}
-                                alt=""
+                                alt="Image"
                                 className="w-full h-full object-cover"
                               />
                             </div>
 
                             <div className="flex-1 min-w-0">
                               <div className="font-medium overflow-hidden text-ellipsis whitespace-nowrap">
-                                {/* {item.variant.product.title} */}
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit.
+                                {item.product.title}
                               </div>
 
                               <div className="grid text-xs text-muted-foreground">
@@ -295,12 +294,21 @@ export default function Cart() {
                 </div>
 
                 <Link to="/checkout">
-                  <Button className="w-full text-white cursor-pointer">
+                  <Button className="hidden md:flex w-full text-white cursor-pointer">
                     Proceed to Checkout <ArrowRight />
                   </Button>
                 </Link>
               </CardContent>
             </Card>
+
+            {/* Mobile sticky button */}
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-lg p-4 md:hidden">
+              <Link to="/checkout">
+                <Button className="w-full text-white cursor-pointer">
+                  Proceed to Checkout <ArrowRight />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </Container>
