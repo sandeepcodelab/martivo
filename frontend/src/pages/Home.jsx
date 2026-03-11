@@ -20,7 +20,7 @@ import hero6 from "@/assets/img/hero6.jpg";
 import { Link } from "react-router";
 import ProductCard from "@/components/Product/ProductCard";
 import { getAllProducts } from "@/services/productService";
-import { getAllcategories } from "@/services/admin/categoryService";
+import { getAllcategories } from "@/services/categoryService";
 
 export default function HomePage() {
   const plugin = useRef(Autoplay({ delay: 4000, stopOnInteraction: true }));
@@ -104,9 +104,11 @@ export default function HomePage() {
                       Premium collections curated just for you. Elevate your
                       wardrobe today.
                     </p>
-                    <Button size="lg" className="text-white cursor-pointer">
-                      Shop Now
-                    </Button>
+                    <Link to="/products">
+                      <Button size="lg" className="text-white cursor-pointer">
+                        Shop Now
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </CarouselItem>
@@ -222,7 +224,7 @@ export default function HomePage() {
 
           {!loading ? (
             <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((item) => (
+              {products.reverse().map((item) => (
                 <Link key={item.title} to={`/product-details/${item._id}`}>
                   <ProductCard item={item} />
                 </Link>
