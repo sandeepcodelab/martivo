@@ -6,12 +6,15 @@ import {
   uploadOnCloudinary,
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
+import { Category } from "../models/categoryModel.js";
 
 const addProduct = asyncHandler(async (req, res) => {
-  const { title, description, category, status } = req.body;
+  const { title, slug, description, category, status } = req.body;
 
   const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
   const imagesLocalPath = req.files?.images;
+
+  const productSlug = slug ? slug : slugify(title, { lower: true, trim: true });
 
   // Upload thumbnail
   let thumbnail = "";
@@ -45,6 +48,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
   const product = await Product.create({
     title,
+    slug: productSlug,
     description,
     category,
     thumbnail: {
@@ -80,7 +84,7 @@ const addProduct = asyncHandler(async (req, res) => {
 });
 
 const getAllProducts = asyncHandler(async (req, res) => {
-  let { limit = 12, page = 1, search = "" } = req.query;
+  let { limit = 12, page = 1, search = "", category = "" } = req.query;
 
   page = Number(page);
   limit = Number(limit);
@@ -96,10 +100,18 @@ const getAllProducts = asyncHandler(async (req, res) => {
     query.title = { $regex: search, $options: "i" };
   }
 
+  if (category) {
+    const getCategory = await Category.findOne({ slug: category });
+    query.category = getCategory?._id;
+  }
+
   // Get total document
   const total = await Product.countDocuments(query);
 
-  const products = await Product.find(query).skip(skip).limit(limit);
+  const products = await Product.find(query)
+    .skip(skip)
+    .limit(limit)
+    .populate("category");
 
   if (!products) {
     throw new ApiError(404, "Products not found.", []);
