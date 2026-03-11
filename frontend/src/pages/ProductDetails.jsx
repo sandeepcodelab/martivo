@@ -18,7 +18,9 @@ export default function ProductDetails() {
 
   const [product, setProduct] = useState({});
   const [variants, setVariants] = useState([]);
-  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState(
+    "https://placehold.co/600x500?text=Image",
+  );
   const [selectedColor, setColor] = useState("");
   const [selectedSize, setSize] = useState("");
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -115,6 +117,12 @@ export default function ProductDetails() {
   const uniqueColors = [...new Set(variants.map((v) => v.color))];
   const uniqueSizes = [...new Set(variants.map((v) => v.size))];
 
+  const productPrice = selectedVariant?.price || variants[0]?.price;
+  const productSalePrice = selectedVariant?.salePrice || variants[0]?.salePrice;
+  const percentage = Math.ceil(
+    ((productPrice - productSalePrice) / productPrice) * 100,
+  );
+
   return (
     <Container>
       <div className="grid md:grid-cols-2 gap-15 mt-8">
@@ -124,7 +132,7 @@ export default function ProductDetails() {
             <CardContent className="p-0 h-[500px]">
               <img
                 src={selectedImage}
-                alt="product"
+                alt="Image"
                 className="w-full h-full object-cover hover:scale-105 transition"
               />
             </CardContent>
@@ -135,6 +143,7 @@ export default function ProductDetails() {
               <img
                 key={img?.url}
                 src={img?.url}
+                alt="Image"
                 onClick={() => setSelectedImage(img.url)}
                 className="w-20 h-20 object-cover rounded-lg cursor-pointer border hover:border-primary"
               />
@@ -148,9 +157,13 @@ export default function ProductDetails() {
 
           {/* Rating */}
           <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star className="size-4 fill-yellow-400 text-yellow-400" />
+            {[...Array(4)].map((_, i) => (
+              <Star
+                key={i}
+                className="size-4 fill-yellow-400 text-yellow-400"
+              />
             ))}
+            <Star className="size-4 text-gray-500" />
             <span className="text-sm text-gray-500">(120 reviews)</span>
           </div>
 
@@ -158,20 +171,22 @@ export default function ProductDetails() {
           <div>
             <div className="flex items-center gap-4">
               <span className="flex items-center text-3xl font-bold">
-                <IndianRupee size={20} />
-                {selectedVariant?.price || variants[0]?.price}
+                <IndianRupee size={24} strokeWidth={3} className="mt-1" />
+                {selectedVariant?.salePrice || variants[0]?.salePrice}
               </span>
-              <span className="line-through text-gray-400">₹10000</span>
-              <span className="text-green-600 font-medium">50% OFF</span>
+              <span className="flex items-center line-through text-gray-400">
+                ₹{selectedVariant?.price || variants[0]?.price}
+              </span>
+              <span className="text-green-600 font-medium">
+                {percentage}% OFF
+              </span>
             </div>
 
             {combinationError ? (
               <p className="text-red-500 text-sm">{combinationError}</p>
             ) : (
               selectedVariant?.stock > 0 && (
-                <p className="text-sm text-green-600 mt-1">
-                  In Stock ({selectedVariant.stock})
-                </p>
+                <p className="text-sm text-green-600 mt-1">In Stock</p>
               )
             )}
           </div>
