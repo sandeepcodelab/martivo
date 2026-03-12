@@ -7,6 +7,11 @@ const productSchema = new Schema(
       trim: true,
       required: true,
     },
+    slug: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     description: {
       type: String,
       trim: true,
@@ -14,7 +19,7 @@ const productSchema = new Schema(
     },
     category: {
       type: Schema.Types.ObjectId,
-      ref: "category",
+      ref: "Category",
       required: true,
     },
     thumbnail: {
@@ -41,6 +46,8 @@ const productSchema = new Schema(
         },
       },
     ],
+    minPrice: Number,
+    maxPrice: Number,
     status: {
       type: String,
       enum: ["active", "inactive", "out_of_stock"],
