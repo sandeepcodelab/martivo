@@ -103,9 +103,3 @@ export const getCartItems = () => {
 export const clearCart = () => {
   return api.get("/cart/clear-cart");
 };
-
-// Checkout APIs
-
-export const createOrder = (payload) => {
-  return api.post("/order/create", payload);
-};
