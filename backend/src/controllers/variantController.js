@@ -228,6 +228,7 @@ const updateProductPrice = async (productId) => {
     lowPriceVariant[0].product,
     {
       minPrice: lowPriceVariant[0].salePrice,
+      maxPrice: lowPriceVariant[0].price,
     }
   );
 };
