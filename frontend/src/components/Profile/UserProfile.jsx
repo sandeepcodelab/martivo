@@ -70,9 +70,9 @@ export function UserProfileDesktop({ user }) {
         </div>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link to="/user/account">
+          <Link to="/user/orders">
             <DropdownMenuItem className="cursor-pointer">
-              My Account
+              My Orders
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>

@@ -27,16 +27,12 @@ export default function Header() {
       path: "/",
     },
     {
+      name: "Categories",
+      path: "/categories",
+    },
+    {
       name: "Products",
       path: "/products",
-    },
-    {
-      name: "Product-details",
-      path: "/product-details",
-    },
-    {
-      name: "Admin",
-      path: "/admin",
     },
   ];
 

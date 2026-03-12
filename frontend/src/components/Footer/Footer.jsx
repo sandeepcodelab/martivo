@@ -1,6 +1,7 @@
 import Container from "../Container/Container";
-import { Facebook, Twitter, Github, Instagram } from "lucide-react";
+import { Facebook, Twitter, Instagram, Youtube } from "lucide-react";
 import logo from "../../assets/logo.png";
+import { Link } from "react-router";
 
 export default function Footer() {
   return (
@@ -20,34 +21,23 @@ export default function Footer() {
 
             {/* Navigation */}
             <div className="flex flex-col sm:flex-row gap-6 text-sm font-medium">
-              <a href="#" className="hover:text-primary">
+              <Link to="/" className="hover:text-primary">
                 Home
-              </a>
-              <a href="#" className="hover:text-primary">
+              </Link>
+              <Link to="/categories" className="hover:text-primary">
+                Categories
+              </Link>
+              <Link to="/products" className="hover:text-primary">
                 Products
-              </a>
-              <a href="#" className="hover:text-primary">
-                About
-              </a>
-              <a href="#" className="hover:text-primary">
-                Contact
-              </a>
+              </Link>
             </div>
 
             {/* Socials */}
             <div className="flex gap-4">
-              <a href="#" className="hover:text-primary">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="hover:text-primary">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="hover:text-primary">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="hover:text-primary">
-                <Github className="h-5 w-5" />
-              </a>
+              <Facebook className="h-5 w-5" />
+              <Twitter className="h-5 w-5" />
+              <Instagram className="h-5 w-5" />
+              <Youtube className="h-5 w-5" />
             </div>
           </div>
 
