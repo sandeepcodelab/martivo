@@ -1,6 +1,5 @@
 import { Cart } from "../models/cartModel.js";
 import { Order } from "../models/orderModel.js";
-import { Variant } from "../models/variantModel.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -48,7 +47,7 @@ const createOrder = asyncHandler(async (req, res) => {
   );
 
   const order = await Order.create({
-    userId: user._id,
+    user: user._id,
     orderItems,
     totalPrice,
     shippingAddress: {
@@ -71,4 +70,27 @@ const createOrder = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, order, "Order created successfully."));
 });
 
-export { createOrder };
+const getOrders = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  const orders = await Order.find({ user: userId }).populate({
+    path: "orderItems.product",
+    select: "thumbnail title",
+  });
+
+  if (!orders) {
+    throw new ApiError(404, "No orders found.");
+  }
+
+  if (!orders.length) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { orders }, "Your Order History is Empty."));
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { orders }, "Orders fetched successfully."));
+});
+
+export { createOrder, getOrders };
