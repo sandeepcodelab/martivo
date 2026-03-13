@@ -16,10 +16,6 @@ import orderRouter from "./routes/orderRoute.js";
 
 const app = express();
 
-app.get("/test", (req, res) => {
-  res.send("Hello this is testing request");
-});
-
 // Basic configurations
 app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
