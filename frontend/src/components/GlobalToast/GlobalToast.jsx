@@ -17,6 +17,11 @@ export default function GlobalToast() {
       transition={Bounce}
       pauseOnHover
       pauseOnFocusLoss={false}
+      toastStyle={{
+        width: window.innerWidth < 600 ? "80vw" : "350px",
+        marginBottom: window.innerWidth < 600 ? "10px" : "",
+        marginRight: window.innerWidth < 600 ? "10px" : "",
+      }}
     />
   );
 }
