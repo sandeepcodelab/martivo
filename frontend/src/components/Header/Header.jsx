@@ -96,7 +96,7 @@ export default function Header() {
                 <Button variant="ghost" size="icon" className="cursor-pointer">
                   <ShoppingCart />
                 </Button>
-                <div className="absolute -top-1 right-0 bg-primary text-[10px] rounded px-1">
+                <div className="absolute -top-1 right-0 bg-primary text-white text-[10px] rounded px-1">
                   {itemsCount > 0 ? itemsCount : null}
                 </div>
               </Link>

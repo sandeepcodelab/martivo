@@ -7,15 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShoppingCart, CreditCard, Truck, IndianRupee } from "lucide-react";
 import { useForm } from "react-hook-form";
-import {
-  clearCart,
-  createOrder,
-  getCartWithVariants,
-} from "@/services/cartService";
+import { clearCart, getCartWithVariants } from "@/services/cartService";
 import { notification } from "@/utils/toast";
 import { useNavigate } from "react-router";
 import { Spinner } from "@/components/ui/spinner";
 import AuthContext from "@/contexts/AuthContext";
+import { createOrder } from "@/services/orderService";
 
 export default function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState("Card");
@@ -64,7 +61,9 @@ export default function Checkout() {
           navigate("/cart");
         }
       } catch (err) {
-        console.log(err.response.data.message);
+        // console.log(err.response.data.message);
+        if (err.status === 401) return;
+        notification.error(err.response.data.message);
       } finally {
         setLoading(false);
       }
