@@ -20,9 +20,8 @@ export default function OrderSuccess() {
 
   return (
     <Container>
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="flex items-center justify-center px-4 py-8">
         <div className="bg-card border-1 shadow-lg rounded-2xl p-8 max-w-lg w-full text-center">
-          {/* <div className="text-green-500 text-6xl mb-4">✓</div> */}
           <div className="flex justify-center text-green-500 text-6xl mb-4">
             <CircleCheckBig size={60} />
           </div>
@@ -58,13 +57,13 @@ export default function OrderSuccess() {
               Go to Home
             </Button>
 
-            {/* <Button
-            variant="outline"
-            onClick={() => navigate("/orders")}
-            className="cursor-pointer"
-          >
-            View Orders
-          </Button> */}
+            <Button
+              variant="outline"
+              onClick={() => navigate("/user/orders")}
+              className="cursor-pointer"
+            >
+              View Orders
+            </Button>
           </div>
         </div>
       </div>
