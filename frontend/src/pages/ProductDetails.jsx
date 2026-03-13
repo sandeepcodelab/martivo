@@ -11,6 +11,13 @@ import AuthContext from "@/contexts/AuthContext";
 import { addItemToCart, addItemToGuestCart } from "@/services/cartService";
 import { Spinner } from "@/components/ui/spinner";
 import { getAllVariants, getProduct } from "@/services/productService";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -114,8 +121,11 @@ export default function ProductDetails() {
     );
   }
 
-  const uniqueColors = [...new Set(variants.map((v) => v.color))];
-  const uniqueSizes = [...new Set(variants.map((v) => v.size))];
+  const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
+  const uniqueColors = [...new Set(variants.map((v) => v.color))].sort();
+  const uniqueSizes = [...new Set(variants.map((v) => v.size))].sort(
+    (a, b) => SIZE_ORDER.indexOf(a) - SIZE_ORDER.indexOf(b),
+  );
 
   const productPrice = selectedVariant?.price || variants[0]?.price;
   const productSalePrice = selectedVariant?.salePrice || variants[0]?.salePrice;
@@ -123,31 +133,54 @@ export default function ProductDetails() {
     ((productPrice - productSalePrice) / productPrice) * 100,
   );
 
+  const productImages = [product.thumbnail, ...(product?.images || [])];
+
   return (
     <Container>
       <div className="grid md:grid-cols-2 gap-15 mt-8">
-        {/* Image Section */}
-        <div className="space-y-4">
+        <div className="space-y-4 w-full mx-auto">
           <Card className="overflow-hidden rounded-2xl shadow-md py-0">
-            <CardContent className="p-0 h-[500px]">
+            <CardContent className="p-0">
               <img
                 src={selectedImage}
-                alt="Image"
-                className="w-full h-full object-cover hover:scale-105 transition"
+                alt="Product Image"
+                className="w-full h-[300px] sm:h-[400px] md:h-[500px] object-cover transition duration-300 hover:scale-105"
               />
             </CardContent>
           </Card>
 
-          <div className="flex gap-3">
-            {[product.thumbnail, ...(product?.images || [])].map((img) => (
-              <img
-                key={img?.url}
-                src={img?.url}
-                alt="Image"
-                onClick={() => setSelectedImage(img.url)}
-                className="w-20 h-20 object-cover rounded-lg cursor-pointer border hover:border-primary"
-              />
-            ))}
+          <div className="relative w-full">
+            <Carousel>
+              <CarouselContent className="-ml-2">
+                {productImages.map((img) => (
+                  <CarouselItem
+                    key={img?.url}
+                    className="pl-2 basis-1/5 md:basis-1/6"
+                  >
+                    <img
+                      src={img?.url}
+                      alt="Thumbnail"
+                      onClick={() => setSelectedImage(img.url)}
+                      className={`w-14 h-14 sm:w-16 sm:h-16 md:w-18 md:h-18 object-cover rounded-lg cursor-pointer border-2
+                      ${selectedImage === img?.url ? "border-primary" : "border-gray-200"}`}
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+
+              {productImages.length > 5 && (
+                <>
+                  <CarouselPrevious
+                    className="hidden sm:flex absolute -left-1 top-1/2 -translate-y-1/2 text-white"
+                    variant="secondary"
+                  />
+                  <CarouselNext
+                    className="hidden sm:flex absolute -right-1 top-1/2 -translate-y-1/2 text-white"
+                    variant="secondary"
+                  />
+                </>
+              )}
+            </Carousel>
           </div>
         </div>
 
@@ -194,7 +227,7 @@ export default function ProductDetails() {
           {/* Color Selection */}
           <div>
             <Label>Color</Label>
-            <div className="flex gap-3 mt-2">
+            <div className="flex flex-wrap gap-3 mt-2">
               {uniqueColors.map((color) => (
                 <button
                   key={color}
@@ -216,7 +249,7 @@ export default function ProductDetails() {
           <div>
             <Label>Size</Label>
 
-            <div className="flex gap-3 mt-2 flex-wrap">
+            <div className="flex flex-wrap gap-3 mt-2">
               {uniqueSizes.map((size) => (
                 <button
                   key={size}
