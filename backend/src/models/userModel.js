@@ -10,10 +10,10 @@ const userSchema = new Schema(
         url: String,
         localPath: String,
       },
-      default: {
-        url: "https://placehold.co/250x200/31343C/EEE?font=raleway&text=User",
-        localPath: "",
-      },
+      // default: {
+      //   url: "https://placehold.co/250x200/31343C/EEE?font=raleway&text=User",
+      //   localPath: "",
+      // },
     },
     name: {
       type: String,

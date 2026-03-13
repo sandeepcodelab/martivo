@@ -44,22 +44,22 @@ const registerUser = asyncHandler(async (req, res) => {
     isEmailVerified: false,
   });
 
-  const { unHashedToken, hashedToken, tokenExpiry } =
-    user.generateTemporaryToken();
+  // const { unHashedToken, hashedToken, tokenExpiry } =
+  //   user.generateTemporaryToken();
 
-  user.emailVerificationToken = hashedToken;
-  user.emailVerificationExpiry = tokenExpiry;
+  // user.emailVerificationToken = hashedToken;
+  // user.emailVerificationExpiry = tokenExpiry;
 
-  await user.save({ validateBeforeSave: false });
+  // await user.save({ validateBeforeSave: false });
 
-  await sendEmail({
-    email: user?.email,
-    subject: "Please verify your email",
-    mailgenContent: generateVerificationMail(
-      user.name,
-      `${req.protocol}://${req.get("host")}/api/v1/auth/verify/${unHashedToken}`
-    ),
-  });
+  // await sendEmail({
+  //   email: user?.email,
+  //   subject: "Please verify your email",
+  //   mailgenContent: generateVerificationMail(
+  //     user.name,
+  //     `${req.protocol}://${req.get("host")}/api/v1/auth/verify/${unHashedToken}`
+  //   ),
+  // });
 
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
@@ -69,15 +69,14 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Registration failed. Please try again later.");
   }
 
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(
-        201,
-        { user: createdUser },
-        "Registration successful! Please verify your email to activate your account."
-      )
-    );
+  return res.status(201).json(
+    new ApiResponse(
+      201,
+      { user: createdUser },
+      "Registration successful."
+      // "Registration successful! Please verify your email to activate your account."
+    )
+  );
 });
 
 const login = asyncHandler(async (req, res) => {
