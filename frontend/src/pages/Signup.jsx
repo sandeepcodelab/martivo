@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { EyeOff, Eye } from "lucide-react";
 import { useState } from "react";
 import { signupUser } from "@/services/authService";
@@ -31,6 +31,8 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [apiErrors, setApiErrors] = useState({});
+  const navigate = useNavigate();
 
   const onSubmit = async (formData) => {
     const { password, confirmPassword } = formData;
@@ -53,11 +55,12 @@ export default function Signup() {
 
       const res = await signupUser(payload);
       notification.success(res?.data?.message);
+      navigate("/auth/login");
     } catch (error) {
-      if (error.status === 409) {
-        notification.error(error?.response?.data?.message);
+      if (error.status === 422) {
+        setApiErrors(Object.assign({}, ...error?.response?.data.errors));
       }
-      // console.error("Signup failed 2:", error?.response?.data || error.message);
+      notification.error(error?.response?.data.message);
     } finally {
       setLoader(false);
     }
@@ -65,7 +68,7 @@ export default function Signup() {
 
   return (
     <Container>
-      <div className="flex justify-center my-15">
+      <div className="flex justify-center my-8">
         <Card className="bg-card w-full max-w-sm">
           <CardHeader>
             <CardTitle className="text-center font-bold text-xl">
@@ -84,6 +87,9 @@ export default function Signup() {
                 {errors.fullname && (
                   <p className="text-sm text-red-500">Full Name is required.</p>
                 )}
+                {apiErrors.name && (
+                  <p className="text-sm text-red-500">{apiErrors.name}</p>
+                )}
               </div>
 
               <div className="grid gap-2 mb-5">
@@ -91,10 +97,19 @@ export default function Signup() {
                 <Input
                   id="email"
                   type="email"
-                  {...register("email", { required: true })}
+                  {...register("email", {
+                    required: "Email is required.",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Enter a valid email",
+                    },
+                  })}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-500">Email is required.</p>
+                  <p className="text-sm text-red-500">{errors.email.message}</p>
+                )}
+                {apiErrors.email && (
+                  <p className="text-sm text-red-500">{apiErrors.email}</p>
                 )}
               </div>
 
@@ -104,7 +119,13 @@ export default function Signup() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    {...register("password", { required: true })}
+                    {...register("password", {
+                      required: "Password is required.",
+                      minLength: {
+                        value: 8,
+                        message: "Password must be at least 8 characters",
+                      },
+                    })}
                     className="pr-10"
                   />
                   {showPasswordIcon && (
@@ -119,7 +140,12 @@ export default function Signup() {
                   )}
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-500">Password is required.</p>
+                  <p className="text-sm text-red-500">
+                    {errors.password.message}
+                  </p>
+                )}
+                {apiErrors.password && (
+                  <p className="text-sm text-red-500">{apiErrors.password}</p>
                 )}
               </div>
 
@@ -129,7 +155,9 @@ export default function Signup() {
                   <Input
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
-                    {...register("confirmPassword", { required: true })}
+                    {...register("confirmPassword", {
+                      required: "Confirm Password is required.",
+                    })}
                     className="pr-10"
                   />
                   {showConfirmPasswordIcon && (
@@ -147,7 +175,7 @@ export default function Signup() {
                 </div>
                 {errors.confirmPassword && (
                   <p className="text-sm text-red-500">
-                    Confirm Password is required.
+                    {errors.confirmPassword.message}
                   </p>
                 )}
               </div>
@@ -171,7 +199,7 @@ export default function Signup() {
             Already have an account?&nbsp;
             <Link
               to="/auth/login"
-              className="hover:underline hover:text-primary"
+              className="text-primary font-semibold hover:underline"
             >
               Login
             </Link>
