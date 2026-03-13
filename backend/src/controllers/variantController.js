@@ -215,6 +215,45 @@ const getCartVariants = asyncHandler(async (req, res) => {
     );
 });
 
+const addBulkVariant = asyncHandler(async (req, res) => {
+  const { variants = [] } = req.body;
+
+  const { productId } = req.params;
+
+  if (!productId) {
+    throw new ApiError(400, "Product Id is missing.", []);
+  }
+
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    throw new ApiError(404, "Product not found.", []);
+  }
+
+  const modifiedVariants = variants.map((variant) => ({
+    ...variant,
+    product: product._id,
+  }));
+
+  const createdVariants = await Variant.insertMany(modifiedVariants);
+
+  if (!createdVariants || createdVariants.length === 0) {
+    throw new ApiError(400, "Variant creation failed", []);
+  }
+
+  await updateProductPrice(product._id);
+
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        { variants: createdVariants },
+        "Variants created successfully."
+      )
+    );
+});
+
 const updateProductPrice = async (productId) => {
   if (!productId) return;
 
@@ -240,4 +279,5 @@ export {
   updateVariant,
   deleteVariant,
   getCartVariants,
+  addBulkVariant,
 };

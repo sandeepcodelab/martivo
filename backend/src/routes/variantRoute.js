@@ -8,10 +8,12 @@ import {
   updateVariant,
   deleteVariant,
   getCartVariants,
+  addBulkVariant,
 } from "../controllers/variantController.js";
 
 import { validate } from "../middlewares/validatorMiddleware.js";
 import {
+  addBulkVariantValidator,
   addVariantValidator,
   updateVariantValidator,
 } from "../validators/index.js";
@@ -30,6 +32,16 @@ router
     addVariantValidator(),
     validate,
     addVariant
+  );
+
+router
+  .route("/:productId/addBulk")
+  .post(
+    verifyJWT,
+    roleCheck(["admin"]),
+    addBulkVariantValidator(),
+    validate,
+    addBulkVariant
   );
 
 router.route("/edit/:id").get(verifyJWT, roleCheck(["admin"]), getVariantById);
