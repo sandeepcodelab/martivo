@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import Container from "@/components/Container/Container";
 import { getAllOrders } from "@/services/orderService";
 import { notification } from "@/utils/toast";
+import { Link } from "react-router";
 
 export default function UserOrders() {
   const [orders, setOrders] = useState([]);
@@ -48,107 +49,128 @@ export default function UserOrders() {
 
   return (
     <Container>
-      <div className="py-8">
-        {/* Header */}
+      {orders.length ? (
+        <div className="py-8">
+          {/* Header */}
 
-        <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-10">
-          <div>
-            <h1 className="text-2xl font-semibold">My Orders</h1>
-            <p className="text-sm text-muted-foreground">
-              View your order history
-            </p>
+          <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-10">
+            <div>
+              <h1 className="text-2xl font-semibold">My Orders</h1>
+              <p className="text-sm text-muted-foreground">
+                View your order history
+              </p>
+            </div>
+
+            {/* <Input placeholder="Search order ID..." className="max-w-sm" /> */}
           </div>
 
-          {/* <Input placeholder="Search order ID..." className="max-w-sm" /> */}
-        </div>
+          {/* Orders */}
 
-        {/* Orders */}
+          <div className="space-y-5">
+            {orders.map((order) => {
+              const firstItem = order.orderItems[0];
+              const remaining = order.orderItems.length - 1;
 
-        <div className="space-y-5">
-          {orders.map((order) => {
-            const firstItem = order.orderItems[0];
-            const remaining = order.orderItems.length - 1;
+              const orderDate = new Date(order.createdAt);
 
-            const orderDate = new Date(order.createdAt);
+              return (
+                <Card
+                  key={order._id}
+                  className="p-6 hover:shadow-md transition"
+                >
+                  <CardContent className="p-0">
+                    {/* Top Row */}
 
-            return (
-              <Card key={order._id} className="p-6 hover:shadow-md transition">
-                <CardContent className="p-0">
-                  {/* Top Row */}
-
-                  <div className="flex justify-between items-center mb-5">
-                    <div>
-                      <p className="font-semibold">Order #{order._id}</p>
-                    </div>
-
-                    <span
-                      className={`text-xs px-3 py-1 rounded-full ${statusColor(
-                        order.orderStatus,
-                      )}`}
-                    >
-                      {order.orderStatus}
-                    </span>
-                  </div>
-
-                  {/* Main Row */}
-
-                  <div className="grid grid-cols-1 md:grid-cols-4 md:flex-row md:items-center md:justify-between gap-6">
-                    {/* Product */}
-
-                    <div className="flex items-center gap-4">
-                      <img
-                        src={firstItem.product?.thumbnail.url}
-                        className="w-16 h-16 rounded-md border object-cover"
-                      />
-
-                      <div className="min-w-0">
-                        <p className="font-medium truncate">
-                          {firstItem.product?.title}
-                        </p>
-
-                        <p className="text-sm text-muted-foreground">
-                          Qty: {firstItem.quantity}
-                        </p>
-
-                        {remaining > 0 && (
-                          <p className="text-sm text-muted-foreground">
-                            +{remaining} more items
-                          </p>
-                        )}
+                    <div className="flex justify-between items-center mb-5">
+                      <div>
+                        <p className="font-semibold">Order #{order._id}</p>
                       </div>
+
+                      <span
+                        className={`text-xs px-3 py-1 rounded-full ${statusColor(
+                          order.orderStatus,
+                        )}`}
+                      >
+                        {order.orderStatus}
+                      </span>
                     </div>
 
-                    {/* Order Info */}
-                    <div className="grid place-items-center">
-                      <p className="text-muted-foreground">Placed</p>
-                      <p className="font-medium">
-                        {orderDate.toLocaleDateString("en-IN", {
-                          day: "2-digit",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </p>
-                    </div>
+                    {/* Main Row */}
 
-                    <div className="grid place-items-center">
-                      <p className="text-muted-foreground">Payment Method</p>
-                      <p className="font-medium">{order.paymentMethod}</p>
-                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-4 md:flex-row md:items-center md:justify-between gap-6">
+                      {/* Product */}
 
-                    <div className="grid place-items-center">
-                      <p className="text-muted-foreground">Total</p>
-                      <p className="font-semibold">₹{order.totalPrice}</p>
-                    </div>
+                      <div className="flex items-center gap-4">
+                        <img
+                          src={firstItem.product?.thumbnail.url}
+                          className="w-16 h-16 rounded-md border object-cover"
+                        />
 
-                    {/* Button */}
-                    {/* <Button variant="outline">View Details</Button> */}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                        <div className="min-w-0">
+                          <p className="font-medium truncate">
+                            {firstItem.product?.title}
+                          </p>
+
+                          <p className="text-sm text-muted-foreground">
+                            Qty: {firstItem.quantity}
+                          </p>
+
+                          {remaining > 0 && (
+                            <p className="text-sm text-muted-foreground">
+                              +{remaining} more items
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Order Info */}
+                      <div className="grid place-items-center">
+                        <p className="text-muted-foreground">Placed</p>
+                        <p className="font-medium">
+                          {orderDate.toLocaleDateString("en-IN", {
+                            day: "2-digit",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </p>
+                      </div>
+
+                      <div className="grid place-items-center">
+                        <p className="text-muted-foreground">Payment Method</p>
+                        <p className="font-medium">{order.paymentMethod}</p>
+                      </div>
+
+                      <div className="grid place-items-center">
+                        <p className="text-muted-foreground">Total</p>
+                        <p className="font-semibold">₹{order.totalPrice}</p>
+                      </div>
+
+                      {/* Button */}
+                      {/* <Button variant="outline">View Details</Button> */}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="h-70 grid place-items-center">
+          <div className="grid justify-items-center gap-4">
+            <h2 className="text-2xl font-bold">
+              You haven't placed any orders yet.
+            </h2>
+            <h3 className="text-lg font-semibold">
+              Start shopping to see your orders here.
+            </h3>
+            <Link to="/products">
+              <Button className="text-white cursor-pointer">
+                Start Shopping
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
     </Container>
   );
 }

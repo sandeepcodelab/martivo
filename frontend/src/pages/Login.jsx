@@ -60,7 +60,7 @@ export default function Login() {
 
   return (
     <Container>
-      <div className="flex justify-center my-15">
+      <div className="flex justify-center my-8">
         <Card className="bg-card w-full max-w-sm">
           <CardHeader>
             <CardTitle className="text-center font-bold text-xl">
@@ -131,7 +131,7 @@ export default function Login() {
             Don&apos;t have an account?&nbsp;
             <Link
               to="/auth/signup"
-              className="hover:underline hover:text-primary"
+              className="text-primary font-semibold hover:underline"
             >
               Sign up
             </Link>
