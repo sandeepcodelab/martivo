@@ -161,19 +161,54 @@ const updateVariantValidator = () => {
   ];
 };
 
+const addBulkVariantValidator = () => {
+  return [
+    body("variants")
+      .isArray({ min: 1 })
+      .withMessage("Variants must be a non-empty array"),
+
+    body("variants.*.size").trim().notEmpty().withMessage("Size is required"),
+
+    body("variants.*.color").trim().notEmpty().withMessage("Color is required"),
+
+    body("variants.*.price")
+      .isFloat({ gt: 0 })
+      .withMessage("Price must be greater than 0"),
+
+    body("variants.*.salePrice")
+      .optional()
+      .isFloat({ gt: 0 })
+      .withMessage("Sale price must be greater than 0"),
+
+    body("variants.*.stock")
+      .isInt({ min: 0 })
+      .withMessage("Stock must be 0 or greater"),
+
+    body("variants.*.sku").trim().notEmpty().withMessage("SKU is required"),
+
+    body("variants.*").custom((variant) => {
+      if (variant.salePrice && variant.salePrice > variant.price) {
+        throw new Error("Sale price cannot be greater than price");
+      }
+      return true;
+    }),
+  ];
+};
+
 export {
-  // Auth validators
+  // Auth validators----
   userRegisterValidator,
   userLoginValidator,
   forgotPasswordValidator,
   resetForgotPasswordValidator,
   changeCurrentPasswordValidator,
-  // Category validators
+  // Category validators----
   categoryValidator,
-  // Product validator
+  // Product validator----
   addProductVlidator,
   updateProductVlidator,
-  // Product variant validator
+  // Product variant validator----
   addVariantValidator,
   updateVariantValidator,
+  addBulkVariantValidator,
 };
