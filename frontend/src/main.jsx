@@ -24,15 +24,15 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
 // Admin routes
-import AdminLayout from "./layouts/AdminLayout";
-import Dashboard from "./admin/pages/Dashboard";
-import ProductsTable from "./admin/pages/Products";
-import Orders from "./admin/pages/Orders";
-import OrderDetails from "./admin/pages/OrderDetails";
-import Users from "./admin/pages/Users";
-import Categories from "./admin/pages/Categories";
-import AddProduct from "./admin/pages/AddProduct";
-import EditProduct from "./admin/pages/EditProduct";
+// import AdminLayout from "./layouts/AdminLayout";
+// import Dashboard from "./admin/pages/Dashboard";
+// import ProductsTable from "./admin/pages/Products";
+// import Orders from "./admin/pages/Orders";
+// import OrderDetails from "./admin/pages/OrderDetails";
+// import Users from "./admin/pages/Users";
+// import Categories from "./admin/pages/Categories";
+// import AddProduct from "./admin/pages/AddProduct";
+// import EditProduct from "./admin/pages/EditProduct";
 
 const router = createBrowserRouter([
   // User Routes
