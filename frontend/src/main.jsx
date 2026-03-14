@@ -4,7 +4,7 @@ import "./index.css";
 import { ThemeProvider } from "@/components/Providers/ThemeProvider";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import AuthContaxtProvider from "./contexts/AuthContextProvider";
-import { ToastContainer, Bounce } from "react-toastify";
+import GlobalToast from "./components/GlobalToast/GlobalToast";
 
 // User routes
 import UserLayout from "./layouts/UserLayout";
@@ -13,6 +13,10 @@ import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import Checkout from "./pages/Checkout";
+import ProtectedRoute from "./pages/ProtectedRoute";
+import OrderSuccess from "./pages/OrderSuccess";
+import UserOrders from "./pages/UserOrders";
+import UserCategories from "./pages/Categories";
 
 // Auth routes
 import AuthLayout from "./layouts/AuthLayout";
@@ -24,6 +28,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import Dashboard from "./admin/pages/Dashboard";
 import ProductsTable from "./admin/pages/Products";
 import Orders from "./admin/pages/Orders";
+import OrderDetails from "./admin/pages/OrderDetails";
 import Users from "./admin/pages/Users";
 import Categories from "./admin/pages/Categories";
 import AddProduct from "./admin/pages/AddProduct";
@@ -38,8 +43,32 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "products", element: <Products /> },
       { path: "cart", element: <Cart /> },
-      { path: "product-details", element: <ProductDetails /> },
-      { path: "checkout", element: <Checkout /> },
+      { path: "product-details/:id", element: <ProductDetails /> },
+      { path: "categories", element: <UserCategories /> },
+      {
+        path: "checkout",
+        element: (
+          <ProtectedRoute>
+            <Checkout />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "order-success",
+        element: (
+          <ProtectedRoute>
+            <OrderSuccess />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "user/orders",
+        element: (
+          <ProtectedRoute>
+            <UserOrders />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 
@@ -48,42 +77,46 @@ const router = createBrowserRouter([
     path: "/auth",
     element: <AuthLayout />,
     children: [
-      { path: "Login", element: <Login /> },
-      { path: "signup", element: <Signup /> },
+      {
+        path: "Login",
+        element: (
+          <ProtectedRoute authentication={false}>
+            <Login />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "signup",
+        element: (
+          <ProtectedRoute authentication={false}>
+            <Signup />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
 
   // Admin Routes
-  {
-    path: "/admin",
-    element: <AdminLayout />,
-    children: [
-      { index: true, element: <Dashboard /> },
-      { path: "products", element: <ProductsTable /> },
-      { path: "products/add", element: <AddProduct /> },
-      { path: "products/edit", element: <EditProduct /> },
-      { path: "orders", element: <Orders /> },
-      { path: "categories", element: <Categories /> },
-      { path: "users", element: <Users /> },
-    ],
-  },
+  // {
+  //   path: "/admin",
+  //   element: <AdminLayout />,
+  //   children: [
+  //     { index: true, element: <Dashboard /> },
+  //     { path: "products", element: <ProductsTable /> },
+  //     { path: "products/add", element: <AddProduct /> },
+  //     { path: "products/edit", element: <EditProduct /> },
+  //     { path: "orders", element: <Orders /> },
+  //     { path: "orders/order-details", element: <OrderDetails /> },
+  //     { path: "categories", element: <Categories /> },
+  //     { path: "users", element: <Users /> },
+  //   ],
+  // },
 ]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ThemeProvider defaultTheme="system" storageKey="martivo-theme">
-      <ToastContainer
-        position="bottom-right"
-        autoClose={4000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        theme="dark"
-        transition={Bounce}
-        pauseOnHover={false}
-        pauseOnFocusLoss={false}
-      />
+    <ThemeProvider defaultTheme="dark" storageKey="martivo-theme">
+      <GlobalToast />
       <AuthContaxtProvider>
         <RouterProvider router={router} />
       </AuthContaxtProvider>
