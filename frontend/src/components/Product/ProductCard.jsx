@@ -35,7 +35,7 @@ export default function ProductCard({ item = {} }) {
 
       {/* Product Info */}
       <div className="p-4 space-y-2">
-        <h3 className="text-md font-medium group-hover:underline">
+        <h3 className="text-md font-medium group-hover:underline line-clamp-1">
           {item.title}
         </h3>
 

@@ -1,6 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 import { Upload, Trash2, CircleX } from "lucide-react";
 import {
   Card,
@@ -177,12 +175,6 @@ export default function EditProduct() {
                 <p className="text-red-500">{errors.category}</p>
               )}
             </div>
-
-            <ReactQuill
-              placeholder="Description..."
-              value={description}
-              onChange={setDescription}
-            />
 
             {/* Actions */}
             <div className="flex justify-end">
