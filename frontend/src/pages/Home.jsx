@@ -151,17 +151,19 @@ export default function HomePage() {
                     key={category._id}
                     className="flex-shrink-0 snap-start group text-center cursor-pointer"
                   >
-                    <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
-                      <img
-                        src={category.image}
-                        className="w-full h-full object-cover"
-                        alt={category.name}
-                      />
-                    </div>
+                    <Link to={`/products?category=${category.slug}`}>
+                      <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
+                        <img
+                          src={category.image}
+                          className="w-full h-full object-cover"
+                          alt={category.name}
+                        />
+                      </div>
 
-                    <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
-                      {category.name}
-                    </p>
+                      <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
+                        {category.name}
+                      </p>
+                    </Link>
                   </div>
                 ))}
 

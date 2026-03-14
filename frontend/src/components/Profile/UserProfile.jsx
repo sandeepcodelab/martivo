@@ -113,9 +113,9 @@ export function UserProfileMobile({ user }) {
           <p className="text-sm">{user?.email}</p>
         </div>
       </div>
-      <Link to="/user/account">
+      <Link to="/user/orders">
         <Button variant="outline" className="w-full">
-          My Account
+          My Orders
         </Button>
       </Link>
       <Link>
