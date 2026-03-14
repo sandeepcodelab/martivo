@@ -34,6 +34,7 @@ export default function HomePage() {
   const [errors, setErrors] = useState({});
 
   const heroImages = [hero1, hero2, hero3, hero4, hero5, hero6];
+  const reverseProducts = [...products].reverse();
 
   useEffect(() => {
     if (!carouselApi) return;
@@ -75,7 +76,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="space-y-20 pb-20">
+    <main className="space-y-20 pb-8">
       {/* ================= HERO SECTION ================= */}
       <section>
         <Carousel
@@ -88,7 +89,7 @@ export default function HomePage() {
         >
           <CarouselContent>
             {heroImages.map((img, index) => (
-              <CarouselItem key={index}>
+              <CarouselItem key={img}>
                 <div className="relative h-[350px] sm:h-[420px] md:h-[500px] overflow-hidden">
                   <img
                     src={img}
@@ -142,72 +143,85 @@ export default function HomePage() {
           </h2>
 
           {/* Mobile Layout (Horizontal Scroll) */}
-          <div className="flex md:hidden gap-4 p-1 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory">
-            {categories.slice(0, 7).map((category) => (
-              <div
-                key={category._id}
-                className="flex-shrink-0 snap-start group text-center cursor-pointer"
-              >
-                <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
-                  <img
-                    src={category.image}
-                    className="w-full h-full object-cover"
-                    alt={category.title}
-                  />
-                </div>
+          {!loading ? (
+            <>
+              <div className="flex md:hidden gap-4 p-1 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory">
+                {categories.slice(0, 7).map((category) => (
+                  <div
+                    key={category._id}
+                    className="flex-shrink-0 snap-start group text-center cursor-pointer"
+                  >
+                    <div className="w-20 h-20 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
+                      <img
+                        src={category.image}
+                        className="w-full h-full object-cover"
+                        alt={category.title}
+                      />
+                    </div>
 
-                <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
-                  {category.title}
-                </p>
-              </div>
-            ))}
-
-            {/* All Categories */}
-            <div className="flex-shrink-0 group text-center cursor-pointer">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gray-400 flex items-center justify-center group-hover:scale-105 transition">
-                <LayoutGrid />
-              </div>
-
-              <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
-                More
-              </p>
-            </div>
-          </div>
-
-          {/* Desktop Layout (Grid) */}
-          <div className="hidden md:grid grid-cols-6 lg:grid-cols-8 gap-6">
-            {categories.slice(0, 7).map((category) => (
-              <div
-                key={category._id}
-                className="group text-center cursor-pointer"
-              >
-                <Link to={`/products?category=${category.slug}`}>
-                  <div className="w-24 h-24 lg:w-28 lg:h-28 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
-                    <img
-                      src={category.image}
-                      className="w-full h-full object-cover"
-                      alt={category.name}
-                    />
+                    <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
+                      {category.title}
+                    </p>
                   </div>
+                ))}
 
-                  <p className="mt-3 text-sm lg:text-base font-medium group-hover:text-primary transition">
-                    {category.name}
-                  </p>
-                </Link>
+                {/* All Categories */}
+                <div className="flex-shrink-0 group text-center cursor-pointer">
+                  <Link to="/categories">
+                    <div className="w-20 h-20 mx-auto rounded-full bg-gray-400 flex items-center justify-center group-hover:scale-105 transition">
+                      <LayoutGrid />
+                    </div>
+
+                    <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
+                      More
+                    </p>
+                  </Link>
+                </div>
               </div>
-            ))}
 
-            {/* All Categories */}
-            <div className="group text-center cursor-pointer">
-              <div className="w-24 h-24 lg:w-28 lg:h-28 mx-auto rounded-full bg-gray-400 flex items-center justify-center group-hover:scale-105 transition">
-                <LayoutGrid />
+              {/* Desktop Layout (Grid) */}
+
+              <div className="hidden md:grid grid-cols-6 lg:grid-cols-8 gap-6">
+                {categories.slice(0, 7).map((category) => (
+                  <div
+                    key={category._id}
+                    className="group text-center cursor-pointer"
+                  >
+                    <Link to={`/products?category=${category.slug}`}>
+                      <div className="w-24 h-24 lg:w-28 lg:h-28 mx-auto rounded-full overflow-hidden border group-hover:scale-105 transition">
+                        <img
+                          src={category.image}
+                          className="w-full h-full object-cover"
+                          alt={category.name}
+                        />
+                      </div>
+
+                      <p className="mt-3 text-sm lg:text-base font-medium group-hover:text-primary transition">
+                        {category.name}
+                      </p>
+                    </Link>
+                  </div>
+                ))}
+
+                {/* All Categories */}
+                <div className="group text-center cursor-pointer">
+                  <Link to="/categories">
+                    <div className="w-24 h-24 lg:w-28 lg:h-28 mx-auto rounded-full bg-gray-400 flex items-center justify-center group-hover:scale-105 transition">
+                      <LayoutGrid />
+                    </div>
+
+                    <p className="mt-3 text-sm lg:text-base font-medium group-hover:text-primary transition">
+                      More
+                    </p>
+                  </Link>
+                </div>
               </div>
-
-              <p className="mt-3 text-sm lg:text-base font-medium group-hover:text-primary transition">
-                More
-              </p>
+            </>
+          ) : (
+            <div className="flex justify-center items-center h-40">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-          </div>
+          )}
         </Container>
       </section>
 
@@ -224,7 +238,7 @@ export default function HomePage() {
 
           {!loading ? (
             <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {products.reverse().map((item) => (
+              {products.slice(0, 4).map((item) => (
                 <Link key={item.title} to={`/product-details/${item._id}`}>
                   <ProductCard item={item} />
                 </Link>
@@ -250,7 +264,7 @@ export default function HomePage() {
 
           {!loading ? (
             <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {products.map((item) => (
+              {reverseProducts.slice(0, 4).map((item) => (
                 <Link key={item.title} to={`/product-details/${item._id}`}>
                   <ProductCard item={item} />
                 </Link>
