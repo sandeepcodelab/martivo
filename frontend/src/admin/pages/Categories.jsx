@@ -33,7 +33,7 @@ import {
   categoryDelete,
   getAllcategories,
   updateCategory,
-} from "@/services/admin/categoryService";
+} from "@/services/categoryService";
 import { useSearchParams } from "react-router";
 import { PaginationList } from "@/components/Pagination/Pagination";
 
