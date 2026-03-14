@@ -155,12 +155,12 @@ export default function HomePage() {
                       <img
                         src={category.image}
                         className="w-full h-full object-cover"
-                        alt={category.title}
+                        alt={category.name}
                       />
                     </div>
 
                     <p className="mt-2 text-xs font-medium group-hover:text-primary transition">
-                      {category.title}
+                      {category.name}
                     </p>
                   </div>
                 ))}
