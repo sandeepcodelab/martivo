@@ -87,7 +87,7 @@ export default function UserOrders() {
                       </div>
 
                       <span
-                        className={`text-xs px-3 py-1 rounded-full ${statusColor(
+                        className={`hidden md:flex text-xs px-3 py-1 rounded-full ${statusColor(
                           order.orderStatus,
                         )}`}
                       >
@@ -97,7 +97,7 @@ export default function UserOrders() {
 
                     {/* Main Row */}
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 md:flex-row md:items-center md:justify-between gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-4 items-center justify-between gap-6">
                       {/* Product */}
 
                       <div className="flex items-center gap-4">
@@ -123,8 +123,8 @@ export default function UserOrders() {
                         </div>
                       </div>
 
-                      {/* Order Info */}
-                      <div className="grid place-items-center">
+                      {/* Order Info for Desktop*/}
+                      <div className="hidden md:grid place-items-center">
                         <p className="text-muted-foreground">Placed</p>
                         <p className="font-medium">
                           {orderDate.toLocaleDateString("en-IN", {
@@ -135,16 +135,52 @@ export default function UserOrders() {
                         </p>
                       </div>
 
-                      <div className="grid place-items-center">
+                      <div className="hidden md:grid place-items-center">
                         <p className="text-muted-foreground">Payment Method</p>
                         <p className="font-medium">{order.paymentMethod}</p>
                       </div>
 
-                      <div className="grid place-items-center">
+                      <div className="hidden md:grid place-items-center">
                         <p className="text-muted-foreground">Total</p>
                         <p className="font-semibold">₹{order.totalPrice}</p>
                       </div>
 
+                      {/* Order Info for Mobile*/}
+                      <div className="md:hidden grid grid-cols-2 gap-4">
+                        <div className="grid place-items-center">
+                          <p className="text-muted-foreground">Placed</p>
+                          <p className="font-medium">
+                            {orderDate.toLocaleDateString("en-IN", {
+                              day: "2-digit",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </p>
+                        </div>
+
+                        <div className="grid place-items-center">
+                          <p className="text-muted-foreground">Status</p>
+                          <span
+                            className={`text-xs px-3 py-1 rounded-full ${statusColor(
+                              order.orderStatus,
+                            )}`}
+                          >
+                            {order.orderStatus}
+                          </span>
+                        </div>
+
+                        <div className="grid place-items-center">
+                          <p className="text-muted-foreground">
+                            Payment Method
+                          </p>
+                          <p className="font-medium">{order.paymentMethod}</p>
+                        </div>
+
+                        <div className="grid place-items-center">
+                          <p className="text-muted-foreground">Total</p>
+                          <p className="font-semibold">₹{order.totalPrice}</p>
+                        </div>
+                      </div>
                       {/* Button */}
                       {/* <Button variant="outline">View Details</Button> */}
                     </div>
