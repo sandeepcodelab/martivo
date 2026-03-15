@@ -1,13 +1,15 @@
 import { ToastContainer, Bounce } from "react-toastify";
 import { useTheme } from "../Providers/ThemeProvider";
-// import { useTheme } from "next-themes";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function GlobalToast() {
   const { resolvedTheme } = useTheme();
 
+  const isMobile = useIsMobile();
+
   return (
     <ToastContainer
-      position={window.innerWidth < 600 ? "top-center" : "bottom-right"}
+      position={isMobile ? "top-center" : "bottom-right"}
       autoClose={4000}
       hideProgressBar={false}
       newestOnTop={false}
@@ -18,8 +20,8 @@ export default function GlobalToast() {
       pauseOnHover
       pauseOnFocusLoss={false}
       toastStyle={{
-        width: window.innerWidth < 600 ? "80vw" : "350px",
-        marginTop: window.innerWidth < 600 ? "15px" : "",
+        width: isMobile ? "80vw" : "350px",
+        marginTop: isMobile ? "15px" : "",
       }}
     />
   );
