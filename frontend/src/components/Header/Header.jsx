@@ -76,7 +76,8 @@ export default function Header() {
                 </div>
               </Link>
             </div>
-            {/* Mode toggle */}
+
+            {/* Theme Mode toggle */}
             <ModeToggle />
 
             {userData.user ? (
@@ -102,10 +103,10 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Mode toggle */}
-            <div>
+            {/* Theme Mode toggle */}
+            {/* <div>
               <ModeToggle />
-            </div>
+            </div> */}
 
             {/* Menu */}
             <div>
@@ -144,11 +145,16 @@ export default function Header() {
                         <UserProfileMobile user={userData.user} />
                       </div>
                     ) : (
-                      <Link to="/auth/login">
-                        <Button className="w-full text-white cursor-pointer">
-                          Log in
-                        </Button>
-                      </Link>
+                      <div className="flex gap-3 items-center">
+                        {/* Theme Mode toggle */}
+                        <ModeToggle />
+
+                        <Link to="/auth/login" className="flex-1">
+                          <Button className="w-full text-white cursor-pointer">
+                            Log in
+                          </Button>
+                        </Link>
+                      </div>
                     )}
                   </SheetFooter>
                 </SheetContent>

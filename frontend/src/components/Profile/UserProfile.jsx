@@ -14,6 +14,7 @@ import { Link, useNavigate } from "react-router";
 import { notification } from "@/utils/toast";
 import AuthContext from "@/contexts/AuthContext";
 import { logout } from "@/services/authService";
+import { ModeToggle } from "../Providers/ModeToggle";
 
 const useLogout = () => {
   const { userLogout } = useContext(AuthContext);
@@ -118,12 +119,18 @@ export function UserProfileMobile({ user }) {
           My Orders
         </Button>
       </Link>
-      <Link>
-        <Button variant="destructive" className="w-full" onClick={logout}>
-          <LogOutIcon />
-          Log Out
-        </Button>
-      </Link>
+
+      <div className="flex gap-3 items-center">
+        {/* Theme Mode toggle */}
+        <ModeToggle />
+
+        <div className="flex-1">
+          <Button variant="destructive" className="w-full" onClick={logout}>
+            <LogOutIcon />
+            Log Out
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
