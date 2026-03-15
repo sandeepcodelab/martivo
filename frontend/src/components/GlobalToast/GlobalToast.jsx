@@ -7,7 +7,7 @@ export default function GlobalToast() {
 
   return (
     <ToastContainer
-      position="bottom-right"
+      position={window.innerWidth < 600 ? "top-center" : "bottom-right"}
       autoClose={4000}
       hideProgressBar={false}
       newestOnTop={false}
@@ -19,8 +19,7 @@ export default function GlobalToast() {
       pauseOnFocusLoss={false}
       toastStyle={{
         width: window.innerWidth < 600 ? "80vw" : "350px",
-        marginBottom: window.innerWidth < 600 ? "10px" : "",
-        marginRight: window.innerWidth < 600 ? "10px" : "",
+        marginTop: window.innerWidth < 600 ? "15px" : "",
       }}
     />
   );
