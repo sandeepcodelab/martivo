@@ -15,8 +15,6 @@ export default function MinimalHeader() {
             </Link>
           </div>
 
-          <Link to="/">Back to home</Link>
-
           {/* Mode toggle */}
           <div>
             <ModeToggle />
