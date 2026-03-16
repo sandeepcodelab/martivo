@@ -11,8 +11,6 @@ You can use the following credentials to test the application:
 Email: demo@test.com  
 Password: 123456789
 
----
-
 ## Tech Stack
 
 - React
@@ -20,8 +18,6 @@ Password: 123456789
 - Express
 - MongoDB
 - JWT Authentication
-
----
 
 ## Features
 
@@ -31,8 +27,6 @@ Password: 123456789
 - Cart management
 - Checkout and order system
 - Order history
-
----
 
 ## Screenshots
 
