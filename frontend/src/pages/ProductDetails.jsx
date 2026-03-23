@@ -113,14 +113,6 @@ export default function ProductDetails() {
     }
   };
 
-  if (loader) {
-    return (
-      <div className="flex justify-center items-center h-80">
-        <Spinner />
-      </div>
-    );
-  }
-
   const SIZE_ORDER = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"];
   const uniqueColors = [...new Set(variants.map((v) => v.color))].sort();
   const uniqueSizes = [...new Set(variants.map((v) => v.size))].sort(
@@ -134,6 +126,14 @@ export default function ProductDetails() {
   );
 
   const productImages = [product.thumbnail, ...(product?.images || [])];
+
+  if (loader) {
+    return (
+      <div className="flex justify-center items-center h-70">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <Container>
