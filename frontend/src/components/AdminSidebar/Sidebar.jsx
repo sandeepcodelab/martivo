@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sidebar";
 
 // Sample data
-const data = {
+const menuData = {
   headerData: {
     name: "Martivo",
     logo: Store,
@@ -52,30 +52,25 @@ const data = {
     { name: "Categories", url: "/admin/categories", icon: LayoutGrid },
     { name: "Users", url: "/admin/users", icon: UserRound },
   ],
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
 };
 
 export function AdminSidebar(props) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarHeaderTitle headerData={data.headerData} />
+        <SidebarHeaderTitle headerData={menuData.headerData} />
       </SidebarHeader>
 
       <SidebarContent>
         <MainMenu
-          dashboard={data.dashboard}
-          dropdowns={data.dropdowns}
-          menus={data.menus}
+          dashboard={menuData.dashboard}
+          dropdowns={menuData.dropdowns}
+          menus={menuData.menus}
         />
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarUser user={data.user} />
+        <SidebarUser />
       </SidebarFooter>
 
       <SidebarRail />
