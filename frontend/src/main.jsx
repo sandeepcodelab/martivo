@@ -7,13 +7,13 @@ import AuthContaxtProvider from "./contexts/AuthContextProvider";
 import GlobalToast from "./components/GlobalToast/GlobalToast";
 
 // User routes
+import ProtectedRoute from "./pages/ProtectedRoute";
 import UserLayout from "./layouts/UserLayout";
 import HomePage from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import ProductDetails from "./pages/ProductDetails";
 import Checkout from "./pages/Checkout";
-import ProtectedRoute from "./pages/ProtectedRoute";
 import OrderSuccess from "./pages/OrderSuccess";
 import UserOrders from "./pages/UserOrders";
 import UserCategories from "./pages/Categories";
@@ -24,15 +24,16 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
 // Admin routes
-// import AdminLayout from "./layouts/AdminLayout";
-// import Dashboard from "./admin/pages/Dashboard";
-// import ProductsTable from "./admin/pages/Products";
-// import Orders from "./admin/pages/Orders";
+import AdminRoute from "./admin/AdminRoutes";
+import AdminLayout from "./layouts/AdminLayout";
+import Dashboard from "./admin/pages/Dashboard";
+import ProductsTable from "./admin/pages/Products";
+import Orders from "./admin/pages/Orders";
 // import OrderDetails from "./admin/pages/OrderDetails";
-// import Users from "./admin/pages/Users";
-// import Categories from "./admin/pages/Categories";
-// import AddProduct from "./admin/pages/AddProduct";
-// import EditProduct from "./admin/pages/EditProduct";
+import Users from "./admin/pages/Users";
+import Categories from "./admin/pages/Categories";
+import AddProduct from "./admin/pages/AddProduct";
+import EditProduct from "./admin/pages/EditProduct";
 
 const router = createBrowserRouter([
   // User Routes
@@ -97,20 +98,24 @@ const router = createBrowserRouter([
   },
 
   // Admin Routes
-  // {
-  //   path: "/admin",
-  //   element: <AdminLayout />,
-  //   children: [
-  //     { index: true, element: <Dashboard /> },
-  //     { path: "products", element: <ProductsTable /> },
-  //     { path: "products/add", element: <AddProduct /> },
-  //     { path: "products/edit", element: <EditProduct /> },
-  //     { path: "orders", element: <Orders /> },
-  //     { path: "orders/order-details", element: <OrderDetails /> },
-  //     { path: "categories", element: <Categories /> },
-  //     { path: "users", element: <Users /> },
-  //   ],
-  // },
+  {
+    path: "/admin",
+    element: (
+      <AdminRoute>
+        <AdminLayout />
+      </AdminRoute>
+    ),
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: "products", element: <ProductsTable /> },
+      { path: "products/add", element: <AddProduct /> },
+      { path: "products/edit", element: <EditProduct /> },
+      { path: "orders", element: <Orders /> },
+      // { path: "orders/order-details", element: <OrderDetails /> },
+      { path: "categories", element: <Categories /> },
+      { path: "users", element: <Users /> },
+    ],
+  },
 ]);
 
 createRoot(document.getElementById("root")).render(
