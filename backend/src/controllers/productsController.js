@@ -16,6 +16,13 @@ const addProduct = asyncHandler(async (req, res) => {
 
   const productSlug = slug ? slug : slugify(title, { lower: true, trim: true });
 
+  const checkProduct = await Product.findOne({ slug: productSlug });
+  if (checkProduct) {
+    throw new ApiError(409, "A product with this slug already exists.", []);
+  }
+  console.log(checkProduct);
+  return;
+
   // Upload thumbnail
   let thumbnail = "";
   if (thumbnailLocalPath) {
