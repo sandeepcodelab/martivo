@@ -20,22 +20,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Editor from "@/components/Editor/Editor";
+import { getAllcategories } from "@/services/categoryService";
+import { notification } from "@/utils/toast";
+import { addBulkVariants, createProduct } from "@/services/productService";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function AddProduct() {
   const editorRef = useRef(null);
+  const [categories, setCategories] = useState([]);
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [showVariants, setShowVariants] = useState(false);
-  const [variants, setVariants] = useState([
-    {
-      size: "",
-      color: "",
-      price: "",
-      stock: "",
-    },
-  ]);
-
+  const [slug, setSlug] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const thumbnailRef = useRef(null);
   const [thumbnailImage, setThumbnailImage] = useState(null);
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
@@ -43,7 +38,37 @@ export default function AddProduct() {
   const [productImages, setProductImages] = useState([]);
   const [productImagesPreview, setProductImagesPreview] = useState([]);
   const [errors, setErrors] = useState({});
+  const [productLoader, setProductLoader] = useState(false);
+  const [storedProduct, setStoredProduct] = useState({});
+  const [variants, setVariants] = useState([
+    {
+      size: "",
+      color: "",
+      price: "",
+      salePrice: "",
+      stock: "",
+      sku: "",
+    },
+  ]);
+  const [variantsLoader, setVariantsLoader] = useState(false);
+  const [variantsErrors, setvariantsErrors] = useState({});
+  console.log(variantsErrors);
 
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await getAllcategories();
+        setCategories(res?.data?.data?.categories);
+      } catch (err) {
+        notification.error(err.response.data.message);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  // Handle Images
   useEffect(() => {
     if (thumbnailImage) {
       const url = URL.createObjectURL(thumbnailImage);
@@ -58,6 +83,7 @@ export default function AddProduct() {
     }
   }, [thumbnailImage]);
 
+  // Remove Images
   const removeProductImage = (index) => {
     setProductImages((prev) => prev.filter((value, i) => i !== index));
 
@@ -67,6 +93,7 @@ export default function AddProduct() {
     });
   };
 
+  // Handle product images
   const productImagesHandler = (e) => {
     const images = Array.from(e.target.files);
 
@@ -80,6 +107,7 @@ export default function AddProduct() {
     return () => urls.map((url) => URL.revokeObjectURL(url));
   };
 
+  // Variants
   const addAnotherVariants = () => {
     setVariants([
       ...variants,
@@ -87,29 +115,43 @@ export default function AddProduct() {
         size: "",
         color: "",
         price: "",
+        salePrice: "",
         stock: "",
+        sku: "",
       },
     ]);
   };
 
+  // Handle variant update
   const variantChangesHandler = (index, field, value) => {
     const updateVariants = [...variants];
     updateVariants[index][field] = value;
     setVariants(updateVariants);
+
+    if (Object.keys(variantsErrors).length > 0) {
+      delete variantsErrors[`variants[${index}].${field}`];
+    }
   };
 
+  // Remove variant
   const removeVariant = (removeIndex) => {
     setVariants((prev) => prev.filter((value, index) => index !== removeIndex));
   };
 
   // Saving product
-  const saveProductHandler = () => {
+  const saveProductHandler = async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData();
     const newErrors = {};
 
     if (!title) {
       newErrors.title = "Title is required";
     }
-    if (!category) {
+    if (!slug) {
+      newErrors.slug = "Slug is required";
+    }
+    if (!selectedCategory) {
       newErrors.category = "Category is required";
     }
     if (!thumbnailImage) {
@@ -117,16 +159,57 @@ export default function AddProduct() {
     }
 
     setErrors(newErrors);
-    const description = editorRef?.current.getJSON();
-    console.log(description);
+
     if (Object.keys(newErrors).length > 0) {
       return;
+    }
+
+    const description = JSON.stringify(editorRef?.current.getJSON());
+
+    formData.append("title", title);
+    formData.append("slug", slug);
+    formData.append("category", selectedCategory);
+    formData.append("description", description);
+    formData.append("thumbnail", thumbnailImage);
+    formData.append("status", "inactive");
+    productImages.map((image) => formData.append("images", image));
+
+    try {
+      setProductLoader(true);
+      const res = await createProduct(formData);
+      console.log("res : ", res);
+    } catch (err) {
+      notification.error(err.response.data.message);
+    } finally {
+      setProductLoader(false);
     }
   };
 
   // Save variants
-  const saveVariantHandler = () => {
-    console.log(variants);
+  const saveVariantHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+      setVariantsLoader(true);
+
+      const productId = "69c3bd8005e1c9694ac5ae75";
+
+      const res = await addBulkVariants(productId, variants);
+
+      console.log("res => ", res);
+    } catch (err) {
+      if (err.response.status === 422) {
+        const flatErrors = {};
+
+        err?.response?.data?.errors?.forEach((obj) => {
+          Object.assign(flatErrors, obj);
+        });
+        setvariantsErrors(flatErrors);
+      }
+      notification.error(err.response?.data?.message);
+    } finally {
+      setVariantsLoader(false);
+    }
   };
 
   return (
@@ -146,17 +229,36 @@ export default function AddProduct() {
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value);
-                  setErrors((prev) => ({ ...prev, title: "" }));
+                  setErrors((prev) => ({ ...prev, title: "", slug: "" }));
+                  setSlug(
+                    e.target.value.trim().replaceAll(" ", "-").toLowerCase(),
+                  );
                 }}
               />
-              {errors.title && <p className="text-red-500">{errors.title}</p>}
+              {errors.title && (
+                <p className="text-red-500 text-sm">{errors.title}</p>
+              )}
+            </div>
+
+            <div>
+              <Input
+                placeholder="Slug"
+                value={slug}
+                onChange={(e) => {
+                  setSlug(e.target.value);
+                  setErrors((prev) => ({ ...prev, slug: "" }));
+                }}
+              />
+              {errors.slug && (
+                <p className="text-red-500 text-sm">{errors.slug}</p>
+              )}
             </div>
 
             <div className="mb-5">
               <Select
-                value={category}
+                value={selectedCategory}
                 onValueChange={(value) => {
-                  setCategory(value);
+                  setSelectedCategory(value);
                   setErrors((prev) => ({ ...prev, category: "" }));
                 }}
               >
@@ -166,16 +268,16 @@ export default function AddProduct() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Categories</SelectLabel>
-                    <SelectItem value="apple">Apple</SelectItem>
-                    <SelectItem value="banana">Banana</SelectItem>
-                    <SelectItem value="blueberry">Blueberry</SelectItem>
-                    <SelectItem value="grapes">Grapes</SelectItem>
-                    <SelectItem value="pineapple">Pineapple</SelectItem>
+                    {categories.map((cate) => (
+                      <SelectItem key={cate._id} value={cate._id}>
+                        {cate.name}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
               {errors.category && (
-                <p className="text-red-500">{errors.category}</p>
+                <p className="text-red-500 text-sm">{errors.category}</p>
               )}
             </div>
 
@@ -188,30 +290,23 @@ export default function AddProduct() {
               <Button
                 onClick={saveProductHandler}
                 className="text-white cursor-pointer"
+                disabled={productLoader}
               >
-                Save & continue
-              </Button>
-            </div>
-
-            {/* Add Variants CTA */}
-            <Separator />
-            <div className="flex justify-between">
-              <p className="text-sm text-muted-foreground mt-2">
-                If this product has multiple options like size or color
-              </p>
-              <Button
-                type="button"
-                onClick={() => setShowVariants(true)}
-                className="text-white cursor-pointer"
-              >
-                + Add variants
+                {productLoader ? (
+                  <div className="flex items-center gap-2">
+                    <Spinner />
+                    Saving...
+                  </div>
+                ) : (
+                  "Save & continue"
+                )}
               </Button>
             </div>
           </CardContent>
         </Card>
 
         {/* Variants Section */}
-        {showVariants && (
+        {Object.keys(storedProduct).length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle>Variants</CardTitle>
@@ -225,39 +320,108 @@ export default function AddProduct() {
                 <Card key={index}>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                      <Input
-                        placeholder="Size (e.g. M)"
-                        value={variant.size}
-                        onChange={(e) =>
-                          variantChangesHandler(index, "size", e.target.value)
-                        }
-                      />
-                      <Input
-                        placeholder="Color (e.g. Red)"
-                        value={variant.color}
-                        onChange={(e) =>
-                          variantChangesHandler(index, "color", e.target.value)
-                        }
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Price"
-                        min={0}
-                        value={variant.price}
-                        onChange={(e) =>
-                          variantChangesHandler(index, "price", e.target.value)
-                        }
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Stock"
-                        min={0}
-                        value={variant.stock}
-                        onChange={(e) =>
-                          variantChangesHandler(index, "stock", e.target.value)
-                        }
-                      />
+                      <div>
+                        <Input
+                          placeholder="Size (e.g. M)"
+                          value={variant.size}
+                          onChange={(e) =>
+                            variantChangesHandler(index, "size", e.target.value)
+                          }
+                        />
+                        <p className="text-xs text-red-500">
+                          {variantsErrors[`variants[${index}].size`]}
+                        </p>
+                      </div>
+
+                      <div>
+                        <Input
+                          placeholder="Color (e.g. Red)"
+                          value={variant.color}
+                          onChange={(e) =>
+                            variantChangesHandler(
+                              index,
+                              "color",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <p className="text-xs text-red-500">
+                          {variantsErrors[`variants[${index}].color`]}
+                        </p>
+                      </div>
+
+                      <div>
+                        <Input
+                          type="number"
+                          placeholder="Price"
+                          min={0}
+                          value={variant.price}
+                          onChange={(e) =>
+                            variantChangesHandler(
+                              index,
+                              "price",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <p className="text-xs text-red-500">
+                          {variantsErrors[`variants[${index}].price`]}
+                        </p>
+                      </div>
+
+                      <div>
+                        <Input
+                          type="number"
+                          placeholder="Sale Price"
+                          min={0}
+                          value={variant.salePrice}
+                          onChange={(e) =>
+                            variantChangesHandler(
+                              index,
+                              "salePrice",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <p className="text-xs text-red-500">
+                          {variantsErrors[`variants[${index}].salePrice`]}
+                        </p>
+                      </div>
+
+                      <div>
+                        <Input
+                          type="number"
+                          placeholder="Stock"
+                          min={0}
+                          value={variant.stock}
+                          onChange={(e) =>
+                            variantChangesHandler(
+                              index,
+                              "stock",
+                              e.target.value,
+                            )
+                          }
+                        />
+                        <p className="text-xs text-red-500">
+                          {variantsErrors[`variants[${index}].stock`]}
+                        </p>
+                      </div>
+
+                      <div>
+                        <Input
+                          type="text"
+                          placeholder="SKU"
+                          value={variant.sku}
+                          onChange={(e) =>
+                            variantChangesHandler(index, "sku", e.target.value)
+                          }
+                        />
+                        <p className="text-xs text-red-500">
+                          {variantsErrors[`variants[${index}].sku`]}
+                        </p>
+                      </div>
                     </div>
+
                     {variants.length > 1 && (
                       <CardFooter className="flex justify-end px-0">
                         <Button
@@ -287,7 +451,14 @@ export default function AddProduct() {
                   onClick={saveVariantHandler}
                   className="text-white cursor-pointer"
                 >
-                  Save variants
+                  {variantsLoader ? (
+                    <div className="flex items-center gap-2">
+                      <Spinner />
+                      Saving...
+                    </div>
+                  ) : (
+                    "Save variants"
+                  )}
                 </Button>
               </div>
             </CardContent>
@@ -324,7 +495,7 @@ export default function AddProduct() {
               <div className="h-[180px] bg-muted rounded-lg" />
             )}
             {errors.thumbnail && (
-              <p className="text-red-500">{errors.thumbnail}</p>
+              <p className="text-red-500 text-sm">{errors.thumbnail}</p>
             )}
           </CardContent>
 
