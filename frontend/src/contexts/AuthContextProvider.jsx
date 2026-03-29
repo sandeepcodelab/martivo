@@ -4,10 +4,7 @@ import { getCurrentUser } from "@/services/authService";
 import { getCartItems, mergeCart } from "@/services/cartService";
 
 const AuthContaxtProvider = ({ children }) => {
-  const [userData, setUserData] = useState({
-    user: null,
-    isAuthenticated: false,
-  });
+  const [userData, setUserData] = useState(null);
   const [itemsCount, setItemCount] = useState(0);
 
   // Refresh auth on app load
@@ -21,6 +18,7 @@ const AuthContaxtProvider = ({ children }) => {
         if (error.response?.status === 401) {
           userLogout();
         }
+        setUserData({ user: null, isAuthenticated: false });
       }
     };
 

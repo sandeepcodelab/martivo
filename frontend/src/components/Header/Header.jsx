@@ -80,13 +80,14 @@ export default function Header() {
             {/* Theme Mode toggle */}
             <ModeToggle />
 
-            {userData.user ? (
-              <UserProfileDesktop user={userData.user} />
-            ) : (
-              <Link to="/auth/login">
-                <Button className="text-white cursor-pointer">Login</Button>
-              </Link>
-            )}
+            {userData !== null &&
+              (userData?.user ? (
+                <UserProfileDesktop user={userData.user} />
+              ) : (
+                <Link to="/auth/login">
+                  <Button className="text-white cursor-pointer">Login</Button>
+                </Link>
+              ))}
           </div>
 
           {/* Mobile Menu */}
@@ -140,22 +141,23 @@ export default function Header() {
                     ))}
                   </nav>
                   <SheetFooter>
-                    {userData.user ? (
-                      <div>
-                        <UserProfileMobile user={userData.user} />
-                      </div>
-                    ) : (
-                      <div className="flex gap-3 items-center">
-                        {/* Theme Mode toggle */}
-                        <ModeToggle />
+                    {userData !== null &&
+                      (userData?.user ? (
+                        <div>
+                          <UserProfileMobile user={userData.user} />
+                        </div>
+                      ) : (
+                        <div className="flex gap-3 items-center">
+                          {/* Theme Mode toggle */}
+                          <ModeToggle />
 
-                        <Link to="/auth/login" className="flex-1">
-                          <Button className="w-full text-white cursor-pointer">
-                            Log in
-                          </Button>
-                        </Link>
-                      </div>
-                    )}
+                          <Link to="/auth/login" className="flex-1">
+                            <Button className="w-full text-white cursor-pointer">
+                              Log in
+                            </Button>
+                          </Link>
+                        </div>
+                      ))}
                   </SheetFooter>
                 </SheetContent>
               </Sheet>
