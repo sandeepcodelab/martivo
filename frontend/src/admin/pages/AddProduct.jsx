@@ -51,8 +51,7 @@ export default function AddProduct() {
     },
   ]);
   const [variantsLoader, setVariantsLoader] = useState(false);
-  const [variantsErrors, setvariantsErrors] = useState({});
-  console.log(variantsErrors);
+  const [variantsErrors, setVariantsErrors] = useState({});
 
   // Fetch categories
   useEffect(() => {
@@ -128,14 +127,64 @@ export default function AddProduct() {
     updateVariants[index][field] = value;
     setVariants(updateVariants);
 
-    if (Object.keys(variantsErrors).length > 0) {
-      delete variantsErrors[`variants[${index}].${field}`];
-    }
+    setVariantsErrors((prev) => {
+      const updated = { ...prev };
+      delete updated[`variants[${index}].${field}`];
+      return updated;
+    });
   };
 
   // Remove variant
   const removeVariant = (removeIndex) => {
     setVariants((prev) => prev.filter((value, index) => index !== removeIndex));
+  };
+
+  // Clear all form fields
+  const resetAllFields = () => {
+    // Basic fields
+    setTitle("");
+    setSlug("");
+    setSelectedCategory("");
+
+    // Editor
+    editorRef.current?.clear();
+
+    // Thumbnail
+    setThumbnailImage(null);
+    setThumbnailPreview(null);
+    if (thumbnailRef.current) {
+      thumbnailRef.current.value = "";
+    }
+
+    // Product Images
+    setProductImages([]);
+    setProductImagesPreview([]);
+    if (productImagesRef.current) {
+      productImagesRef.current.value = "";
+    }
+
+    // Variants
+    setVariants([
+      {
+        size: "",
+        color: "",
+        price: "",
+        salePrice: "",
+        stock: "",
+        sku: "",
+      },
+    ]);
+
+    // Errors
+    setErrors({});
+    setVariantsErrors({});
+
+    // Stored product
+    setStoredProduct({});
+
+    // Loaders
+    setProductLoader(false);
+    setVariantsLoader(false);
   };
 
   // Saving product
@@ -171,13 +220,12 @@ export default function AddProduct() {
     formData.append("category", selectedCategory);
     formData.append("description", description);
     formData.append("thumbnail", thumbnailImage);
-    formData.append("status", "inactive");
     productImages.map((image) => formData.append("images", image));
 
     try {
       setProductLoader(true);
       const res = await createProduct(formData);
-      console.log("res : ", res);
+      setStoredProduct(res?.data?.data?.product);
     } catch (err) {
       notification.error(err.response.data.message);
     } finally {
@@ -192,19 +240,26 @@ export default function AddProduct() {
     try {
       setVariantsLoader(true);
 
-      const productId = "69c3bd8005e1c9694ac5ae75";
+      const productId = storedProduct?._id;
+
+      if (!productId) {
+        notification.error("Create product first");
+        return;
+      }
 
       const res = await addBulkVariants(productId, variants);
 
-      console.log("res => ", res);
+      // Reset all fields
+      resetAllFields();
+
+      notification.success(res.data.message);
     } catch (err) {
       if (err.response.status === 422) {
         const flatErrors = {};
-
         err?.response?.data?.errors?.forEach((obj) => {
           Object.assign(flatErrors, obj);
         });
-        setvariantsErrors(flatErrors);
+        setVariantsErrors(flatErrors);
       }
       notification.error(err.response?.data?.message);
     } finally {
@@ -286,184 +341,197 @@ export default function AddProduct() {
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end">
-              <Button
-                onClick={saveProductHandler}
-                className="text-white cursor-pointer"
-                disabled={productLoader}
-              >
-                {productLoader ? (
-                  <div className="flex items-center gap-2">
-                    <Spinner />
-                    Saving...
-                  </div>
-                ) : (
-                  "Save & continue"
-                )}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Variants Section */}
-        {Object.keys(storedProduct).length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Variants</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Each variant can have its own price and stock
-              </p>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              {variants.map((variant, index) => (
-                <Card key={index}>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                      <div>
-                        <Input
-                          placeholder="Size (e.g. M)"
-                          value={variant.size}
-                          onChange={(e) =>
-                            variantChangesHandler(index, "size", e.target.value)
-                          }
-                        />
-                        <p className="text-xs text-red-500">
-                          {variantsErrors[`variants[${index}].size`]}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Input
-                          placeholder="Color (e.g. Red)"
-                          value={variant.color}
-                          onChange={(e) =>
-                            variantChangesHandler(
-                              index,
-                              "color",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        <p className="text-xs text-red-500">
-                          {variantsErrors[`variants[${index}].color`]}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Input
-                          type="number"
-                          placeholder="Price"
-                          min={0}
-                          value={variant.price}
-                          onChange={(e) =>
-                            variantChangesHandler(
-                              index,
-                              "price",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        <p className="text-xs text-red-500">
-                          {variantsErrors[`variants[${index}].price`]}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Input
-                          type="number"
-                          placeholder="Sale Price"
-                          min={0}
-                          value={variant.salePrice}
-                          onChange={(e) =>
-                            variantChangesHandler(
-                              index,
-                              "salePrice",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        <p className="text-xs text-red-500">
-                          {variantsErrors[`variants[${index}].salePrice`]}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Input
-                          type="number"
-                          placeholder="Stock"
-                          min={0}
-                          value={variant.stock}
-                          onChange={(e) =>
-                            variantChangesHandler(
-                              index,
-                              "stock",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        <p className="text-xs text-red-500">
-                          {variantsErrors[`variants[${index}].stock`]}
-                        </p>
-                      </div>
-
-                      <div>
-                        <Input
-                          type="text"
-                          placeholder="SKU"
-                          value={variant.sku}
-                          onChange={(e) =>
-                            variantChangesHandler(index, "sku", e.target.value)
-                          }
-                        />
-                        <p className="text-xs text-red-500">
-                          {variantsErrors[`variants[${index}].sku`]}
-                        </p>
-                      </div>
-                    </div>
-
-                    {variants.length > 1 && (
-                      <CardFooter className="flex justify-end px-0">
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeVariant(index)}
-                          className="cursor-pointer"
-                        >
-                          Remove
-                        </Button>
-                      </CardFooter>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                className="cursor-pointer"
-                onClick={addAnotherVariants}
-              >
-                + Add another variant
-              </Button>
+            {Object.keys(storedProduct).length === 0 && (
               <div className="flex justify-end">
                 <Button
-                  type="button"
-                  onClick={saveVariantHandler}
+                  onClick={saveProductHandler}
                   className="text-white cursor-pointer"
+                  disabled={productLoader}
                 >
-                  {variantsLoader ? (
+                  {productLoader ? (
                     <div className="flex items-center gap-2">
                       <Spinner />
                       Saving...
                     </div>
                   ) : (
-                    "Save variants"
+                    "Save & continue"
                   )}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            )}
+
+            {/* Variants Section */}
+            {Object.keys(storedProduct).length > 0 && (
+              <div>
+                <Separator />
+                <div className="my-5">
+                  <h3 className="text-lg font-bold">Variants</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Each variant can have its own price and stock
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {variants.map((variant, index) => (
+                    <Card key={index}>
+                      <CardContent className="space-y-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                          <div>
+                            <Input
+                              placeholder="Size (e.g. M)"
+                              value={variant.size}
+                              onChange={(e) =>
+                                variantChangesHandler(
+                                  index,
+                                  "size",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <p className="text-xs text-red-500">
+                              {variantsErrors[`variants[${index}].size`]}
+                            </p>
+                          </div>
+
+                          <div>
+                            <Input
+                              placeholder="Color (e.g. Red)"
+                              value={variant.color}
+                              onChange={(e) =>
+                                variantChangesHandler(
+                                  index,
+                                  "color",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <p className="text-xs text-red-500">
+                              {variantsErrors[`variants[${index}].color`]}
+                            </p>
+                          </div>
+
+                          <div>
+                            <Input
+                              type="number"
+                              placeholder="Price"
+                              min={0}
+                              value={variant.price}
+                              onChange={(e) =>
+                                variantChangesHandler(
+                                  index,
+                                  "price",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <p className="text-xs text-red-500">
+                              {variantsErrors[`variants[${index}].price`]}
+                            </p>
+                          </div>
+
+                          <div>
+                            <Input
+                              type="number"
+                              placeholder="Sale Price"
+                              min={0}
+                              value={variant.salePrice}
+                              onChange={(e) =>
+                                variantChangesHandler(
+                                  index,
+                                  "salePrice",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <p className="text-xs text-red-500">
+                              {variantsErrors[`variants[${index}].salePrice`]}
+                            </p>
+                          </div>
+
+                          <div>
+                            <Input
+                              type="number"
+                              placeholder="Stock"
+                              min={0}
+                              value={variant.stock}
+                              onChange={(e) =>
+                                variantChangesHandler(
+                                  index,
+                                  "stock",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <p className="text-xs text-red-500">
+                              {variantsErrors[`variants[${index}].stock`]}
+                            </p>
+                          </div>
+
+                          <div>
+                            <Input
+                              type="text"
+                              placeholder="SKU"
+                              value={variant.sku}
+                              onChange={(e) =>
+                                variantChangesHandler(
+                                  index,
+                                  "sku",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <p className="text-xs text-red-500">
+                              {variantsErrors[`variants[${index}].sku`]}
+                            </p>
+                          </div>
+                        </div>
+
+                        {variants.length > 1 && (
+                          <CardFooter className="flex justify-end px-0">
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => removeVariant(index)}
+                              className="cursor-pointer"
+                            >
+                              Remove
+                            </Button>
+                          </CardFooter>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="cursor-pointer"
+                    onClick={addAnotherVariants}
+                  >
+                    + Add another variant
+                  </Button>
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      onClick={saveVariantHandler}
+                      className="text-white cursor-pointer"
+                    >
+                      {variantsLoader ? (
+                        <div className="flex items-center gap-2">
+                          <Spinner />
+                          Saving...
+                        </div>
+                      ) : (
+                        "Save variants"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* End Variants Section */}
+          </CardContent>
+        </Card>
       </div>
 
       {/* ================= RIGHT SIDE ================= */}
