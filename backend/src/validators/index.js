@@ -187,7 +187,10 @@ const addBulkVariantValidator = () => {
     body("variants.*.sku").trim().notEmpty().withMessage("SKU is required"),
 
     body("variants.*").custom((variant) => {
-      if (variant.salePrice && variant.salePrice > variant.price) {
+      const price = Number(variant.price);
+      const salePrice = Number(variant.salePrice);
+
+      if (salePrice && salePrice > price) {
         throw new Error("Sale price cannot be greater than price");
       }
       return true;
