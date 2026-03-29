@@ -50,8 +50,12 @@ const productSchema = new Schema(
     maxPrice: Number,
     status: {
       type: String,
-      enum: ["active", "inactive", "out_of_stock"],
-      default: "active",
+      enum: ["active", "inactive"],
+      default: "inactive",
+    },
+    isCompleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {
