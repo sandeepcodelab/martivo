@@ -18,6 +18,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { generateHTML } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+
+/* Editor style*/
+import "@/components/Editor/styles.scss";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -126,6 +131,21 @@ export default function ProductDetails() {
   );
 
   const productImages = [product.thumbnail, ...(product?.images || [])];
+
+  // Convert decription into HTML
+  let html;
+  if (product.description) {
+    try {
+      const parsedDescription =
+        typeof product.description === "string"
+          ? JSON.parse(product.description)
+          : product.description;
+
+      html = generateHTML(parsedDescription, [StarterKit]);
+    } catch (err) {
+      html = null;
+    }
+  }
 
   if (loader) {
     return (
@@ -311,7 +331,16 @@ export default function ProductDetails() {
       <section className="mt-16">
         <Card className="p-6 rounded-2xl shadow-sm">
           <h2 className="text-2xl font-semibold mb-4">Product Description</h2>
-          <p className="leading-relaxed">{product.description}</p>
+          {html ? (
+            <div
+              className="leading-relaxed tiptap"
+              dangerouslySetInnerHTML={{
+                __html: html,
+              }}
+            />
+          ) : (
+            <p className="leading-relaxed">{product.description}</p>
+          )}
         </Card>
       </section>
     </Container>
