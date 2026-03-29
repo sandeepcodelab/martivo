@@ -27,6 +27,7 @@ export default function Editor({ ref, initialValue = "" }) {
   useImperativeHandle(ref, () => ({
     getJSON: () => editor?.getJSON(),
     getHTML: () => editor?.getHTML(),
+    clear: () => editor?.commands.clearContent(true),
   }));
 
   if (!editor) return null;
