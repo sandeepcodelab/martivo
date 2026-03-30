@@ -233,7 +233,7 @@ export default function Cart() {
                             {/* Price */}
                             <div className="md:w-[100px] text-right font-semibold flex justify-center items-center">
                               <IndianRupee size={14} />
-                              {item.price * item.quantity}
+                              {item.salePrice * item.quantity}
                             </div>
                           </div>
 
@@ -274,7 +274,10 @@ export default function Cart() {
                   <span>Subtotal</span>
                   <span className="flex items-center">
                     <IndianRupee size={13} />
-                    {cartItems.reduce((t, i) => t + i.price * i.quantity, 0)}
+                    {cartItems.reduce(
+                      (t, i) => t + i.salePrice * i.quantity,
+                      0,
+                    )}
                   </span>
                 </div>
 
@@ -289,7 +292,10 @@ export default function Cart() {
                   <span>Total</span>
                   <span className="flex items-center">
                     <IndianRupee size={16} />
-                    {cartItems.reduce((t, i) => t + i.price * i.quantity, 0)}
+                    {cartItems.reduce(
+                      (t, i) => t + i.salePrice * i.quantity,
+                      0,
+                    )}
                   </span>
                 </div>
 
