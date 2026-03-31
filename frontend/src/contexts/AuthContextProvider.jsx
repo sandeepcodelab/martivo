@@ -27,6 +27,8 @@ const AuthContaxtProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchCartItem = async () => {
+      if (!userData) return;
+
       try {
         if (userData.isAuthenticated) {
           const res = await getCartItems();
