@@ -7,6 +7,7 @@ import {
   deleteFromCloudinary,
 } from "../utils/cloudinary.js";
 import { Category } from "../models/categoryModel.js";
+import { Variant } from "../models/variantModel.js";
 
 const addProduct = asyncHandler(async (req, res) => {
   const { title, slug, description, category, status } = req.body;
@@ -20,8 +21,6 @@ const addProduct = asyncHandler(async (req, res) => {
   if (checkProduct) {
     throw new ApiError(409, "A product with this slug already exists.", []);
   }
-  console.log(checkProduct);
-  return;
 
   // Upload thumbnail
   let thumbnail = "";
@@ -111,6 +110,9 @@ const getAllProducts = asyncHandler(async (req, res) => {
     const getCategory = await Category.findOne({ slug: category });
     query.category = getCategory?._id;
   }
+
+  query.status = "active";
+  query.isCompleted = true;
 
   // Get total document
   const total = await Product.countDocuments(query);
@@ -242,6 +244,8 @@ const deleteProduct = asyncHandler(async (req, res) => {
   if (!deleteProduct) {
     throw new ApiError(500, "Failed to delete product.", []);
   }
+
+  await Variant.deleteMany({ product: id });
 
   return res
     .status(200)
@@ -427,6 +431,65 @@ const deleteProductImage = asyncHandler(async (req, res) => {
     );
 });
 
+const adminGetAllProducts = asyncHandler(async (req, res) => {
+  let { limit = 10, page = 1, search = "", category = "" } = req.query;
+
+  page = Number(page);
+  limit = Number(limit);
+
+  if (page < 1) page = 1;
+  if (limit < 10) page = 10;
+
+  const skip = (page - 1) * limit;
+
+  const query = {};
+
+  if (search.trim) {
+    query.title = { $regex: search, $options: "i" };
+  }
+
+  if (category) {
+    const getCategory = await Category.findOne({ slug: category });
+    query.category = getCategory?._id;
+  }
+
+  // Get total document
+  const total = await Product.countDocuments(query);
+
+  const products = await Product.find(query)
+    .skip(skip)
+    .limit(limit)
+    .populate(["category", "variants"]);
+
+  if (!products) {
+    throw new ApiError(404, "Products not found.", []);
+  }
+
+  if (products.length === 0) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, { products }, "We could not find any products.")
+      );
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        products,
+        pageInfo: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      "Products fetched successfully."
+    )
+  );
+});
+
 export {
   addProduct,
   getAllProducts,
@@ -436,4 +499,5 @@ export {
   updateProductThumbnail,
   addProductImages,
   deleteProductImage,
+  adminGetAllProducts,
 };
