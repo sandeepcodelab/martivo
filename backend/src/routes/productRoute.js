@@ -8,6 +8,7 @@ import {
   updateProductThumbnail,
   addProductImages,
   deleteProductImage,
+  adminGetAllProducts,
 } from "../controllers/productsController.js";
 import { validate } from "../middlewares/validatorMiddleware.js";
 import {
@@ -24,6 +25,10 @@ router.route("/all").get(getAllProducts);
 router.route("/singleProduct/:id").get(getProductById);
 
 // Secured routes
+router
+  .route("/getAll")
+  .get(verifyJWT, roleCheck(["admin"]), adminGetAllProducts);
+
 router.route("/add").post(
   upload.fields([
     {
