@@ -57,7 +57,7 @@ const addCategory = asyncHandler(async (req, res) => {
 });
 
 const getAllCategories = asyncHandler(async (req, res) => {
-  let { search = "", page = "1", limit = "10", sort = "desc" } = req.query;
+  let { search = "", page = "", limit = "", sort = "desc" } = req.query;
 
   page = Number(page);
   limit = Number(limit);
@@ -82,10 +82,17 @@ const getAllCategories = asyncHandler(async (req, res) => {
   // Get total document
   const total = await Category.countDocuments(query);
 
-  const categories = await Category.find(query)
-    .sort(sorting)
-    .skip(skip)
-    .limit(limit);
+  let dbQuery = Category.find(query).sort(sorting);
+
+  if (skip !== undefined) {
+    dbQuery = dbQuery.skip(skip);
+  }
+
+  if (limit !== undefined) {
+    dbQuery = dbQuery.limit(limit);
+  }
+
+  const categories = await dbQuery;
 
   if (!categories) {
     throw new ApiError(404, "Category not found.", []);
