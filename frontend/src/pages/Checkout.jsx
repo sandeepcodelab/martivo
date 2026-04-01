@@ -39,7 +39,7 @@ export default function Checkout() {
   });
 
   const itemsPrice = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc, item) => acc + item.salePrice * item.quantity,
     0,
   );
 
@@ -275,9 +275,12 @@ export default function Checkout() {
                   className="flex justify-between items-center text-md my-2"
                 >
                   <div className="grid">
-                    <span className="w-full max-w-40 overflow-hidden text-ellipsis whitespace-nowrap">
-                      {item.product.title} × {item.quantity}
-                    </span>
+                    <div className="flex w-full max-w-40 lg:max-w-50 gap-2">
+                      <span className="w-full max-w-30 lg:max-w-40 overflow-hidden text-ellipsis whitespace-nowrap">
+                        {item.product.title}
+                      </span>
+                      <span>× {item.quantity}</span>
+                    </div>
                     <span className="text-xs text-muted-foreground">
                       {item.color} - {item.size}
                     </span>
@@ -285,7 +288,7 @@ export default function Checkout() {
                   <div>
                     <span className="flex items-center">
                       <IndianRupee size={14} />
-                      {item.price * item.quantity}
+                      {item.salePrice * item.quantity}
                     </span>
                   </div>
                 </div>
