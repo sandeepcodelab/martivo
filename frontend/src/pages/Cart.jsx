@@ -170,7 +170,7 @@ export default function Cart() {
                       <CardContent className="px-2">
                         <div className="flex flex-col md:flex-row md:items-center gap-4">
                           {/* 🔹 GROUP 1 : IMAGE + TITLE */}
-                          <div className="flex items-center gap-3 md:flex-1 min-w-0">
+                          <div className="flex items-start gap-3 md:flex-1 min-w-0">
                             <div className="w-[72px] h-[90px] rounded-lg overflow-hidden shrink-0">
                               <img
                                 src={item.product.thumbnail.url}
@@ -180,9 +180,11 @@ export default function Cart() {
                             </div>
 
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium overflow-hidden text-ellipsis whitespace-nowrap">
-                                {item.product.title}
-                              </div>
+                              <Link to={`/product-details/${item.product._id}`}>
+                                <div className="font-medium overflow-hidden text-ellipsis whitespace-nowrap hover:underline">
+                                  {item.product.title}
+                                </div>
+                              </Link>
 
                               <div className="grid text-xs text-muted-foreground">
                                 <span>Size: {item.size}</span>
