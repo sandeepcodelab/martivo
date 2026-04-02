@@ -28,6 +28,7 @@ export default function Editor({ ref, initialValue = "" }) {
     getJSON: () => editor?.getJSON(),
     getHTML: () => editor?.getHTML(),
     clear: () => editor?.commands.clearContent(true),
+    setContent: (content) => editor?.commands.setContent(content),
   }));
 
   if (!editor) return null;
