@@ -138,29 +138,6 @@ const addVariantValidator = () => {
   ];
 };
 
-const updateVariantValidator = () => {
-  return [
-    body("size").trim().notEmpty().withMessage("Size field can not be empty."),
-    body("color")
-      .trim()
-      .notEmpty()
-      .withMessage("Color field can not be empty."),
-    body("price")
-      .notEmpty()
-      .withMessage("Price field can not be empty.")
-      .isFloat({ gt: 0 })
-      .withMessage(
-        "Price must be a valid number (integer or decimal) greater than 0."
-      ),
-    body("stock")
-      .notEmpty()
-      .withMessage("Stock field can not be empty.")
-      .isInt({ min: 0 })
-      .withMessage("Stock must be a valid non-negative integer."),
-    body("sku").trim().notEmpty().withMessage("Sku field can not be empty."),
-  ];
-};
-
 const addBulkVariantValidator = () => {
   return [
     body("variants")
@@ -212,6 +189,5 @@ export {
   updateProductVlidator,
   // Product variant validator----
   addVariantValidator,
-  updateVariantValidator,
   addBulkVariantValidator,
 };
