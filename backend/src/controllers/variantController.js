@@ -119,32 +119,35 @@ const getVariantById = asyncHandler(async (req, res) => {
 });
 
 const updateVariant = asyncHandler(async (req, res) => {
-  const { size, color, price, stock, sku, discount, isActive } = req.body;
-  const { id } = req.params;
+  const { productId } = req.params;
+  const { variants = [] } = req.body;
 
-  const variant = await Variant.findById(id);
-
-  if (!variant) {
-    throw new ApiError(404, "Product variant not found.", []);
+  if (!productId) {
+    throw new ApiError(400, "Product Id is missing.", []);
   }
 
-  const updatedVariant = await Variant.findByIdAndUpdate(
-    variant._id,
-    {
-      $set: {
-        size: size || variant.size,
-        color: color || variant.color,
-        price: price || variant.price,
-        stock: stock || variant.stock,
-        sku: sku || variant.sku,
-        discount: discount || variant.discount,
-        isActive: isActive || variant.isActive,
-      },
-    },
-    { new: true }
-  );
+  let collectVariant = [];
 
-  if (!updatedVariant) {
+  for (const variant of variants) {
+    if (variant._id) {
+      const updatedRecord = await variant.findByIdAndUpdate(
+        variant._id,
+        variant,
+        { new: true }
+      );
+
+      collectVariant.push(updatedRecord);
+    } else {
+      const createdRecord = await Variant.create({
+        ...variant,
+        product: productId,
+      });
+
+      collectVariant.push(createdRecord);
+    }
+  }
+
+  if (!collectVariant.length) {
     throw new ApiError(
       500,
       "Unable to update product variant. Please retry later.",
@@ -152,14 +155,14 @@ const updateVariant = asyncHandler(async (req, res) => {
     );
   }
 
-  await updateProductPrice(variant.product);
+  await updateProductPrice(productId);
 
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        { variant: updatedVariant },
+        { variant: collectVariant },
         "Product variant created successfully."
       )
     );
