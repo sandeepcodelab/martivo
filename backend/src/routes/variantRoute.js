@@ -15,7 +15,6 @@ import { validate } from "../middlewares/validatorMiddleware.js";
 import {
   addBulkVariantValidator,
   addVariantValidator,
-  updateVariantValidator,
 } from "../validators/index.js";
 
 const router = Router();
@@ -47,11 +46,11 @@ router
 router.route("/edit/:id").get(verifyJWT, roleCheck(["admin"]), getVariantById);
 
 router
-  .route("/update/:id")
+  .route("/update/:productId")
   .patch(
     verifyJWT,
     roleCheck(["admin"]),
-    updateVariantValidator(),
+    addBulkVariantValidator(),
     validate,
     updateVariant
   );
