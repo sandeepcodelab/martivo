@@ -154,7 +154,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const product = await Product.findById(id);
+  const product = await Product.findById(id).populate("variants");
 
   if (!product) {
     throw new ApiError(404, "Product not found.", []);
@@ -168,7 +168,10 @@ const getProductById = asyncHandler(async (req, res) => {
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const { title, description, category, status } = req.body;
+  const { title, slug, description, category, status } = req.body;
+
+  const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
+  const imagesLocalPath = req.files?.images;
 
   const product = await Product.findById(id);
 
@@ -176,14 +179,50 @@ const updateProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Product not found.", []);
   }
 
+  // Upload thumbnail
+  let thumbnail = "";
+  if (thumbnailLocalPath) {
+    try {
+      thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+    } catch (error) {
+      throw new ApiError(500, "Failed to upload thumbnail.", []);
+    }
+  }
+
+  // Upload images
+  let uploadedImages = [];
+  let images = product.images;
+  if (imagesLocalPath?.length > 0) {
+    try {
+      await Promise.all(
+        imagesLocalPath.map(async (image) => {
+          const uploadedImg = await uploadOnCloudinary(image.path);
+          images.push({
+            url: uploadedImg.secure_url,
+            localPath: image.path,
+          });
+          uploadedImages.push(uploadedImg);
+        })
+      );
+    } catch (error) {
+      throw new ApiError(500, "Failed to upload thumbnail.", []);
+    }
+  }
+
   const updateProduct = await Product.findByIdAndUpdate(
     product._id,
     {
       $set: {
-        title: title || product.title,
-        description: description || product.description,
-        category: category || product.category,
-        status: status || product.status,
+        title: title ?? product.title,
+        slug: slug ?? product.slug,
+        description: description ?? product.description,
+        category: category ?? product.category,
+        status: status ?? product.status,
+        thumbnail: {
+          url: thumbnail?.secure_url ?? product.thumbnail.url,
+          localPath: thumbnailLocalPath ?? product.thumbnail.localPath,
+        },
+        images,
       },
     },
     { new: true }
