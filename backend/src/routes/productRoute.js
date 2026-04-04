@@ -48,15 +48,22 @@ router.route("/add").post(
 
 router.route("/edit/:id").get(verifyJWT, roleCheck(["admin"]), getProductById);
 
-router
-  .route("/update/:id")
-  .patch(
-    verifyJWT,
-    roleCheck(["admin"]),
-    updateProductVlidator(),
-    validate,
-    updateProduct
-  );
+router.route("/update/:id").patch(
+  upload.fields([
+    {
+      name: "thumbnail",
+      maxCount: 1,
+    },
+    {
+      name: "images",
+    },
+  ]),
+  verifyJWT,
+  roleCheck(["admin"]),
+  updateProductVlidator(),
+  validate,
+  updateProduct
+);
 
 router
   .route("/delete/:id")
