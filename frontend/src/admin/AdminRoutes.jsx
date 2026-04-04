@@ -1,22 +1,23 @@
 import AuthContext from "@/contexts/AuthContext";
-import { useContext, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useContext } from "react";
+import { Navigate, useLocation } from "react-router";
 
-export default function AdminRoute({ children, authentication = true }) {
+export default function AdminRoute({ children, requiredRole }) {
   const { userData } = useContext(AuthContext);
-  const isAuthenticated = userData?.isAuthenticated || false;
-  const navigate = useNavigate();
   const location = useLocation();
 
-  useEffect(() => {
-    if (!userData) return;
+  if (userData === null) return null;
 
-    if (authentication && authentication !== isAuthenticated) {
-      navigate("/auth/login", { state: { from: location }, replace: true });
-    } else if (!authentication && authentication !== isAuthenticated) {
-      navigate(location?.state?.from?.pathname || "/admin", { replace: true });
-    }
-  }, [isAuthenticated, authentication, navigate]);
+  if (!userData?.isAuthenticated) {
+    return <Navigate to="/auth/login" state={{ from: location }} replace />;
+  }
+
+  if (
+    requiredRole &&
+    userData?.user?.role?.toLowerCase() !== requiredRole.toLowerCase()
+  ) {
+    return <Navigate to="/" replace />;
+  }
 
   return children;
 }
