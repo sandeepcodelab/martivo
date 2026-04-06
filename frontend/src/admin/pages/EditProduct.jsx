@@ -6,6 +6,7 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
+  CardAction,
 } from "@/components/ui/card";
 import {
   Select,
@@ -23,19 +24,22 @@ import Editor from "@/components/Editor/Editor";
 import { getAllcategories } from "@/services/categoryService";
 import { notification } from "@/utils/toast";
 import {
-  addBulkVariants,
-  createProduct,
+  deleteProductImage,
+  deleteVariant,
   getProduct,
   updateProduct,
+  updateStatusOfProduct,
   updateVariants,
 } from "@/services/productService";
 import { Spinner } from "@/components/ui/spinner";
 import { useParams } from "react-router";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 export default function AddProduct() {
   const editorRef = useRef(null);
   const [categories, setCategories] = useState([]);
-  // const [product, setProduct] = useState({});
+  const [productStatus, setProductStatus] = useState(false);
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -61,6 +65,9 @@ export default function AddProduct() {
   const [variantsLoader, setVariantsLoader] = useState(false);
   const [variantsErrors, setVariantsErrors] = useState({});
   const params = useParams();
+  const [imagePreviewLoader, setimagePreviewLoader] = useState(false);
+  const [removeLoader, setRemoveLoader] = useState(null);
+  const timerRef = useRef(null);
 
   // Fetch categories and product
   useEffect(() => {
@@ -70,6 +77,7 @@ export default function AddProduct() {
       try {
         const fetchProduct = await getProduct(params.id);
         const product = fetchProduct?.data?.data.product;
+
         setTitle(product.title);
         setSlug(product.slug);
         setSelectedCategory(String(product.category));
@@ -85,6 +93,7 @@ export default function AddProduct() {
         setProductImages(product.images.map((image) => image.url));
         setProductImagesPreview(product.images.map((image) => image.url));
         setVariants(product.variants);
+        setProductStatus(product.status);
 
         const fetchCategories = await getAllcategories();
         setCategories(fetchCategories?.data?.data?.categories);
@@ -115,13 +124,39 @@ export default function AddProduct() {
   }, [thumbnailImage]);
 
   // Remove Images
-  const removeProductImage = (index) => {
-    setProductImages((prev) => prev.filter((value, i) => i !== index));
+  const removeProductImage = async (index) => {
+    if (!index) return;
 
-    setProductImagesPreview((prev) => {
-      URL.revokeObjectURL(prev[index]);
-      return prev.filter((value, i) => i !== index);
-    });
+    const image = productImages[index];
+
+    const isFile = (value) => value instanceof File || value instanceof Blob;
+
+    if (isFile(image)) {
+      setProductImages((prev) => prev.filter((value, i) => i !== index));
+
+      setProductImagesPreview((prev) => {
+        URL.revokeObjectURL(prev[index]);
+        return prev.filter((value, i) => i !== index);
+      });
+    } else {
+      try {
+        setimagePreviewLoader(true);
+
+        const image = productImages[index];
+        await deleteProductImage(params.id, image);
+
+        setProductImages((prev) => prev.filter((value, i) => i !== index));
+
+        setProductImagesPreview((prev) => {
+          URL.revokeObjectURL(prev[index]);
+          return prev.filter((value, i) => i !== index);
+        });
+      } catch (error) {
+        notification.error(error.response.data.message);
+      } finally {
+        setimagePreviewLoader(false);
+      }
+    }
   };
 
   // Handle product images
@@ -167,56 +202,25 @@ export default function AddProduct() {
   };
 
   // Remove variant
-  const removeVariant = (removeIndex) => {
-    setVariants((prev) => prev.filter((value, index) => index !== removeIndex));
-  };
+  const removeVariant = async (removeIndex) => {
+    if (!removeIndex) return;
 
-  // Clear all form fields
-  const resetAllFields = () => {
-    // Basic fields
-    setTitle("");
-    setSlug("");
-    setSelectedCategory("");
+    try {
+      setRemoveLoader(removeIndex);
+      const variantData = variants[removeIndex];
 
-    // Editor
-    editorRef.current?.clear();
+      const res = await deleteVariant(variantData?._id);
 
-    // Thumbnail
-    setThumbnailImage(null);
-    setThumbnailPreview(null);
-    if (thumbnailRef.current) {
-      thumbnailRef.current.value = "";
+      setVariants((prev) =>
+        prev.filter((value, index) => index !== removeIndex),
+      );
+
+      notification.success(res.data.message);
+    } catch (error) {
+      notification.error(error.response.data.message);
+    } finally {
+      setRemoveLoader(null);
     }
-
-    // Product Images
-    setProductImages([]);
-    setProductImagesPreview([]);
-    if (productImagesRef.current) {
-      productImagesRef.current.value = "";
-    }
-
-    // Variants
-    setVariants([
-      {
-        size: "",
-        color: "",
-        price: "",
-        salePrice: "",
-        stock: "",
-        sku: "",
-      },
-    ]);
-
-    // Errors
-    setErrors({});
-    setVariantsErrors({});
-
-    // Stored product
-    setStoredProduct({});
-
-    // Loaders
-    setProductLoader(false);
-    setVariantsLoader(false);
   };
 
   // Saving product
@@ -288,10 +292,6 @@ export default function AddProduct() {
       }
 
       const res = await updateVariants(productId, variants);
-      console.log(res);
-
-      // Reset all fields
-      // resetAllFields();
 
       notification.success(res.data.message);
     } catch (err) {
@@ -308,6 +308,26 @@ export default function AddProduct() {
     }
   };
 
+  // Update product status
+  const updateProductStatus = () => {
+    const productId = params.id;
+    if (!productId) return;
+
+    const newStatus = !productStatus;
+    setProductStatus(newStatus);
+
+    clearTimeout(timerRef.current);
+
+    timerRef.current = setTimeout(async () => {
+      try {
+        const res = await updateStatusOfProduct(productId, newStatus);
+        setProductStatus(res.data.data.product.status);
+      } catch (err) {
+        notification.error(err.response.data.message);
+      }
+    }, 500);
+  };
+
   return (
     <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
       {/* ================= LEFT SIDE ================= */}
@@ -316,6 +336,14 @@ export default function AddProduct() {
         <Card className="p-5">
           <CardHeader>
             <CardTitle>Product details</CardTitle>
+            <CardAction className="flex items-center space-x-2">
+              <Label htmlFor="airplane-mode">Active</Label>
+              <Switch
+                id="airplane-mode"
+                checked={productStatus}
+                onCheckedChange={updateProductStatus}
+              />
+            </CardAction>
           </CardHeader>
 
           <CardContent className="space-y-5">
@@ -534,6 +562,7 @@ export default function AddProduct() {
                             size="sm"
                             onClick={() => removeVariant(index)}
                             className="cursor-pointer"
+                            disabled={removeLoader === index ? true : false}
                           >
                             Remove
                           </Button>
@@ -634,7 +663,7 @@ export default function AddProduct() {
             <CardTitle>Product images</CardTitle>
           </CardHeader>
 
-          <CardContent className="grid grid-cols-3 gap-2">
+          <CardContent className="grid grid-cols-3 gap-2 relative">
             {productImagesPreview.length > 0
               ? productImagesPreview.map((preview, index) => (
                   <div key={preview} className="relative">
@@ -650,6 +679,15 @@ export default function AddProduct() {
               : [1, 2, 3].map((_, i) => (
                   <div key={i} className="aspect-square bg-muted rounded-md" />
                 ))}
+
+            {/* Loader */}
+            {imagePreviewLoader ? (
+              <div className="absolute inset-0 -top-1 bg-black/80 flex justify-center items-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              ""
+            )}
           </CardContent>
 
           <CardFooter>
