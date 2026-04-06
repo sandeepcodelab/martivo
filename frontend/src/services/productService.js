@@ -32,6 +32,16 @@ export const deleteProduct = (id) => {
   return api.delete(`/product/delete/${id}`);
 };
 
+export const deleteProductImage = (id, url) => {
+  return api.delete(
+    `/product/delete-image/${id}?url=${encodeURIComponent(url)}`,
+  );
+};
+
+export const updateStatusOfProduct = (id, productStatus) => {
+  return api.patch(`product/update-status/${id}`, { status: productStatus });
+};
+
 // Variants
 export const getAllVariants = (productId) => {
   return api.get(`/product-variant/${productId}/all`);
@@ -43,4 +53,8 @@ export const addBulkVariants = (productId, variants) => {
 
 export const updateVariants = (productId, variants) => {
   return api.patch(`/product-variant/update/${productId}`, { variants });
+};
+
+export const deleteVariant = (id) => {
+  return api.delete(`/product-variant/delete/${id}`);
 };
