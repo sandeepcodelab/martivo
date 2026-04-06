@@ -9,6 +9,7 @@ import {
   addProductImages,
   deleteProductImage,
   adminGetAllProducts,
+  updateProductStatus,
 } from "../controllers/productsController.js";
 import { validate } from "../middlewares/validatorMiddleware.js";
 import {
@@ -90,5 +91,9 @@ router
 router
   .route("/delete-image/:id")
   .delete(verifyJWT, roleCheck(["admin"]), deleteProductImage);
+
+router
+  .route("/update-status/:id")
+  .patch(verifyJWT, roleCheck(["admin"]), updateProductStatus);
 
 export default router;
