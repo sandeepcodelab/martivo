@@ -49,9 +49,8 @@ const productSchema = new Schema(
     minPrice: Number,
     maxPrice: Number,
     status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "inactive",
+      type: Boolean,
+      default: false,
     },
     isCompleted: {
       type: Boolean,
