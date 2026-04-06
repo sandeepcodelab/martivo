@@ -111,7 +111,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
     query.category = getCategory?._id;
   }
 
-  query.status = "active";
+  query.status = true;
   query.isCompleted = true;
 
   // Get total document
@@ -424,7 +424,7 @@ const addProductImages = asyncHandler(async (req, res) => {
 
 const deleteProductImage = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { url } = req.body;
+  const { url = "" } = req.query;
 
   const product = await Product.findById(id);
 
@@ -529,6 +529,31 @@ const adminGetAllProducts = asyncHandler(async (req, res) => {
   );
 });
 
+const updateProductStatus = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { status = false } = req.body;
+
+  if (!id) {
+    throw new ApiError(400, "Required product ID", []);
+  }
+
+  const product = await Product.findByIdAndUpdate(
+    id,
+    { $set: { status } },
+    { new: true }
+  );
+
+  if (!product) {
+    throw new ApiError(500, "Unable to update product status.", []);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { product }, "Product status updated successfully.")
+    );
+});
+
 export {
   addProduct,
   getAllProducts,
@@ -539,4 +564,5 @@ export {
   addProductImages,
   deleteProductImage,
   adminGetAllProducts,
+  updateProductStatus,
 };
