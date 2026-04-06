@@ -130,7 +130,7 @@ const updateVariant = asyncHandler(async (req, res) => {
 
   for (const variant of variants) {
     if (variant._id) {
-      const updatedRecord = await variant.findByIdAndUpdate(
+      const updatedRecord = await Variant.findByIdAndUpdate(
         variant._id,
         variant,
         { new: true }
@@ -163,7 +163,7 @@ const updateVariant = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         { variant: collectVariant },
-        "Product variant created successfully."
+        "Product variants updated successfully."
       )
     );
 });
@@ -191,7 +191,7 @@ const deleteVariant = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Product variant deleted successfully."));
+    .json(new ApiResponse(200, {}, "Product variant removed successfully."));
 });
 
 const getCartVariants = asyncHandler(async (req, res) => {
@@ -271,7 +271,7 @@ const updateProductPrice = async (productId) => {
     {
       minPrice: lowPriceVariant[0].salePrice,
       maxPrice: lowPriceVariant[0].price,
-      status: "active",
+      status: true,
       isCompleted: true,
     }
   );
