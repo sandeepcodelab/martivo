@@ -72,13 +72,6 @@ const changeCurrentPasswordValidator = () => {
   ];
 };
 
-// Category validators
-const categoryValidator = () => {
-  return [
-    body("name").trim().notEmpty().withMessage("Name field can not be empty."),
-  ];
-};
-
 // Product validator
 const addProductVlidator = () => {
   return [
@@ -182,8 +175,6 @@ export {
   forgotPasswordValidator,
   resetForgotPasswordValidator,
   changeCurrentPasswordValidator,
-  // Category validators----
-  categoryValidator,
   // Product validator----
   addProductVlidator,
   updateProductVlidator,
