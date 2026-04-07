@@ -322,8 +322,10 @@ export default function AddProduct() {
       try {
         const res = await updateStatusOfProduct(productId, newStatus);
         setProductStatus(res.data.data.product.status);
+        notification.success("Product activeted");
       } catch (err) {
         notification.error(err.response.data.message);
+        setProductStatus(!newStatus);
       }
     }, 500);
   };
