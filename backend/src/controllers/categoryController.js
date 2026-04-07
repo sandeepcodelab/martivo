@@ -7,6 +7,7 @@ import {
   deleteFromCloudinary,
   uploadOnCloudinary,
 } from "../utils/cloudinary.js";
+import { Product } from "../models/productsModel.js";
 
 const addCategory = asyncHandler(async (req, res) => {
   const { name, slug, parentId, status } = req.body;
@@ -79,6 +80,8 @@ const getAllCategories = asyncHandler(async (req, res) => {
     sorting = { createdAt: 1 };
   }
 
+  query.status = true;
+
   // Get total document
   const total = await Category.countDocuments(query);
 
@@ -133,12 +136,11 @@ const updateCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const { name, slug, parentId, status } = req.body;
+  const imagePath = req.file?.path;
 
   if (!name) {
     throw new ApiError(400, "Name field cannot be empty.", []);
   }
-
-  const categorySlug = slug ? slug : slugify(name, { lower: true, trim: true });
 
   const category = await Category.findById(id);
 
@@ -146,13 +148,19 @@ const updateCategory = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Category not found.", []);
   }
 
+  let image = "";
+  if (imagePath) {
+    image = await uploadOnCloudinary(imagePath);
+  }
+
   const updatedCategory = await Category.findByIdAndUpdate(
     category._id,
     {
       $set: {
         name: name ?? category.name,
-        slug: categorySlug ?? category.slug,
+        slug: slug ?? category.slug,
         parentId: parentId ?? category.parentId,
+        image: image.secure_url ?? category.image,
         status: status ?? category.status,
       },
     },
@@ -162,7 +170,14 @@ const updateCategory = asyncHandler(async (req, res) => {
   );
 
   if (!updatedCategory) {
+    if (image) {
+      await deleteFromCloudinary(image.public_id);
+    }
     throw new ApiError(500, "Failed to update category, Please try again.", []);
+  }
+
+  if (!updatedCategory.status) {
+    await Product.updateMany({ category: id }, { status: false });
   }
 
   return res
@@ -179,15 +194,100 @@ const updateCategory = asyncHandler(async (req, res) => {
 const deleteCategory = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const category = await Category.findByIdAndDelete(id);
+  const category = await Category.findById(id);
 
   if (!category) {
     throw new ApiError(404, "Category not found.", []);
   }
 
+  const image = category?.image;
+
+  if (image) {
+    const match = image.match(/\/(martivo\/[^.]+)\./);
+    const public_id = match ? match[1] : null;
+
+    await deleteFromCloudinary(public_id);
+  }
+
+  const categoryDelete = await Category.findByIdAndDelete(id);
+
+  if (!categoryDelete) {
+    throw new ApiError(404, "Category not found.", []);
+  }
+
+  const updateProduct = await Product.updateMany(
+    { category: id },
+    { status: false }
+  );
+
   return res
     .status(200)
-    .json(new ApiResponse(200, { category }, "Category deleted successfully."));
+    .json(
+      new ApiResponse(
+        200,
+        { category: categoryDelete },
+        "Category deleted successfully."
+      )
+    );
+});
+
+const adminGetAllCategories = asyncHandler(async (req, res) => {
+  let { search = "", page = "", limit = "", sort = "desc" } = req.query;
+
+  page = Number(page);
+  limit = Number(limit);
+
+  if (page < 1) page = 1;
+  if (limit < 10) page = 10;
+
+  const skip = (page - 1) * limit;
+
+  const query = {};
+  if (search.trim) {
+    query.name = { $regex: search, $options: "i" };
+  }
+
+  let sorting = {};
+  if (sort === "desc") {
+    sorting = { createdAt: -1 };
+  } else {
+    sorting = { createdAt: 1 };
+  }
+
+  // Get total document
+  const total = await Category.countDocuments(query);
+
+  let dbQuery = Category.find(query).sort(sorting);
+
+  if (skip !== undefined) {
+    dbQuery = dbQuery.skip(skip);
+  }
+
+  if (limit !== undefined) {
+    dbQuery = dbQuery.limit(limit);
+  }
+
+  const categories = await dbQuery;
+
+  if (!categories) {
+    throw new ApiError(404, "Category not found.", []);
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        categories,
+        pageInfo: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      "Categories fetched successfully."
+    )
+  );
 });
 
 export {
@@ -196,4 +296,5 @@ export {
   editCategory,
   updateCategory,
   deleteCategory,
+  adminGetAllCategories,
 };

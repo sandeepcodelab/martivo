@@ -4,12 +4,24 @@ export const getAllcategories = (params = {}) => {
   return api.get("/category/all", { params });
 };
 
-export const addCategory = (name, categoryStatus) => {
-  return api.post("/category/add", { name, status: categoryStatus });
+export const adminGetAllcategories = (params = {}) => {
+  return api.get("/category/getAll/admin", { params });
 };
 
-export const updateCategory = (id, name, categoryStatus) => {
-  return api.patch(`/category/update/${id}`, { name, status: categoryStatus });
+export const addCategory = (formData) => {
+  return api.post("/category/add", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const updateCategory = (id, formData) => {
+  return api.patch(`/category/update/${id}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 export const categoryDelete = (id) => {
