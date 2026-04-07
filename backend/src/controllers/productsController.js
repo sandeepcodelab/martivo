@@ -537,6 +537,20 @@ const updateProductStatus = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Required product ID", []);
   }
 
+  const checkProduct = await Product.findById(id).populate("category");
+
+  if (!checkProduct) {
+    throw new ApiError(404, "Product not found", []);
+  }
+
+  if (!checkProduct?.category?.status) {
+    throw new ApiError(
+      400,
+      "The selected category is currently inactive. Please choose an active category.",
+      []
+    );
+  }
+
   const product = await Product.findByIdAndUpdate(
     id,
     { $set: { status } },
