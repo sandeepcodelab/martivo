@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { CategoryColumns } from "../../components/DataTable/Columns";
 import { DataTable } from "../../components/DataTable/Data-Table";
@@ -30,34 +30,39 @@ import {
 import { notification } from "@/utils/toast";
 import {
   addCategory,
+  adminGetAllcategories,
   categoryDelete,
-  getAllcategories,
   updateCategory,
 } from "@/services/categoryService";
 import { useSearchParams } from "react-router";
 import { PaginationList } from "@/components/Pagination/Pagination";
 
 export default function Categories() {
+  const imageRef = useRef(null);
   const [allCategories, setAllCategories] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchedValue, setSearchedValue] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [categoryName, setCategoryName] = useState("");
+  const [categoryImage, setCategoryImage] = useState("");
+  const [categoryImagePreview, setCategoryImagePreview] = useState("");
   const [categoryStatus, setCategoryStatus] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
   const [deleteCategory, setDeleteCategory] = useState(null);
   const [paginationData, setPaginationData] = useState({});
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({});
+  const [loader, setLoader] = useState(false);
 
   const search = searchParams.get("search") || "";
   const page = Number(searchParams.get("page")) || 1;
   const limit = Number(searchParams.get("limit")) || 10;
 
+  // Fetching categories data
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const res = await getAllcategories({ search, page, limit });
+        const res = await adminGetAllcategories({ search, page, limit });
         setAllCategories(res?.data?.data?.categories || []);
         setPaginationData(res?.data?.data?.pageInfo || {});
       } catch (err) {
@@ -67,6 +72,7 @@ export default function Categories() {
     fetchCategories();
   }, [search, page, limit]);
 
+  // Set searched data
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearchParams((prev) => {
@@ -80,31 +86,69 @@ export default function Categories() {
     return () => clearTimeout(timer);
   }, [searchedValue]);
 
+  // Search handler
   const searchHandler = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchedValue(value);
   };
 
+  // Image handler
+  const imageHandler = (e) => {
+    const file = e.target.files[0];
+
+    setCategoryImage(file);
+
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setCategoryImagePreview(url);
+
+      return () => URL.revokeObjectURL(url);
+    }
+
+    if (!file) {
+      setCategoryImagePreview(null);
+      return;
+    }
+  };
+
   // Add category handler
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    const errors = {};
+    const formData = new FormData();
+
     if (!categoryName) {
-      setError("Category name is required.");
-      return;
+      errors.name = "Category name is required.";
     }
 
+    if (!categoryImage) {
+      errors.image = "Category Image is required.";
+    }
+
+    setError(errors);
+
+    if (Object.keys(errors).length > 0) return;
+
+    formData.append("name", categoryName.trim());
+    formData.append("image", categoryImage);
+    formData.append("status", categoryStatus);
+
     try {
-      const name = categoryName.trim();
-      const res = await addCategory(name, categoryStatus);
+      setLoader(true);
+
+      const res = await addCategory(formData);
       const newCategory = res?.data?.data?.category;
 
-      setAllCategories((prev) => [...prev, newCategory]);
+      setAllCategories((prev) => [newCategory, ...prev]);
       dialogOnChangeHandler(false);
 
       notification.success("New category added successfully.");
     } catch (err) {
       if (err.status === 409) notification.error("Category already exists.");
-      else notification.error("Faild to add new category.");
+      else notification.error(err.response.data.message);
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -114,37 +158,58 @@ export default function Categories() {
     setDialogOpen(true);
     setCategoryName(row.name);
     setCategoryStatus(row.status);
+    setCategoryImage(row.image);
+    setCategoryImagePreview(row.image);
   };
+
   const editHandler = async (e) => {
     e.preventDefault();
+
+    const errors = {};
+    const formData = new FormData();
 
     if (!selectedCategory) return;
 
     if (!categoryName) {
-      setError("Category name is required.");
-      return;
+      errors.name = "Category name is required.";
     }
+
+    if (!categoryImage) {
+      errors.image = "Category Image is required.";
+    }
+
+    setError(errors);
+
+    if (Object.keys(errors).length > 0) return;
+
+    formData.append("name", categoryName.trim());
+    formData.append("image", categoryImage);
+    formData.append("status", categoryStatus);
+
     try {
-      const name = categoryName.trim();
-      const res = await updateCategory(
-        selectedCategory._id,
-        name,
-        categoryStatus,
-      );
-      const category = res?.data?.data?.category;
+      setLoader(true);
+
+      const res = await updateCategory(selectedCategory._id, formData);
+      const updatedCategory = res?.data?.data?.category;
 
       setAllCategories((prev) =>
         prev.map((item) => {
-          if (item._id !== category._id) return item;
-          return { ...item, name: category.name, status: category.status };
+          if (item._id !== updatedCategory._id) return item;
+          return {
+            ...item,
+            name: updatedCategory.name,
+            image: updatedCategory.image,
+            status: updatedCategory.status,
+          };
         }),
       );
 
       dialogOnChangeHandler(false);
       notification.success("Category updated successfully.");
     } catch (err) {
-      console.log(err);
-      notification.error("Faild to update category.");
+      notification.error(err.response.data.message);
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -159,6 +224,8 @@ export default function Categories() {
     if (!deleteCategory) return;
 
     try {
+      setLoader(true);
+
       const res = await categoryDelete(deleteCategory._id);
       const category = res?.data?.data?.category;
 
@@ -172,6 +239,8 @@ export default function Categories() {
       notification.success("Category deleted successfully.");
     } catch (error) {
       notification.error("Failed to deleted category!");
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -180,6 +249,8 @@ export default function Categories() {
     if (!open) {
       setSelectedCategory(null);
       setCategoryName("");
+      setCategoryImage("");
+      setCategoryImagePreview("");
       setError(null);
     }
   };
@@ -249,19 +320,66 @@ export default function Categories() {
                 <Input
                   id="name-1"
                   name="name"
+                  type="text"
                   value={categoryName}
                   onChange={(e) => {
-                    (setCategoryName(e.target.value), setError(null));
+                    (setCategoryName(e.target.value),
+                      setError((prev) => ({ ...prev, name: "" })));
                   }}
                 />
-                <div className="text-sm text-red-500">
-                  {error ? error : null}
-                </div>
+                {error?.name && (
+                  <div className="text-sm text-red-500">{error.name}</div>
+                )}
               </div>
+
+              <div className="grid gap-3">
+                <Label>Category Image</Label>
+                <Input
+                  id="image"
+                  type="file"
+                  ref={imageRef}
+                  onChange={(e) => {
+                    (imageHandler(e),
+                      setError((prev) => ({ ...prev, image: "" })));
+                  }}
+                  hidden
+                  accept=".jpeg, .jpg, .png"
+                />
+
+                <div className="flex justify-center">
+                  <div className="w-[150px] h-[150px] relative group overflow-hidden rounded-lg">
+                    {categoryImage ? (
+                      <img
+                        src={categoryImagePreview}
+                        alt="IMG"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full border border-gray-800 flex justify-center items-center">
+                        Image
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      className="absolute bottom-0 left-0 w-full py-3 border-t 
+                        bg-black/80 text-white opacity-0 
+                          group-hover:opacity-100 transition duration-200 cursor-pointer"
+                      onClick={() => imageRef?.current.click()}
+                    >
+                      Upload image
+                    </button>
+                  </div>
+                </div>
+                {error?.image && (
+                  <div className="text-sm text-red-500">{error.image}</div>
+                )}
+              </div>
+
               <div className="grid gap-3">
                 <Label>Active</Label>
                 <Switch
-                  checked={categoryStatus ? true : false}
+                  checked={categoryStatus}
                   className="cursor-pointer"
                   onCheckedChange={() => setCategoryStatus((prev) => !prev)}
                 />
@@ -277,8 +395,18 @@ export default function Categories() {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="Submit" className="text-white cursor-pointer">
-                {selectedCategory != null ? "Update" : "Save"}
+              <Button
+                type="Submit"
+                className="text-white cursor-pointer"
+                disabled={loader}
+              >
+                {selectedCategory != null
+                  ? loader
+                    ? "Updating..."
+                    : "Update"
+                  : loader
+                    ? "Saving..."
+                    : "Save"}
               </Button>
             </DialogFooter>
           </form>
@@ -292,8 +420,10 @@ export default function Categories() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. Deleting this category will
-              permanently remove it and may impact products linked to it.
+              This action cannot be undone. Deleting "
+              <span className="font-semibold">{deleteCategory?.name}</span>"
+              category will permanently remove it and may impact products linked
+              to it.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -306,8 +436,9 @@ export default function Categories() {
             <AlertDialogAction
               onClick={deleteHandler}
               className="bg-red-600 hover:bg-red-500 text-white cursor-pointer"
+              disabled={loader}
             >
-              Yes, Delete
+              {loader ? "Deleting..." : "Yes, Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
