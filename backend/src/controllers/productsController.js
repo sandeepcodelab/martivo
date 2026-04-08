@@ -102,7 +102,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
   const query = {};
 
-  if (search.trim) {
+  if (search.trim()) {
     query.title = { $regex: search, $options: "i" };
   }
 
@@ -483,7 +483,7 @@ const adminGetAllProducts = asyncHandler(async (req, res) => {
 
   const query = {};
 
-  if (search.trim) {
+  if (search.trim()) {
     query.title = { $regex: search, $options: "i" };
   }
 

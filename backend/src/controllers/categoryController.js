@@ -69,7 +69,7 @@ const getAllCategories = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const query = {};
-  if (search.trim) {
+  if (search.trim()) {
     query.name = { $regex: search, $options: "i" };
   }
 
@@ -243,7 +243,7 @@ const adminGetAllCategories = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
 
   const query = {};
-  if (search.trim) {
+  if (search.trim()) {
     query.name = { $regex: search, $options: "i" };
   }
 
