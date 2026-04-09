@@ -24,34 +24,106 @@ export const userColumns = [
 ];
 
 // Order columns
-export const OrderColumns = [
+export const OrderColumns = (onEdit) => [
   {
-    accessorKey: "orderId",
+    accessorKey: "_id",
     header: "Order ID",
+    cell: ({ row }) => {
+      const order = row.original;
+
+      return <p className="font-bold">#{order._id}</p>;
+    },
   },
   {
-    accessorKey: "customer",
+    accessorKey: "user.name",
     header: "Customer",
   },
   {
-    accessorKey: "status",
+    accessorKey: "orderStatus",
     header: "Status",
+    cell: ({ row }) => {
+      const status = row.original?.orderStatus;
+
+      const statusColors = {
+        Pending: "text-yellow-500",
+        Processing: "text-blue-500",
+        Shipped: "text-purple-500",
+        Delivered: "text-green-500",
+        Cancelled: "text-red-500",
+      };
+
+      return (
+        <span className={statusColors[status] || "text-gray-500"}>
+          {status || "N/A"}
+        </span>
+      );
+    },
   },
   {
-    accessorKey: "totalAmount",
+    accessorKey: "totalPrice",
     header: "Total Amount",
+    cell: ({ getValue }) => <span>₹{getValue()}</span>,
   },
   {
     accessorKey: "paymentMethod",
     header: "Payment Method",
   },
   {
-    accessorKey: "paymentStatus",
+    accessorKey: "paymentResult.status",
     header: "Payment Status",
+    cell: ({ row }) => {
+      const paymentStatus = row.original?.paymentResult?.status;
+
+      const statusColors = {
+        Paid: "text-green-500",
+        Failed: "text-red-500",
+        Pending: "text-yellow-500",
+      };
+
+      return (
+        <span className={statusColors[paymentStatus] || "text-gray-500"}>
+          {paymentStatus || "N/A"}
+        </span>
+      );
+    },
   },
   {
-    accessorKey: "orderDate",
+    accessorKey: "createdAt",
     header: "Order Date",
+    cell: ({ row }) => {
+      const order = row.original;
+      const date = new Date(order.createdAt);
+
+      return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+    },
+  },
+
+  {
+    id: "action",
+    header: "Action",
+    cell: ({ row }) => (
+      <div className="flex gap-4">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => onEdit(row.original._id)}
+              className="cursor-pointer"
+            >
+              <SquarePen size={20} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Edit</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    ),
   },
 ];
 
@@ -60,6 +132,20 @@ export const CategoryColumns = (onEdit, onDelete) => [
   {
     accessorKey: "name",
     header: "Category Name",
+    cell: ({ row }) => {
+      const category = row?.original;
+
+      return (
+        <div className="flex items-center gap-3">
+          <div className="w-[50px] rounded overflow-hidden">
+            <img src={category.image} alt="IMG" />
+          </div>
+          <p className="max-w-[300px] truncate pr-5 font-semibold">
+            {category.name}
+          </p>
+        </div>
+      );
+    },
   },
   {
     accessorKey: "slug",
@@ -70,10 +156,28 @@ export const CategoryColumns = (onEdit, onDelete) => [
     header: "Status",
     cell: ({ row }) => {
       const status = row?.original?.status;
-      return status === "active" ? (
-        <span className="text-green-500 capitalize">{status}</span>
+      return status ? (
+        <span className="text-green-500 capitalize">active</span>
       ) : (
-        <span className="text-red-500 capitalize">{status}</span>
+        <span className="text-red-500 capitalize">inactive</span>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      const category = row.original;
+      const date = new Date(category.createdAt);
+
+      return (
+        <span>
+          {date.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })}
+        </span>
       );
     },
   },
@@ -120,19 +224,6 @@ export const CategoryColumns = (onEdit, onDelete) => [
 
 // Product columns
 export const ProductColumns = (onDelete) => [
-  // {
-  //   accessorKey: "productName",
-  //   header: "Product",
-  //   cell: ({ row }) => {
-  //     const product = row.original;
-
-  //     return (
-  //       <Link to={`/admin/products/edit/${product._id}`}>
-  //         {product.name}
-  //       </Link>
-  //     );
-  //   },
-  // },
   {
     accessorKey: "title",
     header: "Product",
@@ -220,10 +311,10 @@ export const ProductColumns = (onDelete) => [
     cell: ({ row }) => {
       const status = row.original.status;
 
-      return status === "active" ? (
-        <span className="text-green-500 capitalize">{status}</span>
+      return status ? (
+        <span className="text-green-500 capitalize">active</span>
       ) : (
-        <span className="text-red-500 capitalize">{status}</span>
+        <span className="text-red-500 capitalize">inactive</span>
       );
     },
   },
