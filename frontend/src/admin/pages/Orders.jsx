@@ -1,70 +1,90 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OrderColumns } from "../../components/DataTable/Columns";
 import { DataTable } from "../../components/DataTable/Data-Table";
 import { Input } from "@/components/ui/input";
+import { getAllOrders } from "@/services/orderService";
+import { notification } from "@/utils/toast";
+import { useNavigate, useSearchParams } from "react-router";
+import { PaginationList } from "@/components/Pagination/Pagination";
 
 export default function Orders() {
-  const [searchValue, setSearchValue] = useState();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchedValue, setSearchedValue] = useState("");
+  const [allOrders, setAllOrders] = useState([]);
+  const [paginationData, setPaginationData] = useState({});
+  const navigate = useNavigate();
 
-  const orderData = [
-    {
-      orderId: "ORD-1001",
-      customer: "Rahul Sharma",
-      status: "Pending",
-      totalAmount: 2499,
-      paymentMethod: "UPI",
-      paymentStatus: "Paid",
-      orderDate: "2025-01-02",
-    },
-    {
-      orderId: "ORD-1002",
-      customer: "Ananya Verma",
-      status: "Shipped",
-      totalAmount: 4599,
-      paymentMethod: "Credit Card",
-      paymentStatus: "Paid",
-      orderDate: "2025-01-01",
-    },
-    {
-      orderId: "ORD-1003",
-      customer: "Amit Kumar",
-      status: "Delivered",
-      totalAmount: 1299,
-      paymentMethod: "Cash on Delivery",
-      paymentStatus: "Pending",
-      orderDate: "2024-12-30",
-    },
-    {
-      orderId: "ORD-1004",
-      customer: "Priya Singh",
-      status: "Cancelled",
-      totalAmount: 3199,
-      paymentMethod: "Debit Card",
-      paymentStatus: "Refunded",
-      orderDate: "2024-12-29",
-    },
-    {
-      orderId: "ORD-1005",
-      customer: "Neha Gupta",
-      status: "Delivered",
-      totalAmount: 7999,
-      paymentMethod: "Net Banking",
-      paymentStatus: "Paid",
-      orderDate: "2024-12-28",
-    },
-  ];
+  const search = searchParams.get("search") || "";
+  const page = Number(searchParams.get("page")) || 1;
+  const limit = Number(searchParams.get("limit")) || 10;
+
+  // Fetching Ordres
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const res = await getAllOrders({ search, page, limit });
+        setAllOrders(res.data.data.orders);
+        setPaginationData(res.data.data.pageInfo);
+      } catch (err) {
+        notification.error(err.response.data.message);
+      }
+    };
+
+    fetchOrders();
+  }, [search, page, limit]);
+
+  // Set filter
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchParams((prev) => {
+        prev.set("search", searchedValue);
+        prev.set("page", 1);
+        prev.set("limit", 10);
+        return prev;
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchedValue]);
+
+  const onEdit = (id) => {
+    navigate(`/admin/orders/${id}`);
+  };
 
   return (
     <div className="container mx-auto ">
       <div className="mb-4">
         <Input
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
+          value={searchedValue}
+          onChange={(e) =>
+            setSearchedValue(e.target.value.trim().toLowerCase())
+          }
           placeholder="Search..."
           className="max-w-sm"
         />
       </div>
-      <DataTable columns={OrderColumns} data={orderData} />
+
+      {/* Table */}
+      <DataTable columns={OrderColumns(onEdit)} data={allOrders} />
+
+      {/* Pagination controls */}
+      <div className="pt-4">
+        <PaginationList
+          paginationData={paginationData}
+          onPageChange={(newPage) =>
+            setSearchParams((prev) => {
+              prev.set("page", newPage);
+              return prev;
+            })
+          }
+          onLimitChange={(newLimit) =>
+            setSearchParams((prev) => {
+              prev.set("limit", newLimit);
+              return prev;
+            })
+          }
+        />
+      </div>
     </div>
   );
 }
