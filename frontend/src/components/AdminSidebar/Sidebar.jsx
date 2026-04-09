@@ -43,11 +43,6 @@ const menuData = {
     },
   ],
   menus: [
-    {
-      name: "Order-Details",
-      url: "/admin/orders/order-details",
-      icon: ShoppingBag,
-    },
     { name: "Orders", url: "/admin/orders", icon: ShoppingBag },
     { name: "Categories", url: "/admin/categories", icon: LayoutGrid },
     { name: "Users", url: "/admin/users", icon: UserRound },
