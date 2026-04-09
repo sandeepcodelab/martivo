@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Container from "@/components/Container/Container";
-import { getAllOrders } from "@/services/orderService";
+import { getUserOrders } from "@/services/orderService";
 import { notification } from "@/utils/toast";
 import { Link } from "react-router";
 
@@ -16,7 +16,7 @@ export default function UserOrders() {
       try {
         setLoading(true);
 
-        const res = await getAllOrders();
+        const res = await getUserOrders();
         setOrders(res.data.data.orders);
       } catch (err) {
         notification.error("Failed to load orders.");
