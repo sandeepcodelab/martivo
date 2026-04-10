@@ -9,6 +9,7 @@ import {
 } from "../utils/mail.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { Order } from "../models/orderModel.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -110,10 +111,16 @@ const login = asyncHandler(async (req, res) => {
     "-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
   );
 
+  // const options = {
+  //   httpOnly: true,
+  //   secure: true,
+  //   sameSite: "none",
+  // };
+
   const options = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
   };
 
   return res
@@ -152,10 +159,16 @@ const logoutUser = asyncHandler(async (req, res) => {
     );
   }
 
+  // const options = {
+  //   httpOnly: true,
+  //   secure: true,
+  //   sameSite: "none",
+  // };
+
   const options = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
   };
 
   return res
@@ -266,17 +279,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     user.refreshToken = newRefreshToken;
     await user.save({ validateBeforeSave: false });
 
-    options = {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    };
-
-    // const options = {
+    // options = {
     //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "lax",
+    //   secure: true,
+    //   sameSite: "none",
     // };
+
+    const options = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    };
 
     return res
       .status(200)
@@ -379,6 +392,142 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password changed successfully"));
 });
 
+const getAllUsers = asyncHandler(async (req, res) => {
+  let { search = "", page = 1, limit = 10 } = req.query;
+
+  page = Number(page);
+  limit = Number(limit);
+
+  if (page < 1) page = 1;
+  if (limit < 10) page = 10;
+
+  const skip = (page - 1) * limit;
+
+  const query = {};
+
+  if (search.trim()) {
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { role: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const total = await User.countDocuments();
+
+  const users = await User.find(query)
+    .select("-password -refreshToken")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  if (!users) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { users: {} }, "No users found"));
+  }
+
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        users,
+        pageInfo: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      "Users fetched successfully."
+    )
+  );
+});
+
+const getSingleUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    throw new ApiError(400, "User id is required", []);
+  }
+  const user = await User.findById(id).select("-password -refreshToken");
+
+  if (!user) {
+    throw new ApiError(404, "No user found", []);
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { user }, "Users fetched successfully."));
+});
+
+const updateUserRole = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { role = "" } = req.body;
+
+  if (!id) {
+    throw new ApiError(400, "User id is required", []);
+  }
+
+  if (!role) {
+    throw new ApiError(400, "User id is required", []);
+  }
+
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new ApiError(404, "No user found", []);
+  }
+
+  const updateUser = await User.findByIdAndUpdate(
+    id,
+    { $set: { role } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  if (!updateUser) {
+    throw new ApiError(500, "Failed to update user role", []);
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { user: updateUser },
+        "User role updated successfully."
+      )
+    );
+});
+
+const deleteUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    throw new ApiError(400, "User id is required", []);
+  }
+
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new ApiError(404, "No user found", []);
+  }
+
+  const deleteUser = await User.findByIdAndDelete(id);
+
+  if (!deleteUser) {
+    throw new ApiError(500, "Failed to delete user", []);
+  }
+
+  await Order.deleteMany({ user: id });
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { user: deleteUser }, "User deleted successfully.")
+    );
+});
+
 export {
   registerUser,
   login,
@@ -390,4 +539,8 @@ export {
   forgotPasswordRequest,
   resetForgotPassword,
   changeCurrentPassword,
+  getAllUsers,
+  getSingleUser,
+  updateUserRole,
+  deleteUser,
 };
