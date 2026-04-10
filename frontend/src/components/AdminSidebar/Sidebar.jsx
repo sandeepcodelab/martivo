@@ -18,12 +18,14 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import logo from "@/assets/favicon.png";
+import logoName from "@/assets/logo-name.png";
 
 // Sample data
 const menuData = {
   headerData: {
-    name: "Martivo",
-    logo: Store,
+    name: logoName,
+    logo: logo,
   },
   dashboard: {
     name: "Dashboard",

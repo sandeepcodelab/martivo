@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -6,8 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 
 export function SidebarHeaderTitle({ headerData }) {
-  const [activeTeam, setActiveTeam] = React.useState(headerData);
-  const ActiveLogo = activeTeam.logo;
+  console.log(headerData);
 
   return (
     <SidebarMenu>
@@ -16,12 +15,13 @@ export function SidebarHeaderTitle({ headerData }) {
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <ActiveLogo className="size-6 text-white" />
+          <div className="flex size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+            {/* <ActiveLogo className="size-6 text-white" /> */}
+            <img src={headerData.logo} alt="LOGO" />
           </div>
 
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">{activeTeam.name}</span>
+          <div className="flex-1 text-left">
+            <img src={headerData.name} alt="LOGO" className="w-[150px]" />
           </div>
         </SidebarMenuButton>
       </SidebarMenuItem>

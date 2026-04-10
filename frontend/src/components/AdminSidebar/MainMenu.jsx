@@ -19,7 +19,6 @@ import { Link } from "react-router";
 export function MainMenu({ dropdowns, menus, dashboard }) {
   return (
     <SidebarGroup>
-      {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       {/* Dashboard */}
       <SidebarMenu>
         <SidebarMenuItem key="dashboard.name">
