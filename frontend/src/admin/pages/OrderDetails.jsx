@@ -167,8 +167,17 @@ export default function OrderDetails() {
             <Button
               onClick={orderStatusHandler}
               className="text-white cursor-pointer"
+              disabled={updateLoader}
             >
               {updateLoader ? "Updating..." : "Update"}
+            </Button>
+
+            <Button
+              onClick={() => setEditBtn(false)}
+              className="cursor-pointer"
+              variant="outline"
+            >
+              Cancel
             </Button>
           </CardContent>
         </Card>
@@ -274,8 +283,17 @@ export default function OrderDetails() {
                 <Button
                   onClick={paymentStatusHandler}
                   className="text-white cursor-pointer"
+                  disabled={updateLoader}
                 >
                   {updateLoader ? "Updating..." : "Update"}
+                </Button>
+
+                <Button
+                  onClick={() => setEditPaymentStatusBtn(false)}
+                  className="cursor-pointer"
+                  variant="outline"
+                >
+                  Cancel
                 </Button>
               </>
             )}
