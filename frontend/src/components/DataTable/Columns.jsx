@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/tooltip";
 
 // User columns
-export const userColumns = [
+export const userColumns = (onEdit) => [
   {
     accessorKey: "name",
     header: "Name",
@@ -20,6 +20,43 @@ export const userColumns = [
   {
     accessorKey: "role",
     header: "Role",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      const user = row.original;
+      const date = new Date(user.createdAt);
+
+      return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      });
+    },
+  },
+  {
+    accessorKey: "action",
+    header: "Action",
+    cell: ({ row }) => (
+      <div className="flex gap-4">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="outline"
+              onClick={() => onEdit(row.original)}
+              className="cursor-pointer"
+            >
+              <SquarePen size={20} />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Edit</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    ),
   },
 ];
 
