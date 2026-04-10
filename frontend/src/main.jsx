@@ -29,11 +29,12 @@ import AdminLayout from "./layouts/AdminLayout";
 import Dashboard from "./admin/pages/Dashboard";
 import ProductsTable from "./admin/pages/Products";
 import Orders from "./admin/pages/Orders";
-// import OrderDetails from "./admin/pages/OrderDetails";
 import Users from "./admin/pages/Users";
 import Categories from "./admin/pages/Categories";
 import AddProduct from "./admin/pages/AddProduct";
 import EditProduct from "./admin/pages/EditProduct";
+import OrderDetails from "./admin/pages/OrderDetails";
+import UserDetails from "./admin/pages/UserDetails";
 
 const router = createBrowserRouter([
   // User Routes
@@ -101,7 +102,7 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <AdminRoute>
+      <AdminRoute requiredRole="admin">
         <AdminLayout />
       </AdminRoute>
     ),
@@ -109,11 +110,12 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> },
       { path: "products", element: <ProductsTable /> },
       { path: "products/add", element: <AddProduct /> },
-      { path: "products/edit", element: <EditProduct /> },
+      { path: "products/edit/:id", element: <EditProduct /> },
       { path: "orders", element: <Orders /> },
-      // { path: "orders/order-details", element: <OrderDetails /> },
+      { path: "orders/:id", element: <OrderDetails /> },
       { path: "categories", element: <Categories /> },
       { path: "users", element: <Users /> },
+      { path: "users/:id", element: <UserDetails /> },
     ],
   },
 ]);
