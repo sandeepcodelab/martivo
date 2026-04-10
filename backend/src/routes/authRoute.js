@@ -10,6 +10,10 @@ import {
   resetForgotPassword,
   changeCurrentPassword,
   refreshAccessToken,
+  getAllUsers,
+  getSingleUser,
+  updateUserRole,
+  deleteUser,
 } from "../controllers/authController.js";
 import { validate } from "../middlewares/validatorMiddleware.js";
 import {
@@ -20,6 +24,7 @@ import {
   userRegisterValidator,
 } from "../validators/index.js";
 import { verifyJWT } from "../middlewares/authMiddleware.js";
+import { roleCheck } from "../middlewares/roleMiddleware.js";
 
 const router = Router();
 
@@ -47,5 +52,21 @@ router
     validate,
     changeCurrentPassword
   );
+
+router
+  .route("/getUsers/admin")
+  .get(verifyJWT, roleCheck(["admin"]), getAllUsers);
+
+router
+  .route("/getUser/:id/admin")
+  .get(verifyJWT, roleCheck(["admin"]), getSingleUser);
+
+router
+  .route("/update/:id/admin")
+  .patch(verifyJWT, roleCheck(["admin"]), updateUserRole);
+
+router
+  .route("/delete/:id/admin")
+  .delete(verifyJWT, roleCheck(["admin"]), deleteUser);
 
 export default router;
