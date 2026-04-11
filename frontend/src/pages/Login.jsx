@@ -84,9 +84,9 @@ export default function Login() {
               <div className="grid gap-2">
                 <div className="flex justify-between items-center">
                   <Label htmlFor="password">Password</Label>
-                  <Link to="#" className="text-sm hover:underline">
+                  {/* <Link to="#" className="text-sm hover:underline">
                     Forgot your password?
-                  </Link>
+                  </Link> */}
                 </div>
                 <div className="relative">
                   <Input

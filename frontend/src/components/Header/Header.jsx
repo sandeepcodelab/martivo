@@ -104,11 +104,6 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Theme Mode toggle */}
-            {/* <div>
-              <ModeToggle />
-            </div> */}
-
             {/* Menu */}
             <div>
               <Sheet open={open} onOpenChange={setOpen}>
