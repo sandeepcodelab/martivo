@@ -20,7 +20,7 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const navigate = useNavigate();
-  const { updateCartCount } = useContext(AuthContext);
+  const { updateCartCount, userData } = useContext(AuthContext);
 
   const {
     register,
@@ -29,7 +29,7 @@ export default function Checkout() {
   } = useForm({
     mode: "onBlur",
     defaultValues: {
-      fullName: "",
+      fullName: userData?.user.name ? userData?.user.name : "",
       phone: "",
       address: "",
       city: "",
