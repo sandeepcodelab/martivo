@@ -48,7 +48,7 @@ export default function Orders() {
   }, [searchedValue]);
 
   const onEdit = (id) => {
-    navigate(`/admin/orders/${id}`);
+    navigate(`/admin/orders/edit/${id}`);
   };
 
   return (
