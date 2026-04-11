@@ -20,10 +20,32 @@ import {
 } from "@/components/ui/sidebar";
 import { useContext } from "react";
 import AuthContext from "@/contexts/AuthContext";
+import { ModeToggle } from "../Providers/ModeToggle";
+import { logout } from "@/services/authService";
+import { notification } from "@/utils/toast";
+import { useNavigate } from "react-router";
 
 export function SidebarUser() {
   const { isMobile } = useSidebar();
-  const { userData } = useContext(AuthContext);
+  const { userData, userLogout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+
+      userLogout();
+
+      notification.success("Logged out successfully.");
+      navigate("/auth/login");
+    } catch (error) {
+      console.log(error.response);
+      notification.error(
+        error.response?.data?.message ||
+          "Something went wrong. Please try again.",
+      );
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -83,6 +105,9 @@ export function SidebarUser() {
                     {userData?.user?.email}
                   </span>
                 </div>
+
+                {/* Theme Mode toggle */}
+                <ModeToggle />
               </div>
             </DropdownMenuLabel>
 
@@ -101,7 +126,7 @@ export function SidebarUser() {
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
