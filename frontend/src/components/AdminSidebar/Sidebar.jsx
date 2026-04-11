@@ -1,8 +1,7 @@
 import * as React from "react";
 import {
-  Store,
   Package,
-  ShoppingBag,
+  ShoppingCart,
   LayoutGrid,
   UserRound,
   Gauge,
@@ -45,7 +44,7 @@ const menuData = {
     },
   ],
   menus: [
-    { name: "Orders", url: "/admin/orders", icon: ShoppingBag },
+    { name: "Orders", url: "/admin/orders", icon: ShoppingCart },
     { name: "Categories", url: "/admin/categories", icon: LayoutGrid },
     { name: "Users", url: "/admin/users", icon: UserRound },
   ],
