@@ -59,6 +59,7 @@ const createOrder = asyncHandler(async (req, res) => {
       state,
     },
     paymentMethod,
+    paymentResult: { status: paymentMethod === "Card" ? "Paid" : "Pending" },
   });
 
   if (!order) {
@@ -73,10 +74,12 @@ const createOrder = asyncHandler(async (req, res) => {
 const getUserOrders = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
-  const orders = await Order.find({ user: userId }).populate({
-    path: "orderItems.product",
-    select: "thumbnail title",
-  });
+  const orders = await Order.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .populate({
+      path: "orderItems.product",
+      select: "thumbnail title",
+    });
 
   if (!orders) {
     throw new ApiError(404, "No orders found.");
