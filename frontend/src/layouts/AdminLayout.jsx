@@ -13,9 +13,21 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Outlet } from "react-router";
+import { Outlet, useLocation, Link } from "react-router";
 
-export default function Dashboard() {
+export default function AdminLayout() {
+  const location = useLocation();
+  let segments = location.pathname.split("/").filter(Boolean);
+
+  function isMongoId(str) {
+    return /^[a-f\d]{24}$/i.test(str);
+  }
+
+  segments = segments.filter((seg) => seg !== "admin" && !isMongoId(seg));
+
+  const formatLabel = (text) =>
+    text.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
   return (
     <SidebarProvider>
       <AdminSidebar />
@@ -27,17 +39,40 @@ export default function Dashboard() {
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
+
             <Breadcrumb>
               <BreadcrumbList>
+                {/* Dashboard */}
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
+                  <BreadcrumbLink asChild>
+                    <Link to="/admin">Dashboard</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
+
+                {segments.map((segment, index) => {
+                  const isLast = index === segments.length - 1;
+
+                  const href =
+                    "/" + ["admin", ...segments.slice(0, index + 1)].join("/");
+
+                  return (
+                    <span key={index} className="flex items-center">
+                      <BreadcrumbSeparator className="hidden md:block" />
+
+                      <BreadcrumbItem>
+                        {isLast ? (
+                          <BreadcrumbPage>
+                            {formatLabel(segment)}
+                          </BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink asChild>
+                            <Link to={href}>{formatLabel(segment)}</Link>
+                          </BreadcrumbLink>
+                        )}
+                      </BreadcrumbItem>
+                    </span>
+                  );
+                })}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
