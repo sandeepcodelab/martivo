@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { userColumns } from "../../components/DataTable/Columns";
 import { DataTable } from "../../components/DataTable/Data-Table";
 import { Input } from "@/components/ui/input";
-import { getAllUsers } from "@/services/userService";
+import { getAllUsers } from "@/services/authService";
 import { notification } from "@/utils/toast";
 import { useNavigate, useSearchParams } from "react-router";
 
@@ -49,7 +49,7 @@ export default function Users() {
   // Edit handler
   const onEdit = (row) => {
     const userId = row._id;
-    navigate(`/admin/users/${userId}`);
+    navigate(`/admin/users/edit/${userId}`);
   };
 
   // Delete handler

@@ -7,7 +7,7 @@ import {
   deleteUser,
   getUserById,
   updateUserRole,
-} from "@/services/userService";
+} from "@/services/authService";
 import {
   Select,
   SelectContent,
