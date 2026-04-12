@@ -111,17 +111,17 @@ const login = asyncHandler(async (req, res) => {
     "-password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
   );
 
-  // const options = {
-  //   httpOnly: true,
-  //   secure: true,
-  //   sameSite: "none",
-  // };
-
   const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   };
+
+  // const options = {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   sameSite: "lax",
+  // };
 
   return res
     .status(200)
@@ -159,17 +159,17 @@ const logoutUser = asyncHandler(async (req, res) => {
     );
   }
 
-  // const options = {
-  //   httpOnly: true,
-  //   secure: true,
-  //   sameSite: "none",
-  // };
-
   const options = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   };
+
+  // const options = {
+  //   httpOnly: true,
+  //   secure: process.env.NODE_ENV === "production",
+  //   sameSite: "lax",
+  // };
 
   return res
     .status(200)
@@ -279,17 +279,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     user.refreshToken = newRefreshToken;
     await user.save({ validateBeforeSave: false });
 
-    // options = {
-    //   httpOnly: true,
-    //   secure: true,
-    //   sameSite: "none",
-    // };
-
-    const options = {
+    options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
     };
+
+    // const options = {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "lax",
+    // };
 
     return res
       .status(200)
