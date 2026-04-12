@@ -6,11 +6,14 @@ import { getCartItems, mergeCart } from "@/services/cartService";
 const AuthContaxtProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [itemsCount, setItemCount] = useState(0);
+  const [loading, setloading] = useState(false);
 
   // Refresh auth on app load
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        setloading(true);
+
         // Get current user
         const userData = await getCurrentUser();
         setUserData({ user: userData?.data?.user, isAuthenticated: true });
@@ -19,6 +22,8 @@ const AuthContaxtProvider = ({ children }) => {
           userLogout();
         }
         setUserData({ user: null, isAuthenticated: false });
+      } finally {
+        setloading(false);
       }
     };
 
@@ -53,7 +58,7 @@ const AuthContaxtProvider = ({ children }) => {
 
     const localCart = JSON.parse(localStorage.getItem("guestCartItems"));
 
-    if (localCart.length > 0) {
+    if (localCart?.length > 0) {
       try {
         const res = await mergeCart(localCart);
         updateCartCount(res.data.data.cart.items.length);
@@ -91,6 +96,7 @@ const AuthContaxtProvider = ({ children }) => {
         userLogout,
         itemsCount,
         updateCartCount,
+        loading,
       }}
     >
       {children}
