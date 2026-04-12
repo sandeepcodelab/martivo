@@ -145,3 +145,25 @@ npm install
 
 npm run dev
 ```
+
+### 4. Backend Environment Variables
+
+PORT=8000
+
+CORS_ORIGIN=http://localhost:5173
+
+MONGO_DB_URI=your_mongodb_connection_string
+
+ACCESS_TOKEN_SECRET=access_token_secret
+
+ACCESS_TOKEN_EXPIRY=expiry_time:15m
+
+REFRESH_TOKEN_SECRET=refresh_token_secret
+
+REFRESH_TOKEN_EXPIRY=expiry_time:7d
+
+CLOUDINARY_CLOUD_NAME=cloudinary_cloud_name
+
+CLOUDINARY_API_KEY=cloudinary_API_key
+
+CLOUDINARY_API_SECRET=cloudinary_API_secret
