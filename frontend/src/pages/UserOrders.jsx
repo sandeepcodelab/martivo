@@ -5,12 +5,14 @@ import { Input } from "@/components/ui/input";
 import Container from "@/components/Container/Container";
 import { getUserOrders } from "@/services/orderService";
 import { notification } from "@/utils/toast";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 export default function UserOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
+  // Fetch user orders
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -27,6 +29,12 @@ export default function UserOrders() {
 
     fetchOrders();
   }, []);
+
+  const viewDetailsHandler = (id) => {
+    if (!id) return;
+
+    navigate(`/user/orders/${id}`);
+  };
 
   const statusColors = {
     Pending: "bg-gray-200 text-gray-800",
@@ -97,7 +105,7 @@ export default function UserOrders() {
 
                     {/* Main Row */}
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 items-center justify-between gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-5 items-center justify-between gap-6">
                       {/* Product */}
 
                       <div className="flex items-center gap-4">
@@ -182,7 +190,13 @@ export default function UserOrders() {
                         </div>
                       </div>
                       {/* Button */}
-                      {/* <Button variant="outline">View Details</Button> */}
+                      <Button
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={() => viewDetailsHandler(order._id)}
+                      >
+                        View Details
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
