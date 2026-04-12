@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import Container from "@/components/Container/Container";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,8 @@ export default function Login() {
   const { loggedInUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname;
 
   const onSubmit = async (formData) => {
     const payload = {
@@ -44,9 +46,18 @@ export default function Login() {
     try {
       const res = await userLogin(payload);
       loggedInUser(res);
+      const user = res?.data.user;
+
+      if (from) {
+        console.log("from : ", from);
+        navigate(from, { replace: true });
+      } else {
+        user.role === "admin"
+          ? navigate("/admin", { replace: true })
+          : navigate("/", { replace: true });
+      }
 
       notification.success("Logged in successfully.");
-      navigate("/");
     } catch (error) {
       const message =
         error.response?.data?.message ||
