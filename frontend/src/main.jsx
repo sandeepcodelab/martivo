@@ -7,7 +7,6 @@ import AuthContaxtProvider from "./contexts/AuthContextProvider";
 import GlobalToast from "./components/GlobalToast/GlobalToast";
 
 // User routes
-import ProtectedRoute from "./pages/ProtectedRoute";
 import UserLayout from "./layouts/UserLayout";
 import HomePage from "./pages/Home";
 import Products from "./pages/Products";
@@ -25,7 +24,6 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 
 // Admin routes
-import AdminRoute from "./admin/AdminRoutes";
 import AdminLayout from "./layouts/AdminLayout";
 import Dashboard from "./admin/pages/Dashboard";
 import ProductsTable from "./admin/pages/Products";
@@ -36,6 +34,8 @@ import AddProduct from "./admin/pages/AddProduct";
 import EditProduct from "./admin/pages/EditProduct";
 import OrderDetails from "./admin/pages/OrderDetails";
 import UserDetails from "./admin/pages/UserDetails";
+
+import RouteGuard from "./components/RouteGuard/RouteGuard";
 
 const router = createBrowserRouter([
   // User Routes
@@ -51,33 +51,33 @@ const router = createBrowserRouter([
       {
         path: "checkout",
         element: (
-          <ProtectedRoute>
+          <RouteGuard requireAuth allowedRoles={["user"]}>
             <Checkout />
-          </ProtectedRoute>
+          </RouteGuard>
         ),
       },
       {
         path: "order-success",
         element: (
-          <ProtectedRoute>
+          <RouteGuard requireAuth allowedRoles={["user"]}>
             <OrderSuccess />
-          </ProtectedRoute>
+          </RouteGuard>
         ),
       },
       {
         path: "user/orders",
         element: (
-          <ProtectedRoute>
+          <RouteGuard requireAuth allowedRoles={["user"]}>
             <UserOrders />
-          </ProtectedRoute>
+          </RouteGuard>
         ),
       },
       {
         path: "user/orders/:id",
         element: (
-          <ProtectedRoute>
+          <RouteGuard requireAuth allowedRoles={["user"]}>
             <UserOrderDetails />
-          </ProtectedRoute>
+          </RouteGuard>
         ),
       },
     ],
@@ -91,17 +91,17 @@ const router = createBrowserRouter([
       {
         path: "Login",
         element: (
-          <ProtectedRoute authentication={false}>
-            <Login />
-          </ProtectedRoute>
+          <RouteGuard guestOnly>
+            <Login />,
+          </RouteGuard>
         ),
       },
       {
         path: "signup",
         element: (
-          <ProtectedRoute authentication={false}>
-            <Signup />
-          </ProtectedRoute>
+          <RouteGuard guestOnly>
+            <Signup />,
+          </RouteGuard>
         ),
       },
     ],
@@ -111,9 +111,9 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <AdminRoute requiredRole="admin">
+      <RouteGuard requireAuth allowedRoles={["admin"]}>
         <AdminLayout />
-      </AdminRoute>
+      </RouteGuard>
     ),
     children: [
       { index: true, element: <Dashboard /> },
