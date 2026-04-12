@@ -59,10 +59,10 @@ export default function OrderSuccess() {
 
             <Button
               variant="outline"
-              onClick={() => navigate("/user/orders")}
+              onClick={() => navigate(`/user/orders/${order._id}`)}
               className="cursor-pointer"
             >
-              View Orders
+              View Details
             </Button>
           </div>
         </div>
