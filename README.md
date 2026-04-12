@@ -56,6 +56,10 @@ Password: 123456789
 
 ![Orders](screenshots/martivo-orders.png)
 
+### Admin Dashboard
+
+![Admin Dashboard](martivo-admin-dashboard.png)
+
 ## Architecture
 
 Frontend: React (Vercel)  
