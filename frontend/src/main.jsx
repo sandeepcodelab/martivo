@@ -17,6 +17,7 @@ import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
 import UserOrders from "./pages/UserOrders";
 import UserCategories from "./pages/Categories";
+import UserOrderDetails from "./pages/UserOrderDetails";
 
 // Auth routes
 import AuthLayout from "./layouts/AuthLayout";
@@ -68,6 +69,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <UserOrders />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "user/orders/:id",
+        element: (
+          <ProtectedRoute>
+            <UserOrderDetails />
           </ProtectedRoute>
         ),
       },
