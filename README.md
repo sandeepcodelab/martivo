@@ -125,8 +125,8 @@ The application follows a typical client-server architecture:
 
 ### 1. Clone the repository
 
+```bash
 git clone https://github.com/sandeepcodelab/martivo.git
-
 cd martivo
 
 ### 2. Setup Backend
@@ -144,3 +144,4 @@ cd frontend
 npm install
 
 npm run dev
+```
