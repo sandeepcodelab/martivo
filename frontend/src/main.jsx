@@ -36,6 +36,7 @@ import OrderDetails from "./admin/pages/OrderDetails";
 import UserDetails from "./admin/pages/UserDetails";
 
 import RouteGuard from "./components/RouteGuard/RouteGuard";
+import Unauthorized from "./pages/Unauthorized";
 
 const router = createBrowserRouter([
   // User Routes
@@ -51,7 +52,7 @@ const router = createBrowserRouter([
       {
         path: "checkout",
         element: (
-          <RouteGuard requireAuth allowedRoles={["user"]}>
+          <RouteGuard requireAuth allowedRoles={["user", "admin"]}>
             <Checkout />
           </RouteGuard>
         ),
@@ -59,7 +60,7 @@ const router = createBrowserRouter([
       {
         path: "order-success",
         element: (
-          <RouteGuard requireAuth allowedRoles={["user"]}>
+          <RouteGuard requireAuth allowedRoles={["user", "admin"]}>
             <OrderSuccess />
           </RouteGuard>
         ),
@@ -67,7 +68,7 @@ const router = createBrowserRouter([
       {
         path: "user/orders",
         element: (
-          <RouteGuard requireAuth allowedRoles={["user"]}>
+          <RouteGuard requireAuth allowedRoles={["user", "admin"]}>
             <UserOrders />
           </RouteGuard>
         ),
@@ -75,7 +76,7 @@ const router = createBrowserRouter([
       {
         path: "user/orders/:id",
         element: (
-          <RouteGuard requireAuth allowedRoles={["user"]}>
+          <RouteGuard requireAuth allowedRoles={["user", "admin"]}>
             <UserOrderDetails />
           </RouteGuard>
         ),
@@ -103,6 +104,10 @@ const router = createBrowserRouter([
             <Signup />
           </RouteGuard>
         ),
+      },
+      {
+        path: "unauthorized",
+        element: <Unauthorized />,
       },
     ],
   },
@@ -137,5 +142,5 @@ createRoot(document.getElementById("root")).render(
         <RouterProvider router={router} />
       </AuthContaxtProvider>
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode>,
 );
