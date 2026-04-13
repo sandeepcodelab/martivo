@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { getAllUsers } from "@/services/authService";
 import { notification } from "@/utils/toast";
 import { useNavigate, useSearchParams } from "react-router";
+import { PaginationList } from "@/components/Pagination/Pagination";
 
 export default function Users() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -69,7 +70,28 @@ export default function Users() {
           className="max-w-sm"
         />
       </div>
+
+      {/* User table */}
       <DataTable columns={userColumns(onEdit, onDelete)} data={allusers} />
+
+      {/* Pagination controls */}
+      <div className="pt-4">
+        <PaginationList
+          paginationData={paginationData}
+          onPageChange={(newPage) =>
+            setSearchParams((prev) => {
+              prev.set("page", newPage);
+              return prev;
+            })
+          }
+          onLimitChange={(newLimit) =>
+            setSearchParams((prev) => {
+              prev.set("limit", newLimit);
+              return prev;
+            })
+          }
+        />
+      </div>
     </div>
   );
 }
