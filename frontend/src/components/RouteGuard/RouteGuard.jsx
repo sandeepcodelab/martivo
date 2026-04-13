@@ -11,7 +11,7 @@ export default function RouteGuard({
   const { userData, loading } = useContext(AuthContext);
   const location = useLocation();
 
-  if (loading || userData === null) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -25,6 +25,12 @@ export default function RouteGuard({
 
   // Guest-only pages
   if (guestOnly && isAuthenticated) {
+    const from = location.state?.from?.pathname;
+
+    if (from) {
+      return <Navigate to={from} replace />;
+    }
+
     return user.role === "admin" ? (
       <Navigate to="/admin" replace />
     ) : (
@@ -40,14 +46,9 @@ export default function RouteGuard({
   // Role check
   if (requireAuth && allowedRoles.length > 0) {
     if (!allowedRoles.includes(user.role)) {
-      return user.role === "admin" ? (
-        <Navigate to="/admin" replace />
-      ) : (
-        <Navigate to="/" replace />
-      );
+      return <Navigate to="/auth/unauthorized" replace />;
     }
   }
-
 
   return children;
 }
