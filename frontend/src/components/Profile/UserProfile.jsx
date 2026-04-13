@@ -69,7 +69,24 @@ export function UserProfileDesktop({ user }) {
           <p className="text-xs">{user?.name}</p>
           <p className="text-xs">{user?.email}</p>
         </div>
+
+        {user.role === "admin" ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <Link to="/admin">
+                <DropdownMenuItem className="cursor-pointer ">
+                  Admin Dashboard
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuGroup>
+          </>
+        ) : (
+          ""
+        )}
+
         <DropdownMenuSeparator />
+
         <DropdownMenuGroup>
           <Link to="/user/orders">
             <DropdownMenuItem className="cursor-pointer">
