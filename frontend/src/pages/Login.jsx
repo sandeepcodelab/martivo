@@ -49,7 +49,6 @@ export default function Login() {
       const user = res?.data.user;
 
       if (from) {
-        console.log("from : ", from);
         navigate(from, { replace: true });
       } else {
         user.role === "admin"

@@ -48,17 +48,6 @@ export default function RouteGuard({
     }
   }
 
-  // if (!userData || !userData.isAuthenticated) {
-  //   return <Navigate to="/auth/login" state={{ from: location }} replace />;
-  // }
-
-  // if (!allowedRoles.includes(user.role)) {
-  //   return user.role === "admin" ? (
-  //     <Navigate to="/admin" replace />
-  //   ) : (
-  //     <Navigate to="/" replace />
-  //   );
-  // }
 
   return children;
 }

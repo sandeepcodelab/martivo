@@ -92,7 +92,7 @@ const router = createBrowserRouter([
         path: "Login",
         element: (
           <RouteGuard guestOnly>
-            <Login />,
+            <Login />
           </RouteGuard>
         ),
       },
@@ -100,7 +100,7 @@ const router = createBrowserRouter([
         path: "signup",
         element: (
           <RouteGuard guestOnly>
-            <Signup />,
+            <Signup />
           </RouteGuard>
         ),
       },
@@ -137,5 +137,5 @@ createRoot(document.getElementById("root")).render(
         <RouterProvider router={router} />
       </AuthContaxtProvider>
     </ThemeProvider>
-  </StrictMode>,
+  </StrictMode>
 );
