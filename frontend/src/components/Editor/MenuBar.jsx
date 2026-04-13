@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { useTiptap, useTiptapState } from "@tiptap/react";
 import { menuBarStateSelector } from "./menuBarState";
 import TooltipContext from "./Tooltip";
-import { Button } from "../ui/Button";
+import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import {
   Bold,
