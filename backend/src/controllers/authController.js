@@ -271,7 +271,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const user = await User.findById(decodedToken._id);
 
-    if (!user || incomingRefreshToken !== user.refreshToken) {
+    // if (!user || incomingRefreshToken !== user.refreshToken) {
+    //   throw new ApiError(401, "Unauthorized");
+    // }
+
+    if (!user) {
       throw new ApiError(401, "Unauthorized");
     }
 
