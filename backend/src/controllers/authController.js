@@ -264,10 +264,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 
   try {
+    console.log("Incoming token:", incomingRefreshToken);
+
     const decodedToken = jwt.verify(
       incomingRefreshToken,
       process.env.REFRESH_TOKEN_SECRET
     );
+
+    console.log("Decoded:", decodedToken);
 
     const user = await User.findById(decodedToken._id);
 
@@ -278,6 +282,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     if (!user) {
       throw new ApiError(401, "Unauthorized");
     }
+
+    console.log("User:", decodedToken);
 
     const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshTokens(user._id);
@@ -310,6 +316,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         )
       );
   } catch (error) {
+    console.log("JWT ERROR:", error.message);
+
     throw new ApiError(401, "Unauthorized");
   }
 });
